@@ -1,0 +1,121 @@
+<!doctype html>
+<html manifest=timeomat.manifest>
+<head>
+	<title>Timeomat</title>
+	<meta name=description content='Clock, Alarm, Stopwatch & Timer in your Browser'>
+	<meta name=keywords content='Clock, Alarm, Stopwatch, Timer'>
+	<meta name=apple-mobile-web-app-capable content=yes>
+	<meta name=apple-mobile-web-app-status-bar-style content=none>
+	<meta name=viewport content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
+	<link type=image/png rel=icon id=favicon href=img/favicon.png>
+	<link type=image/png rel=apple-touch-icon-precomposed href=img/icon.png>
+	<link type=text/css rel=stylesheet href=css/screen.css>
+</head>
+<body>
+<script type=text/javascript src=js/UpdateYourBrowser.min.js></script>
+<script type=text/javascript src=js/dominate.extended.js></script>
+
+<nav>
+	<h1 id=logo title=Timeomat>
+		Timeomat
+	</h1><div id=links>
+		<a id=clock title=Clock></a><a id=alarm title=Alarmclock></a><a id=stopwatch title=Stopwatch></a><a id=timer title=Timer></a>
+	</div>
+	<a id=adrian href=http://adriansieber.com>By Adrian Sieber</a>
+</nav>
+
+<div id=wrapcontent>
+
+	<div id=home>
+		<img src=img/clocks.png alt="Clock, Alarm, Stopwatch & Timer">
+		<em>Clock, Alarm, Stopwatch & Timer.</em>
+		<br>
+		<em>All in your Browser.</em>
+	</div>
+
+	<div id=clockwrapper>
+		<h2 id=digitalclock>01:20:54</h2>
+
+		<h3 id=date>Wednesday, 27.June 2012</h3>
+	</div>
+
+	<div id=alarmwrapper>
+		<form>
+			<input id="alarmTime" type=time value=12:00>
+
+			<div id=alarmDays>
+				<input type=checkbox id=monday> <label for=monday>Monday</labeL> <br>
+				<input type=checkbox id=tuesday> <label for=tuesday>Tuesday</labeL> <br>
+				<input type=checkbox id=wednesday> <label for=wednesday>Wednesday</labeL> <br>
+				<input type=checkbox id=thursday> <label for=thursday>Thursday</labeL> <br>
+				<input type=checkbox id=friday> <label for=friday>Friday</labeL> <br>
+				<input type=checkbox id=saturday> <label for=saturday>Saturday</labeL> <br>
+				<input type=checkbox id=sunday> <label for=sunday>Sunday</labeL>
+			</div>
+			<select id=alarmSound>
+				<option>Waves</option>
+				<option>Fire</option>
+				<option>Guitar</option>
+				<option>Alarmbell</option>
+			</select>
+			<input id="setAlarm" type=submit value=Start></form>
+	</div>
+
+	<div id=stopwatchwrapper>
+		<h2 id=stopwatchDisplay>00:00:00.00</h2>
+		<br>
+
+		<div id=stopwatchcontrols>
+			<button id=stopwatchStart>Start</button>
+			<button id=stopwatchRound style="display: none">Round</button>
+			<button id=stopwatchReset style="display: none">x</button>
+		</div>
+		<br>
+		<table id=rounds style="display: none">
+			<tbody>
+			<tr>
+				<th>Round</th>
+				<th>Time</th>
+				<th>Duration</th>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div id=timerwrapper>
+		<form>
+			<h3>Start a Timer</h3>
+			<input id="timerTime" type=text value=00:00:00>
+			<input id="startTimer" type=submit value=Start>
+		</form>
+		<form>
+			<h4>or a Countdown</h4>
+			<input id="countdownDate" type=date value=2013-01-01>
+			<input id="countdownTime" type=time value=12:00>
+			<input id="countdownName" type=text placeholder=Name>
+			<input id="startCountdown" type=submit value=Start>
+		</form>
+		<h2 id="name"></h2>
+
+		<h3 id="rest"></h3>
+	</div>
+
+</div>
+
+<!--
+   <div id=footer>
+	   <div id=social>
+		   <div class=fb-like fb_edge_widget_with_comment fb_iframe_widget data-href=http://www.facebook.com/timeomat data-send=true data-layout=box_count data-width=100 data-show-faces=true>
+			   <span style=height: 92px; width: 100px; ><iframe id=f554626b4 name=f1f1a8c734 scrolling=no style=overflow: hidden; height: 92px; width: 100px; border: none;  title=Like this content on Facebook. class=fb_ltr  src=http://www.facebook.com/plugins/like.php?api_key=248799211809224&amp;channel_url=http%3A%2F%2Fstatic.ak.facebook.com%2Fconnect%2Fxd_arbiter.php%3Fversion%3D8%23cb%3Dfaebd38e4%26origin%3Dhttp%253A%252F%252Ftimeomat.com%252Ff375bea8b8%26domain%3Dtimeomat.com%26relation%3Dparent.parent&amp;extended_social_context=false&amp;href=http%3A%2F%2Fwww.facebook.com%2Ftimeomat&amp;layout=box_count&amp;locale=de_DE&amp;node_type=link&amp;sdk=joey&amp;send=true&amp;show_faces=false&amp;width=100></iframe></span></div>
+		   <iframe allowtransparency=true frameborder=0 scrolling=no src=http://platform.twitter.com/widgets/tweet_button.1340179658.html#_=1340733314535&amp;count=vertical&amp;id=twitter-widget-0&amp;lang=en&amp;original_referer=http%3A%2F%2Ftimeomat.com%2F&amp;size=m&amp;text=Timeomat&amp;url=http%3A%2F%2Ftimeomat.com%2F&amp;via=AdrianSieber class=twitter-share-button twitter-count-vertical style=width: 56px; height: 62px;  title=Twitter Tweet Button></iframe>
+		   <script type=text/javascript src=//platform.twitter.com/widgets.js>
+		   </script>
+		   &nbsp;&nbsp;
+		   <div id=___plusone_0 style=height: 60px; width: 50px; display: inline-block; text-indent: 0px; margin: 0px; padding: 0px; background-color: transparent; border-style: none; float: none; line-height: normal; font-size: 1px; vertical-align: baseline; background-position: initial initial; background-repeat: initial initial; ><iframe allowtransparency=true frameborder=0 hspace=0 marginheight=0 marginwidth=0 scrolling=no style=margin: 0px; border-style: none; height: 60px; width: 50px; position: static; left: 0px; top: 0px; visibility: visible;  tabindex=0 vspace=0 width=100% id=I1_1340733314486 name=I1_1340733314486 src=https://plusone.google.com/_/+1/fastbutton?bsv=pr&amp;url=http%3A%2F%2Ftimeomat.com%2F&amp;size=tall&amp;count=true&amp;origin=http%3A%2F%2Ftimeomat.com&amp;hl=en-US&amp;jsh=m%3B%2F_%2Fapps-static%2F_%2Fjs%2Fgapi%2F__features__%2Frt%3Dj%2Fver%3DuOu-zbpepws.de.%2Fsv%3D1%2Fam%3D!DpnNNtexbrGIOnqTeg%2Fd%3D1%2Frs%3DAItRSTNO9pvEKaelVhSHGE_PewbckgyIOw#id=I1_1340733314486&amp;parent=http%3A%2F%2Ftimeomat.com&amp;rpctoken=275407480&amp;_methods=onPlusOne%2C_ready%2C_close%2C_open%2C_resizeMe%2C_renderstart title=+1></iframe></div>
+	   </div>
+   </div>
+   -->
+
+<script type=text/javascript src=js/timeomat.js></script>
+</body>
+</html>

@@ -1,0 +1,388 @@
+@import compass
+
+@font-face
+	font-family: 'Pacifico'
+	font-style: normal
+	font-weight: 400
+	src: url('../fonts/Pacifico.ttf')
+
+@font-face
+	font-family: 'Play'
+	font-style: normal
+	font-weight: 400
+	src: url('../fonts/Play.ttf')
+
+
+*
+	margin: 0
+	padding: 0
+	border: 0
+	font-size: 100%
+	+box-sizing(border-box)
+
+html
+	background: url(../img/bg.jpg) black
+	height: 100%
+
+body
+	font-weight: 500
+	font-size: 18px
+	line-height: 1.3
+	font-family: "Play", sans-serif
+	color: rgba(200, 200, 200, 1)
+	width: 960px
+	margin: 0 auto 0 auto
+	height: 100%
+
+#clockwrapper,
+#alarmwrapper,
+#stopwatchwrapper,
+#timerwrapper
+	display: none
+
+#logo
+	font-weight: 100
+	font-size: 24px
+	line-height: 50px
+	font-family: "Play", sans-serif
+	&:hover
+		+background-image(linear-gradient(rgb(0, 140, 255), rgb(0, 40, 230)))
+		color: rgb(255, 255, 255)
+		text-shadow: 0px 0px 2px black
+		border-radius: 0 0 0 10px
+
+h2
+	text-align: center
+	vertical-align: middle
+	font-weight: 500
+	font-size: 180px
+	font-family: "Play", sans-serif
+	color: rgba(220, 220, 220, 1)
+	text-shadow: 5px 5px 20px rgb(0, 0, 0), 1px -2px 0px rgb(210, 210, 210), 2px -4px 0px rgb(210, 210, 210), 3px -6px 0px rgb(210, 210, 210), 4px -8px 0px rgb(210, 210, 210)
+	border-radius: 10px
+
+h3
+	display: inline-block
+	text-align: center
+	vertical-align: middle
+	font-weight: 500
+	font-size: 50px
+	font-family: "Play", sans-serif
+	color: rgba(220, 220, 220, 1)
+	text-shadow: 2px 2px 2px rgb(0, 0, 0)
+	text-decoration: none
+	margin: 0 20px
+
+h4
+	display: inline-block
+	text-align: center
+	font: 500 20px/50px "Play", sans-serif
+	color: rgba(200, 200, 200, 1)
+	text-shadow: 1px 1px 4px rgb(0, 0, 0)
+	text-decoration: none
+	margin: 50px 0 0 0
+
+em
+	display: inline-block
+	text-align: center
+	vertical-align: middle
+	font-weight: 400
+	font-size: 50px
+	font-family: "Pacifico", serif
+	font-style: italic
+	color: rgba(220, 220, 220, 1)
+	text-shadow: 2px 2px 2px rgb(0, 0, 0)
+	text-decoration: none
+	margin: 0 20px 0 20px
+
+input[type="submit"],
+button
+	text-align: center
+	vertical-align: middle
+	+background-image(linear-gradient(rgba(30, 30, 30, 1), rgba(0, 0, 0, 1)))
+	border: none
+	font: 500 30px / 30px "Play", sans-serif
+	color: rgb(200, 200, 200)
+	box-shadow: 4px -4px 0px rgba(0, 0, 0, 1)
+	padding: 5px 20px 5px 20px
+	border-radius: 10px
+
+input[type="submit"]:active,
+button:active
+	vertical-align: middle
+	+background-image(linear-gradient(rgba(0, 0, 0, 1), rgba(20, 20, 20, 1)))
+	box-shadow: 2px -2px 0px rgba(0, 0, 0, 1)
+	position: relative
+	bottom: 4px
+	left: 4px
+
+input
+	&[type="time"],
+	&[type="text"]
+		display: inline-block
+		vertical-align: middle
+		font: 500 60px/60px "Play", sans-serif
+		color: white
+		background: rgb(60, 60, 60)
+		width: 240px
+		border-radius: 10px
+		margin: 0 20px 0 0px
+		box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.6)
+		padding: 0 10px 0 10px
+
+#alarmDays,
+select
+	display: inline-block
+	vertical-align: middle
+	font: 500 60px / 60px "Play", sans-serif
+	color: white
+	background: rgb(60, 60, 60)
+	width: 240px
+	border-radius: 10px
+	margin: 0 20px 0 0px
+	box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.6)
+	padding: 0 10px 0 10px
+
+
+//-----------------------------------Navigation-----------------------------------
+
+body > nav
+	color: white
+	+background-image(linear-gradient(rgb(50, 50, 50), rgb(0,0,0)))
+	margin: 0 0 30px 0
+	position: relative
+	border-radius: 0 0 10px 10px
+	box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5)
+
+#links
+	display: inline-block
+
+#links a,
+#logo
+	height: 50px
+	line-height: 50px
+	min-width: 60px
+	display: inline-block
+	text-decoration: none
+	color: rgb(200, 200, 200)
+	border-right: 2px solid rgba(255, 255, 255, 0.3)
+	background-position: center
+	vertical-align: top
+	padding: 0 20px
+	&:active,
+	&:focus
+		+background-image(linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
+		color: rgb(255, 255, 255)
+		box-shadow: inset 2px 0px 20px rgb(0, 0, 0)
+	&:nth-of-type(1)
+		&:active,
+		&:focus
+			border-radius: 0 0 0 10px
+
+#adrian
+	display: inline-block
+	font: 100 12px / 50px "", serif
+	color: rgb(120, 120, 120)
+	text-decoration: none
+	float: right
+	padding: 0 10px 0 0
+	&:hover
+		color: rgb(200, 200, 200)
+
+#logo,
+#clock,
+#alarm,
+#stopwatch,
+#timer,
+	background-repeat: no-repeat
+	background-position: center
+
+#clock
+	+background-image(url('../img/clock.png'))
+	&:hover
+		+background-image(url('../img/clock.png'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
+#alarm
+	+background-image(url('../img/alarm.png'))
+	&:hover
+		+background-image(url('../img/alarm.png'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
+#timer
+	+background-image(url('../img/timer.png'))
+	&:hover
+		+background-image(url('../img/timer.png'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
+#stopwatch
+	+background-image(url('../img/stop.png'))
+	&:hover
+		+background-image(url('../img/stop.png'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
+
+#home
+	text-align: center
+	img
+		width: 800px
+		height: 234px
+		margin-bottom: 20px
+	em
+		margin: 0 0 30px 0
+
+#footer
+	width: 960px
+	padding: 30px 0 30px 0
+	text-align: center
+	vertical-align: top
+	border-top: 1px dashed rgba(255, 255, 255, 0.3)
+	div#social
+		text-align: center
+		>
+			vertical-align: top
+
+
+
+#clockwrapper
+	text-align: center
+
+#alarmwrapper
+	text-align: center
+	form
+		display: inline-block
+		vertical-align: top
+		input[type="time"]
+			width: 200px
+	select
+		font-size: 30px
+		margin-right: 20px
+
+#alarmDays
+	font-size: 20px
+	line-height: 20px
+	padding: 20px
+	width: inherit
+	text-align: left
+
+
+#stopwatchwrapper
+	text-align: center
+	padding: 0 0 50px 0
+	h2
+		font-size: 120px
+		margin: 50px 0 0 0px
+	button
+		display: inline-block
+		font-weight: 900
+		font-size: 40px
+		line-height: 1.5
+		font-family: "Play", sans-serif
+		padding: 0px 30px 0px 30px
+	table
+		margin: 20px 0 0 0
+		tr:nth-of-type(2n + 1)
+			background: rgba(0, 0, 0, 0.1)
+	th
+		text-align: center
+		color: rgb(200, 200, 200)
+		padding: 15px
+	td
+		text-align: center
+		padding: 5px 20px 5px 20px
+
+#timerwrapper
+	text-align: center
+	h2
+		font-size: 120px
+		line-height: 160px
+		margin: 50px 0 0 0px
+	form
+		input[type="date"]
+			vertical-align: middle
+			font: 500 24px / 24px "Play", sans-serif
+			color: white
+			background: rgb(60, 60, 60)
+			width: 150px
+			border-radius: 5px
+			margin: 0 0 0 20px
+			box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.6)
+			padding: 2px 6px 2px 6px
+		input[type="submit"]
+			margin: 0 0 0 40px
+			padding: 10px 30px 10px 30px
+		&:nth-of-type(2)
+			input
+				&[type="text"]
+					width: 140px
+					vertical-align: middle
+					font: 500 24px/24px "Play", sans-serif
+					color: white
+					background: rgb(60, 60, 60)
+					border-radius: 5px
+					margin: 0 0 0 20px
+					box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.6)
+					padding: 2px 6px 2px 6px
+				&[type="time"]
+					vertical-align: middle
+					font: 500 24px/24px "Play", sans-serif
+					color: white
+					background: rgb(60, 60, 60)
+					border-radius: 5px
+					margin: 0 0 0 20px
+					box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.6)
+					padding: 2px 6px 2px 6px
+					width: 80px
+					margin: 0 0 0 5px
+				&[type="submit"]
+					font-size: 24px
+					margin: 0 0 0 30px
+					padding: 5px 20px 5px 20px
+
+		input[type="submit"]:active
+			+background-image(linear-gradient(rgba(0, 0, 0, 1), rgba(20, 20, 20, 1)))
+			box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6)
+			border-radius: 10px
+
+
+
+@media all and (max-width: 480px)
+
+	body
+		font-size: 14px
+		width: 100%
+
+	body > nav
+		width: 100%
+
+	#links a,
+	#logo
+		height: 40px
+		line-height: 40px
+		min-width: 40px
+		padding: 0 16px
+
+	#logo
+		background-size: 100%
+
+	#clock,
+	#alarm,
+	#stopwatch,
+	#timer,
+		background-size: 50%, 100%
+
+
+	#home
+		img
+			width: 100%
+			height: auto
+
+	#stopwatchwrapper
+		h2
+			font-size: 50px
+		button
+			font-size: 24px
+
+
+	h2
+		font-size: 70px
+		text-shadow: 5px 5px 20px rgb(0, 0, 0), 1px -2px 0px rgb(210, 210, 210), 2px -4px 0px rgb(210, 210, 210)
+
+	h3
+		font-size: 32px
+	em
+		font-size: 24px
+
+
