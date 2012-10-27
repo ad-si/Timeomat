@@ -6,6 +6,9 @@
 		stopwatch = new Stopwatch(),
 		countdown = new Countdown();
 
+	function $(e) {
+		return document.getElementById(e);
+	}
 
 	function toHours(value) {
 
@@ -15,21 +18,22 @@
 			h,
 			m,
 			s,
-			ms;
+			ms,
+			floor = Math.floor;
 
 		value = (value >= 0) ? value : 0;
 
-		a = Math.floor(value / 31536000000);
+		a = floor(value / 31536000000);
 		value %= 31536000000;
-		d = Math.floor(value / 86400000);
+		d = floor(value / 86400000);
 		value %= 86400000;
-		h = Math.floor(value / 3600000);
+		h = floor(value / 3600000);
 		value %= 3600000;
-		m = Math.floor(value / 60000);
+		m = floor(value / 60000);
 		value %= 60000;
-		s = Math.floor(value / 1000);
+		s = floor(value / 1000);
 		value %= 1000;
-		ms = Math.floor(value / 10);
+		ms = floor(value / 10);
 
 		time += (a) ? ((a == 1) ? a + ' Year, ' : a + ' Years, ') : '';
 		time += (d) ? ((d == 1) ? d + ' Day, ' : d + ' Days, ') : '';
@@ -41,31 +45,22 @@
 		return time;
 	}
 
-	function highlight(element) {
-		var links = $('c2').getElementsByTagName('div');
-		for (var i = 0; i < links.length; i++) {
-			links[i].className = 'song';
-		}
-		element.className = 'highlight song'
-	}
-
-	function $(e) {
-		return document.getElementById(e);
-	}
 
 	function ajax(url, param, func) {
 
-		var base = '/proxy.php', x = new XMLHttpRequest(), str = "", res, path;
+		var a,
+			base = '/proxy.php', x = new XMLHttpRequest(), str = "", res, path,
+			spinner = $('spinner');
 
-		for (var a in param) {
+		for (a in param) {
 			if (param.hasOwnProperty(a)) {
 				str += a + '=' + param[a] + '&';
 			}
 		}
 
 		// loading spinner
-		if ($('spinner').style.display == "none") {
-			$('spinner').style.display = "inline-block";
+		if (spinner.style.display === "none") {
+			spinner.style.display = "inline-block";
 		}
 
 		path = base + url + '?' + str;
@@ -73,26 +68,27 @@
 		x.open('get', path, true);
 		x.send(null);
 		x.onreadystatechange = function () {
-			if (x.readyState == 4) {
+			if (x.readyState === 4) {
 
-				$('spinner').style.display = "none";
+				spinner.style.display = "none";
 
-				if (x.status == 200) {
+				if (x.status === 200) {
 
-					$('spinner').style.display = "none";
+					spinner.style.display = "none";
 
 					res = JSON.parse(x.responseText);
 
 					if (!res.error) {
-						if (res.data)
-							func(res.data); else
+						if (res.data) {
+							func(res.data);
+						} else {
 							throw new Error('No data available for ' + path);
+						}
 					} else {
 						alert('This Error occured: ' + res.error);
 					}
 
 				} else {
-
 					throw new Error('Http error ' + x.status + ' occured during an ajax request to ' + path);
 				}
 			}
@@ -102,16 +98,16 @@
 	function timeIsOver() {
 
 		var audio = new Audio();
-		audio.src = '../sounds/alarm.wav';
+		audio.src = 'sounds/alarm.wav';
 		audio.volume = 1;
 		audio.addEventListener('canplay', function () {
 			audio.play();
-			document.body.style.background = "rgb(100,0,0)";
+			document.documentElement.style.background = "rgb(100,0,0)";
 			var notification = alert('Your Time Is Over!');
 
-			if (notification == undefined) {
+			if (notification === undefined) {
 				audio.pause();
-				document.body.style.background = "url(img/bg.jpg) black";
+				document.documentElement.style.background = "url(img/bg.jpg) black";
 			}
 		}, false);
 	}
@@ -122,7 +118,6 @@
 
 		var weekdays = new Array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"),
 			months = new Array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
-
 
 		this.showTime = function () {
 			$("digitalclock").innerHTML = new Date().toLocaleTimeString().substr(0, 8);
@@ -138,7 +133,7 @@
 			$("date").innerHTML = weekdays[date.getDay()] + ", " + date.getDate() + "." + months[date.getMonth()] + " " + date.getFullYear();
 
 			setTimeout(function () {
-				clock.showDate()
+				clock.showDate();
 			}, 1000);
 		};
 	}
@@ -177,7 +172,12 @@
 			firstTime = true,
 			isRunning = false,
 			roundCounter = 0,
-			lastRound = 0;
+			lastRound = 0,
+			stopwatchDisplay = $("stopwatchDisplay"),
+			stopwatchStart = $("stopwatchStart"),
+			stopwatchReset = $("stopwatchReset"),
+			stopwatchRound = $("stopwatchRound"),
+			rounds = $("rounds");
 
 
 		this.startStop = function () {
@@ -192,40 +192,42 @@
 
 				stopwatch.showTime();
 
-				$("stopwatchStart").innerHTML = 'Stop';
-				$("stopwatchReset").style.display = 'none';
-				$("stopwatchRound").style.display = 'inline-block';
+				stopwatchStart.innerHTML = 'Stop';
+				stopwatchReset.style.display = 'none';
+				stopwatchRound.style.display = 'inline-block';
 
 			} else {
 				clearTimeout(timer);
 				isRunning = false;
-				$("stopwatchStart").innerHTML = 'Continue';
-				$("stopwatchReset").style.display = 'inline-block';
-				$("stopwatchRound").style.display = 'none';
-
+				stopwatchStart.innerHTML = 'Continue';
+				stopwatchReset.style.display = 'inline-block';
+				stopwatchRound.style.display = 'none';
 			}
 		};
+
 		this.showTime = function () {
+
 			if (isRunning) {
 				var now = new Date();
 				time = now - startTime;
 
-				$("stopwatchDisplay").innerHTML = toHours(time);
+				stopwatchDisplay.innerHTML = toHours(time);
 
 				timer = window.setTimeout(function () {
 					stopwatch.showTime();
 				}, 10);
 
 			} else {
-				$("stopwatchDisplay").innerHTML = '00:00:00.00';
+				stopwatchDisplay.innerHTML = '00:00:00.00';
 			}
 		};
+
 		this.showRound = function () {
 
-			$('rounds').style.display = 'inline-block';
+			rounds.style.display = 'inline-block';
 
 			DOMinate(
-				[$('rounds'),
+				[rounds,
 					['tr',
 						['td', String(++roundCounter)],
 						['td', toHours(time)],
@@ -236,22 +238,23 @@
 
 			lastRound = time;
 		};
+
 		this.reset = function () {
 			firstTime = true;
 			roundCounter = 0;
 			lastRound = 0;
 
-			$("stopwatchDisplay").innerHTML = '00:00:00.00';
-			$("stopwatchStart").innerHTML = 'Start';
-			$("stopwatchReset").style.display = 'none';
-			$("rounds").style.display = 'none';
-			$("rounds").innerHTML = '<tr><th>Round</th><th>Time</th><th>Duration</th></tr>';
+			stopwatchDisplay.innerHTML = '00:00:00.00';
+			stopwatchStart.innerHTML = 'Start';
+			stopwatchReset.style.display = 'none';
+			rounds.style.display = 'none';
+			rounds.innerHTML = '<tr><th>Round</th><th>Time</th><th>Duration</th></tr>';
 		};
 	}
 
 	//Timer
 	function Countdown() {
-		var	timer,
+		var timer,
 			rest,
 			endTime,
 			leftTime = 0;
@@ -272,9 +275,7 @@
 				clearTimeout(timer);
 				timeIsOver();
 			} else {
-				timer = setTimeout(function () {
-					countdown.showTime();
-				}, 10);
+				timer = setTimeout(countdown.showTime, 10);
 			}
 		};
 	}
@@ -283,7 +284,7 @@
 	function route(state) {
 
 		// History object or URL
-		if (typeof(state) == "object") {
+		if (typeof (state) === "object") {
 
 			if (state.url !== undefined) {
 				fromURL(state.url);
@@ -291,7 +292,7 @@
 				throw new Error('History Object does not contain an URL: ' + state.url);
 			}
 
-		} else if (typeof(state) == "string") {
+		} else if (typeof(state) === "string") {
 			fromURL(state);
 		} else {
 			throw new Error('The variable passed to route() is not an object or a string: ' + state);
@@ -300,7 +301,7 @@
 		function fromURL(url) {
 			var dirs = url.split('/');
 
-			if (url == '' || url == '/') {
+			if (url === '' || url === '/') {
 				view().index();
 			} else if (dirs.length == 1) {
 				switch (dirs[0]) {
@@ -323,7 +324,7 @@
 						throw new Error(error);
 				}
 
-			} else if (dirs.length == 2) {
+			} else if (dirs.length === 2) {
 
 				throw new Error('The URL is too long:' + url);
 
@@ -337,11 +338,11 @@
 	function view() {
 
 		function show(el) {
-			$('home').style.display = 'none';
-			$('alarmwrapper').style.display = 'none';
-			$('clockwrapper').style.display = 'none';
-			$('stopwatchwrapper').style.display = 'none';
-			$('timerwrapper').style.display = 'none';
+			$('home').style.display =
+				$('alarmwrapper').style.display =
+					$('clockwrapper').style.display =
+						$('stopwatchwrapper').style.display =
+							$('timerwrapper').style.display = 'none';
 
 			$(el).style.display = 'block';
 		}
@@ -514,10 +515,10 @@
 
 		//Popstate
 		window.addEventListener('popstate', function (event) {
-			if (event.state != null) {
+			if (event.state !== null) {
 				route(event.state);
 			} else {
-				throw new Error('Can\'t route the event "' + event.state + '".');
+				throw new Error('Can not route the event "' + event.state + '".');
 			}
 
 		}, false);
