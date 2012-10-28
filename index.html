@@ -1,104 +1,104 @@
 <!doctype html>
 <html manifest=timeomat.manifest>
 <head>
-	<title>Timeomat</title>
-	<meta name=description content='Clock, Alarm, Stopwatch & Timer in your Browser'>
-	<meta name=keywords content='Clock, Alarm, Stopwatch, Timer'>
-	<meta name=apple-mobile-web-app-capable content=yes>
-	<meta name=apple-mobile-web-app-status-bar-style content=none>
-	<meta name=viewport content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
-	<link type=image/png rel=icon id=favicon href=img/favicon.png>
-	<link type=image/png rel=apple-touch-icon-precomposed href=img/icon.png>
-	<link type=text/css rel=stylesheet href=css/screen.css>
+    <title>Timeomat</title>
+    <meta name=description content='Clock, Alarm, Stopwatch & Timer in your Browser'>
+    <meta name=keywords content='Clock, Alarm, Stopwatch, Timer'>
+    <meta name=apple-mobile-web-app-capable content=yes>
+    <meta name=apple-mobile-web-app-status-bar-style content=none>
+    <meta name=viewport content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <link type=image/png rel=icon id=favicon href=img/favicon.png>
+    <link type=image/png rel=apple-touch-icon-precomposed href=img/icon.png>
+    <link type=text/css rel=stylesheet href=css/screen.css>
 </head>
 <body>
 <script type=text/javascript src=js/UpdateYourBrowser.min.js></script>
 <script type=text/javascript src=js/dominate.extended.js></script>
 
 <nav>
-	<h1 id=logo title=Timeomat>
-		Timeomat
-	</h1><div id=links>
-		<a id=clock title=Clock></a><a id=alarm title=Alarmclock></a><a id=stopwatch title=Stopwatch></a><a id=timer title=Timer></a>
-	</div>
-	<a id=adrian href=http://adriansieber.com>By Adrian Sieber</a>
+    <h1 id=logo title=Timeomat>
+        Timeomat
+    </h1><div id=links>
+        <a id=clock title=Clock></a><a id=alarm title=Alarmclock></a><a id=stopwatch title=Stopwatch></a><a id=timer title=Timer></a><a id=countdown title=Countdown></a><a id=worldclock title=Worldclock></a>
+    </div>
+    <a id=adrian href=http://adriansieber.com>By Adrian Sieber</a>
 </nav>
 
 <div id=wrapcontent>
 
-	<div id=home>
-		<img src=img/clocks.png alt="Clock, Alarm, Stopwatch & Timer">
-		<em>Clock, Alarm, Stopwatch & Timer.</em>
-		<br>
-		<em>All in your Browser.</em>
-	</div>
+    <div id=home>
+        <img src=img/clocks.png alt="Clock, Alarm, Stopwatch & Timer">
+        <em>Clock, Alarm, Stopwatch & Timer.</em>
+        <br>
+        <em>All in your Browser.</em>
+    </div>
 
-	<div id=clockwrapper>
-		<h2 id=digitalclock>01:20:54</h2>
+    <div id=clockwrapper>
+        <h2 id=digitalclock>01:20:54</h2>
 
-		<h3 id=date>Wednesday, 27.June 2012</h3>
-	</div>
+        <h3 id=date>Wednesday, 27.June 2012</h3>
+    </div>
 
-	<div id=alarmwrapper>
-		<form>
-			<input id="alarmTime" type=time value=12:00>
+    <div id=alarmwrapper>
+        <form>
+            <input id="alarmTime" type=time value=12:00>
 
-			<div id=alarmDays>
-				<input type=checkbox id=monday> <label for=monday>Monday</labeL> <br>
-				<input type=checkbox id=tuesday> <label for=tuesday>Tuesday</labeL> <br>
-				<input type=checkbox id=wednesday> <label for=wednesday>Wednesday</labeL> <br>
-				<input type=checkbox id=thursday> <label for=thursday>Thursday</labeL> <br>
-				<input type=checkbox id=friday> <label for=friday>Friday</labeL> <br>
-				<input type=checkbox id=saturday> <label for=saturday>Saturday</labeL> <br>
-				<input type=checkbox id=sunday> <label for=sunday>Sunday</labeL>
-			</div>
-			<select id=alarmSound>
-				<option>Waves</option>
-				<option>Fire</option>
-				<option>Guitar</option>
-				<option>Alarmbell</option>
-			</select>
-			<input id="setAlarm" type=submit value=Start></form>
-	</div>
+            <div id=alarmDays>
+                <input type=checkbox id=monday> <label for=monday>Monday</labeL> <br>
+                <input type=checkbox id=tuesday> <label for=tuesday>Tuesday</labeL> <br>
+                <input type=checkbox id=wednesday> <label for=wednesday>Wednesday</labeL> <br>
+                <input type=checkbox id=thursday> <label for=thursday>Thursday</labeL> <br>
+                <input type=checkbox id=friday> <label for=friday>Friday</labeL> <br>
+                <input type=checkbox id=saturday> <label for=saturday>Saturday</labeL> <br>
+                <input type=checkbox id=sunday> <label for=sunday>Sunday</labeL>
+            </div>
+            <select id=alarmSound>
+                <option>Waves</option>
+                <option>Fire</option>
+                <option>Guitar</option>
+                <option>Alarmbell</option>
+            </select>
+            <input id="setAlarm" type=submit value=Start></form>
+    </div>
 
-	<div id=stopwatchwrapper>
-		<h2 id=stopwatchDisplay>00:00:00.00</h2>
-		<br>
+    <div id=stopwatchwrapper>
+        <h2 id=stopwatchDisplay>00:00:00.00</h2>
+        <br>
 
-		<div id=stopwatchcontrols>
-			<button id=stopwatchStart>Start</button>
-			<button id=stopwatchRound style="display: none">Round</button>
-			<button id=stopwatchReset style="display: none">x</button>
-		</div>
-		<br>
-		<table id=rounds style="display: none">
-			<tbody>
-			<tr>
-				<th>Round</th>
-				<th>Time</th>
-				<th>Duration</th>
-			</tr>
-			</tbody>
-		</table>
-	</div>
+        <div id=stopwatchcontrols>
+            <button id=stopwatchStart>Start</button>
+            <button id=stopwatchRound style="display: none">Round</button>
+            <button id=stopwatchReset style="display: none">x</button>
+        </div>
+        <br>
+        <table id=rounds style="display: none">
+            <tbody>
+            <tr>
+                <th>Round</th>
+                <th>Time</th>
+                <th>Duration</th>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
-	<div id=timerwrapper>
-		<form>
-			<h3>Start a Timer</h3>
-			<input id="timerTime" type=text value=00:00:00>
-			<input id="startTimer" type=submit value=Start>
-		</form>
-		<form>
-			<h4>or a Countdown</h4>
-			<input id="countdownDate" type=date value=2013-01-01>
-			<input id="countdownTime" type=time value=12:00>
-			<input id="countdownName" type=text placeholder=Name>
-			<input id="startCountdown" type=submit value=Start>
-		</form>
-		<h2 id="name"></h2>
+    <div id=timerwrapper>
+        <form>
+            <h3>Start a Timer</h3>
+            <input id="timerTime" type=text value=00:00:00>
+            <input id="startTimer" type=submit value=Start>
+        </form>
+        <form>
+            <h4>or a Countdown</h4>
+            <input id="countdownDate" type=date value=2013-01-01>
+            <input id="countdownTime" type=time value=12:00>
+            <input id="countdownName" type=text placeholder=Name>
+            <input id="startCountdown" type=submit value=Start>
+        </form>
+        <h2 id="name"></h2>
 
-		<h3 id="rest"></h3>
-	</div>
+        <h3 id="rest"></h3>
+    </div>
 
 </div>
 
@@ -109,13 +109,16 @@
 <script type="text/javascript">
     var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.adriansieber.com/" : "http://piwik.adriansieber.com/");
     document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
-</script><script type="text/javascript">
+</script>
+<script type="text/javascript">
     try {
         var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 9);
         piwikTracker.trackPageView();
         piwikTracker.enableLinkTracking();
-    } catch( err ) {}
-</script><noscript><p><img src="http://piwik.adriansieber.com/piwik.php?idsite=9" style="border:0" alt="" /></p></noscript>
+    } catch (err) {
+    }
+</script>
+<noscript><p><img src="http://piwik.adriansieber.com/piwik.php?idsite=9" style="border:0" alt=""/></p></noscript>
 <!-- End Piwik Tracking Code -->
 
 </body>

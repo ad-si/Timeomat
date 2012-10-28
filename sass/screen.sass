@@ -37,7 +37,9 @@ body
 #clockwrapper,
 #alarmwrapper,
 #stopwatchwrapper,
-#timerwrapper
+#timerwrapper,
+#countdownwrapper,
+#worldclockwrapper
 	display: none
 
 #logo
@@ -171,6 +173,7 @@ body > nav
 	padding: 0 20px
 	&:active,
 	&:focus
+		background-size: 100
 		+background-image(linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
 		color: rgb(255, 255, 255)
 		box-shadow: inset 2px 0px 20px rgb(0, 0, 0)
@@ -178,6 +181,12 @@ body > nav
 		&:active,
 		&:focus
 			border-radius: 0 0 0 10px
+
+#links a
+	background-repeat: no-repeat
+	background-size:  60%
+	&:hover
+		background-size:  60%, 100%
 
 #adrian
 	display: inline-block
@@ -189,30 +198,31 @@ body > nav
 	&:hover
 		color: rgb(200, 200, 200)
 
-#logo,
-#clock,
-#alarm,
-#stopwatch,
-#timer,
-	background-repeat: no-repeat
-	background-position: center
 
 #clock
-	+background-image(url('../img/clock.png'))
+	+background-image(url('../img/clock.svg'))
 	&:hover
-		+background-image(url('../img/clock.png'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
+		+background-image(url('../img/clock.svg'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
 #alarm
-	+background-image(url('../img/alarm.png'))
+	+background-image(url('../img/alarm.svg'))
 	&:hover
-		+background-image(url('../img/alarm.png'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
+		+background-image(url('../img/alarm.svg'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
 #timer
-	+background-image(url('../img/timer.png'))
+	+background-image(url('../img/timer.svg'))
 	&:hover
-		+background-image(url('../img/timer.png'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
+		+background-image(url('../img/timer.svg'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
 #stopwatch
-	+background-image(url('../img/stop.png'))
+	+background-image(url('../img/stopwatch.svg'))
 	&:hover
-		+background-image(url('../img/stop.png'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
+		+background-image(url('../img/stopwatch.svg'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
+#countdown
+	+background-image(url('../img/countdown.svg'))
+	&:hover
+		+background-image(url('../img/countdown.svg'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
+#worldclock
+	+background-image(url('../img/worldclock.svg'))
+	&:hover
+		+background-image(url('../img/worldclock.svg'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
 
 #home
 	text-align: center
