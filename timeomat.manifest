@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#2012-06-27T21:50
+#2012-11-15T00:00
 
 #js
 js/UpdateYourBrowser.min.js
@@ -10,19 +10,17 @@ js/timeomat.js
 css/screen.css
 
 #Images
-img/alarm.png
+img/clock.svg
+img/alarm.svg
+img/stopwatch.svg
+img/timer.svg
+img/countdown.svg
+img/worldclock.svg
+
 img/bg.jpg
-img/clock.png
 img/clocks.png
 img/favicon.png
 img/icon.png
-img/iphone.png
-img/loading.png
-img/paper.jpg
-img/paper.png
-img/stop.png
-img/stopwatch.png
-img/timer.png
 
 #sounds
 sounds/alarm.wav

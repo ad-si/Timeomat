@@ -1,13 +1,18 @@
 (function (window, document, undefined) {
 
-	var baseURL = "",
+	var baseURL = '/~adrian/timeomat',
 		clock = new Clock(),
-		alarm = new Alarm(),
+	//alarm = new Alarm(),
 		stopwatch = new Stopwatch(),
-		countdown = new Countdown();
+		countdown = new Countdown(),
+		presentView = '';
 
 	function $(e) {
-		return document.getElementById(e);
+		return document.querySelector(e);
+	}
+
+	function capitalise(string){
+		return string.charAt(0).toUpperCase() + string.slice(1);
 	}
 
 	function toHours(value) {
@@ -37,90 +42,60 @@
 
 		time += (a) ? ((a == 1) ? a + ' Year, ' : a + ' Years, ') : '';
 		time += (d) ? ((d == 1) ? d + ' Day, ' : d + ' Days, ') : '';
-		time += (h > 9) ? h + ':' : "0" + h + ':';
-		time += (m > 9) ? m + ':' : (m == 0) ? "0" + m + ':' : "0" + m + ':';
-		time += (s > 9) ? s + '.' : "0" + s + '.';
-		time += (ms >= 10) ? ms : (ms < 10 && ms >= 0) ? "0" + ms : "00" + ms;
+		time += (h > 9) ? h + ':' : '0' + h + ':';
+		time += (m > 9) ? m + ':' : (m == 0) ? '0' + m + ':' : '0' + m + ':';
+		time += (s > 9) ? s + '.' : '0' + s + '.';
+		time += (ms >= 10) ? ms : (ms < 10 && ms >= 0) ? '0' + ms : '00' + ms;
 
 		return time;
 	}
 
-
-	function ajax(url, param, func) {
-
-		var a,
-			base = '/proxy.php', x = new XMLHttpRequest(), str = "", res, path,
-			spinner = $('spinner');
-
-		for (a in param) {
-			if (param.hasOwnProperty(a)) {
-				str += a + '=' + param[a] + '&';
-			}
-		}
-
-		// loading spinner
-		if (spinner.style.display === "none") {
-			spinner.style.display = "inline-block";
-		}
-
-		path = base + url + '?' + str;
-
-		x.open('get', path, true);
-		x.send(null);
-		x.onreadystatechange = function () {
-			if (x.readyState === 4) {
-
-				spinner.style.display = "none";
-
-				if (x.status === 200) {
-
-					spinner.style.display = "none";
-
-					res = JSON.parse(x.responseText);
-
-					if (!res.error) {
-						if (res.data) {
-							func(res.data);
-						} else {
-							throw new Error('No data available for ' + path);
-						}
-					} else {
-						alert('This Error occured: ' + res.error);
-					}
-
-				} else {
-					throw new Error('Http error ' + x.status + ' occured during an ajax request to ' + path);
-				}
-			}
-		}
+	function setState(url) {
+		history.pushState({'url': url}, url, baseURL + '/' + url);
 	}
 
 	function timeIsOver() {
+
+		function setFavicon(state) {
+			var fav = $('#favicon');
+
+			if (state == null)
+				fav.href = 'img/favicon.png';
+			else if (state == 'warn')
+				fav.href = 'img/favicon2.png';
+		}
 
 		var audio = new Audio();
 		audio.src = 'sounds/alarm.wav';
 		audio.volume = 1;
 		audio.addEventListener('canplay', function () {
 			audio.play();
-			document.documentElement.style.background = "rgb(100,0,0)";
-			var notification = alert('Your Time Is Over!');
+			setFavicon('warn');
+			setTitle('+++ Time is up! +++');
+			//document.documentElement.style.background = 'rgb(100,0,0)';
+			var notification = alert('Your Time Is Up!');
 
 			if (notification === undefined) {
 				audio.pause();
-				document.documentElement.style.background = "url(img/bg.jpg) black";
+				document.documentElement.style.background = 'url(img/bg.jpg) black';
+				setFavicon();
+				setTitle('Timeomat')
 			}
 		}, false);
 	}
 
+	function setTitle(value) {
+		document.title = value;
+	}
 
-	//Clock
+
 	function Clock() {
 
-		var weekdays = new Array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"),
-			months = new Array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+		var weekdays = new Array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'),
+			months = new Array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
 
 		this.showTime = function () {
-			$("digitalclock").innerHTML = new Date().toLocaleTimeString().substr(0, 8);
+			$('#digitalclock').innerHTML = new Date().toLocaleTimeString().substr(0, 8);
 
 			setTimeout(function () {
 				clock.showTime();
@@ -130,7 +105,7 @@
 		this.showDate = function () {
 			var date = new Date();
 
-			$("date").innerHTML = weekdays[date.getDay()] + ", " + date.getDate() + "." + months[date.getMonth()] + " " + date.getFullYear();
+			$('#date').innerHTML = weekdays[date.getDay()] + ', ' + date.getDate() + '.' + months[date.getMonth()] + ' ' + date.getFullYear();
 
 			setTimeout(function () {
 				clock.showDate();
@@ -138,32 +113,31 @@
 		};
 	}
 
-	//Alarm
-	function Alarm() {
+	/*function Alarm() {
 
-		var now,
-			alarmTimer,
-			weekdays = new Array("sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday");
+	 var now,
+	 alarmTimer,
+	 weekdays = new Array('sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday');
 
-		this.check = function (time, days, sound) {
-			now = new Date();
+	 this.check = function (time, days, sound) {
+	 now = new Date();
 
-			if (time == now.toLocaleTimeString().substr(0, 5)) {
-				days.forEach(function (day) {
-					if (day == weekdays[now.getDay()]) {
-						clearTimeout(alarmTimer);
-						timeIsOver();
-					}
-				});
-			} else {
-				alarmTimer = window.setTimeout(function () {
-					alarm.check(time, days, sound);
-				}, 900);
-			}
-		};
-	}
+	 if (time == now.toLocaleTimeString().substr(0, 5)) {
+	 days.forEach(function (day) {
+	 if (day == weekdays[now.getDay()]) {
+	 clearTimeout(alarmTimer);
+	 timeIsOver();
+	 }
+	 });
+	 } else {
+	 alarmTimer = window.setTimeout(function () {
+	 alarm.check(time, days, sound);
+	 }, 900);
+	 }
+	 };
+	 }
+	 */
 
-	//Stopwatch
 	function Stopwatch() {
 
 		var timer,
@@ -173,11 +147,11 @@
 			isRunning = false,
 			roundCounter = 0,
 			lastRound = 0,
-			stopwatchDisplay = $("stopwatchDisplay"),
-			stopwatchStart = $("stopwatchStart"),
-			stopwatchReset = $("stopwatchReset"),
-			stopwatchRound = $("stopwatchRound"),
-			rounds = $("rounds");
+			stopwatchDisplay = $('#stopwatchDisplay'),
+			stopwatchStart = $('#stopwatchStart'),
+			stopwatchReset = $('#stopwatchReset'),
+			stopwatchRound = $('#stopwatchRound'),
+			table = $('#rounds');
 
 
 		this.startStop = function () {
@@ -224,14 +198,14 @@
 
 		this.showRound = function () {
 
-			rounds.style.display = 'inline-block';
+			table.classList.remove('hidden');
 
 			DOMinate(
-				[rounds,
+				[table.lastElementChild,
 					['tr',
 						['td', String(++roundCounter)],
-						['td', toHours(time)],
-						['td', toHours(time - lastRound)]
+						['td', toHours(time - lastRound)],
+						['td', toHours(time)]
 					]
 				]
 			);
@@ -247,12 +221,79 @@
 			stopwatchDisplay.innerHTML = '00:00:00.00';
 			stopwatchStart.innerHTML = 'Start';
 			stopwatchReset.style.display = 'none';
-			rounds.style.display = 'none';
-			rounds.innerHTML = '<tr><th>Round</th><th>Time</th><th>Duration</th></tr>';
+			table.classList.add('hidden');
+			table.lastElementChild.innerHTML = '';
 		};
 	}
 
-	//Timer
+	function Timer(endTime) {
+		var timeoutTimer,
+			leftTime = endTime - new Date(),
+			running = false,
+			delayStart,
+			timerElement,
+			pauseButton,
+			cancelButton;
+
+		function update() {
+			leftTime = endTime - new Date();
+
+			timerElement.firstChild.innerHTML = toHours(leftTime);
+			//setTitle(toHours(leftTime));
+
+			if (leftTime <= 0) {
+				clearTimeout(timeoutTimer);
+				timerElement.childNodes[1].removeChild(pauseButton);
+				timeIsOver();
+			} else {
+				timeoutTimer = setTimeout(update, 10);
+			}
+		}
+
+		function pauseResume() {
+			if (running) {
+				pauseButton.innerHTML = 'Resume';
+				clearTimeout(timeoutTimer);
+				delayStart = new Date();
+				running = false;
+			} else {
+				pauseButton.innerHTML = 'Pause';
+				endTime.setTime(endTime.getTime() + (new Date() - delayStart));
+				timeoutTimer = setTimeout(update, 10);
+				running = true;
+			}
+		}
+
+		function cancel() {
+			timerElement.parentNode.removeChild(timerElement);
+			clearTimeout(timeoutTimer);
+		}
+
+		this.start = function () {
+			running = true;
+			update();
+		};
+
+
+		pauseButton = DOMinate(['button', 'Pause']);
+		pauseButton.addEventListener('click', pauseResume);
+
+		cancelButton = DOMinate(['button', 'x']);
+		cancelButton.addEventListener('click', cancel);
+
+		timerElement = DOMinate(
+			['div',
+				['span', toHours(leftTime)],
+				['div',
+					[pauseButton],
+					[cancelButton]
+				]
+			]
+		);
+
+		DOMinate([$('#timers'), [timerElement]]);
+	}
+
 	function Countdown() {
 		var timer,
 			rest,
@@ -261,15 +302,14 @@
 
 		this.start = function (value) {
 			endTime = value;
-
-			countdown.showTime();
 		};
 
 		this.showTime = function () {
 
 			leftTime = endTime - new Date();
 
-			$('rest').innerHTML = toHours(leftTime);
+
+			//$('#rest').innerHTML = toHours(leftTime);
 
 			if (leftTime <= 0) {
 				clearTimeout(timer);
@@ -280,11 +320,15 @@
 		};
 	}
 
+	function Worldclock() {
+
+	}
+
 
 	function route(state) {
 
 		// History object or URL
-		if (typeof (state) === "object") {
+		if (typeof (state) === 'object') {
 
 			if (state.url !== undefined) {
 				fromURL(state.url);
@@ -292,7 +336,7 @@
 				throw new Error('History Object does not contain an URL: ' + state.url);
 			}
 
-		} else if (typeof(state) === "string") {
+		} else if (typeof(state) === 'string') {
 			fromURL(state);
 		} else {
 			throw new Error('The variable passed to route() is not an object or a string: ' + state);
@@ -301,75 +345,52 @@
 		function fromURL(url) {
 			var dirs = url.split('/');
 
-			if (url === '' || url === '/') {
-				view().index();
-			} else if (dirs.length == 1) {
-				switch (dirs[0]) {
-					case 'clock':
-						view().clock();
-						break;
-					case 'alarm':
-						view().alarm();
-						break;
-					case 'stopwatch':
-						view().stopwatch();
-						break;
-					case 'timer':
-						view().timer();
-						break;
-					default:
-						var error = 'The Website "' + dirs[0] + '" is not available';
+			if (dirs.length == 1) {
 
-						alert(error);
-						throw new Error(error);
+				var pages = [
+					'clock',
+					'alarm',
+					'stopwatch',
+					'timer',
+					'countdown',
+					'worldclock'
+				];
+
+				if (pages.indexOf(dirs[0]) >= 0) {
+					viewPage(dirs[0]);
+				}else if (url === '' || url === '/') {
+					viewPage('home');
+				} else {
+					var error = 'The Website "' + dirs[0] + '" is not available';
+					viewPage('home');
+
+					alert(error);
+					throw new Error(error);
 				}
 
-			} else if (dirs.length === 2) {
+			} else if (dirs.length == 2) {
 
 				throw new Error('The URL is too long:' + url);
 
 			} else {
-				alert('The website is not available');
-				throw new Error('Can not route the URL ' + url);
+
+				throw new Error('Can not route the URL ' + dirs);
 			}
 		}
 	}
 
-	function view() {
+	function viewPage(page) {
+		try {
+			if (page != presentView) {
+				$('#' + page + 'wrapper').classList.remove('hidden');
+				$('#' + presentView + 'wrapper').classList.add('hidden');
 
-		function show(el) {
-			$('home').style.display =
-				$('alarmwrapper').style.display =
-					$('clockwrapper').style.display =
-						$('stopwatchwrapper').style.display =
-							$('timerwrapper').style.display = 'none';
-
-			$(el).style.display = 'block';
+				setTitle( capitalise(page) +' | Timeomat');
+			}
+		} catch (e) {
 		}
 
-		return{
-			index: function () {
-				show('home');
-			},
-
-			clock: function () {
-				show('clockwrapper');
-				clock.showTime();
-				clock.showDate();
-			},
-
-			alarm: function () {
-				show('alarmwrapper');
-			},
-
-			stopwatch: function () {
-				show('stopwatchwrapper');
-			},
-
-			timer: function () {
-				show('timerwrapper');
-			}
-		};
+		presentView = page;
 	}
 
 	function setShortcuts() {
@@ -401,100 +422,90 @@
 
 	function initEvents() {
 
-		$('logo').addEventListener('click', function () {
-			view().index();
+		var menuItems = [
+			'clock',
+			//'alarm',
+			'stopwatch',
+			'timer',
+			'countdown',
+			//'worldclock'
+		];
 
-			var url = '/';
-			history.pushState({"url": url}, url, baseURL + url);
+		menuItems.forEach(function (e) {
+			$('#' + e).addEventListener('click', function () {
+				viewPage(e);
+				setState(e);
+			}, false);
+		});
+
+		$('#home').addEventListener('click', function () {
+			viewPage('home');
+			setState('');
 		}, false);
 
-		$('clock').addEventListener('click', function () {
-			view().clock();
 
-			var url = 'clock';
-			history.pushState({"url": url}, url, baseURL + url);
-		}, false);
 
-		$('alarm').addEventListener('click', function () {
-			view().alarm();
-
-			var url = 'alarm';
-			history.pushState({"url": url}, url, baseURL + url);
-		}, false);
-
-		$('stopwatch').addEventListener('click', function () {
-			view().stopwatch();
-
-			var url = 'stopwatch';
-			history.pushState({"url": url}, url, baseURL + url);
-		}, false);
-
-		$('timer').addEventListener('click', function () {
-			view().timer();
-
-			var url = 'timer';
-			history.pushState({"url": url}, url, baseURL + url);
-		}, false);
-
-		$('startTimer').addEventListener('click', function (e) {
+		$('#startTimer').addEventListener('click', function (e) {
 			e.preventDefault();
 
-			$('name').innerHTML = '';
-
-			var dur = $('timerTime').value.split(':'),
+			var dur = $('#timerTime').value.split(':'),
 				endTime = new Date((dur[0] * 60 * 60 * 1000) + (dur[1] * 60 * 1000) + (dur[2] * 1000) + new Date().getTime());
 
-			countdown.start(endTime);
-			countdown.showTime();
+			var timer = new Timer(endTime);
+			timer.start();
 
 			//var url = 'timer';
-			//history.pushState({"url": url}, url, baseURL + url);
+			//history.pushState({'url': url}, url, baseURL + url);
 		}, false);
 
-		$('startCountdown').addEventListener('click', function (e) {
-			e.preventDefault();
+		/*
+		 $('#startCountdown').addEventListener('click', function (e) {
+		 e.preventDefault();
 
-			var endTime = new Date($('countdownDate').value + 'T' + $('countdownTime').value);
-			$('name').innerHTML = $('countdownName').value;
+		 var endTime = new Date($('#countdownDate').value + 'T' + $('#countdownTime').value);
+		 $('#name').innerHTML = $('#countdownName').value;
 
-			countdown.start(endTime);
-			countdown.showTime();
+		 countdown.start(endTime);
+		 countdown.showTime();
 
-			//var url = 'timer';
-			//history.pushState({"url": url}, url, baseURL + url);
-		}, false);
+		 //var url = 'timer';
+		 //history.pushState({'url': url}, url, baseURL + url);
+		 }, false);
 
-		$('setAlarm').addEventListener('click', function (e) {
-			e.preventDefault();
+		 $('#setAlarm').addEventListener('click', function (e) {
+		 e.preventDefault();
 
-			var days = [],
-				inputs = $('alarmDays').getElementsByTagName('input');
+		 var days = [],
+		 inputs = $('#alarmDays').getElementsByTagName('input');
 
-			for (var a in inputs) {
-				if (inputs.hasOwnProperty(a)) {
-					if (inputs[a].checked)
-						days.push(inputs[a].id);
-				}
-			}
+		 for (var a in inputs) {
+		 if (inputs.hasOwnProperty(a)) {
+		 if (inputs[a].checked)
+		 days.push(inputs[a].id);
+		 }
+		 }
 
-			alarm.check($('alarmTime').value, days, $('alarmSound').value);
+		 alarm.check($('#alarmTime').value, days, $('#alarmSound').value);
 
-			//var url = 'timer';
-			//history.pushState({"url": url}, url, baseURL + url);
-		}, false);
+		 //var url = 'timer';
+		 //history.pushState({'url': url}, url, baseURL + url);
+		 }, false);
+		 */
 
+		clock.showTime();
+		clock.showDate();
 
 		stopwatch.showTime();
 
-		$('stopwatchStart').addEventListener('click', function () {
+		$('#stopwatchStart').addEventListener('click', function () {
 			stopwatch.startStop();
 		}, false);
 
-		$('stopwatchRound').addEventListener('click', function () {
+		$('#stopwatchRound').addEventListener('click', function () {
 			stopwatch.showRound();
 		}, false);
 
-		$('stopwatchReset').addEventListener('click', function () {
+		$('#stopwatchReset').addEventListener('click', function () {
 			stopwatch.reset();
 		}, false);
 
@@ -502,10 +513,11 @@
 	}
 
 	// Initialize Website
-	(function () {
+	function init() {
+
 		var path = location.pathname.substr(baseURL.length + 1, location.pathname.length);
 
-		history.replaceState({"url": path}, path, baseURL + '/' + path);
+		history.replaceState({'url': path}, path, baseURL + '/' + path);
 
 		initEvents();
 
@@ -513,16 +525,25 @@
 
 		//setShortcuts();
 
+		//preload favicon
+		new Image().src = 'img/favicon2.png';
+
 		//Popstate
 		window.addEventListener('popstate', function (event) {
-			if (event.state !== null) {
-				route(event.state);
-			} else {
-				throw new Error('Can not route the event "' + event.state + '".');
+
+			try {
+				if (event.state !== null)
+					route(event.state);
+				else
+					throw new Error('Can not route the event "' + event.state + '".');
+
+			} catch (e) {
+
 			}
 
 		}, false);
+	}
 
-	})();
+	init();
 
 }(window, document));
