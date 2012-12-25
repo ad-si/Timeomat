@@ -1,3 +1,8 @@
+/*@function getBackground($name)
+ * @return #alarm
+ * 			+background-image(url("../img/$name.svg"))
+ * 			&:hover
+ * 				asssa+background-image(url('../img/alarm.svg'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240))) */
 @font-face {
   font-family: "Pacifico";
   font-style: normal;
@@ -12,7 +17,7 @@
   src: url("../fonts/Play.ttf");
 }
 
-/* line 25, ../sass/screen.sass */
+/* line 31, ../sass/screen.sass */
 * {
   margin: 0;
   padding: 0;
@@ -23,13 +28,13 @@
   box-sizing: border-box;
 }
 
-/* line 32, ../sass/screen.sass */
+/* line 38, ../sass/screen.sass */
 html {
   background: url(../img/bg.jpg) black;
   height: 100%;
 }
 
-/* line 36, ../sass/screen.sass */
+/* line 42, ../sass/screen.sass */
 body {
   font-weight: 500;
   font-size: 18px;
@@ -42,19 +47,19 @@ body {
   text-align: center;
 }
 
-/* line 47, ../sass/screen.sass */
+/* line 53, ../sass/screen.sass */
 .hidden {
   display: none !important;
 }
 
-/* line 50, ../sass/screen.sass */
+/* line 56, ../sass/screen.sass */
 #home {
   font-weight: 100;
   font-size: 24px;
   line-height: 50px;
   font-family: "Play", sans-serif;
 }
-/* line 55, ../sass/screen.sass */
+/* line 61, ../sass/screen.sass */
 #home:hover {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #008cff), color-stop(100%, #0028e6));
   background-image: -webkit-linear-gradient(#008cff, #0028e6);
@@ -66,7 +71,7 @@ body {
   border-radius: 0 0 0 10px;
 }
 
-/* line 61, ../sass/screen.sass */
+/* line 67, ../sass/screen.sass */
 h2 {
   text-align: center;
   vertical-align: middle;
@@ -79,7 +84,7 @@ h2 {
   margin-bottom: 40px;
 }
 
-/* line 72, ../sass/screen.sass */
+/* line 78, ../sass/screen.sass */
 h3 {
   display: inline-block;
   text-align: center;
@@ -93,7 +98,7 @@ h3 {
   margin: 0 20px;
 }
 
-/* line 84, ../sass/screen.sass */
+/* line 90, ../sass/screen.sass */
 h4 {
   display: inline-block;
   text-align: center;
@@ -104,7 +109,7 @@ h4 {
   margin: 50px 0 0 0;
 }
 
-/* line 93, ../sass/screen.sass */
+/* line 99, ../sass/screen.sass */
 em {
   display: inline-block;
   text-align: center;
@@ -119,11 +124,12 @@ em {
   margin: 0 20px 0 20px;
 }
 
-/* line 107, ../sass/screen.sass */
+/* line 113, ../sass/screen.sass */
 #stopwatchcontrols button,
 #timercontrols button,
 #timers button,
-#startCountdown {
+#startCountdown,
+#countdowns button {
   font-family: "Play", sans-serif;
   display: inline-block;
   text-align: center;
@@ -139,22 +145,24 @@ em {
   box-shadow: inset 0px 1px 1px rgba(255, 255, 255, 0.1);
   border-radius: 8px;
 }
-/* line 121, ../sass/screen.sass */
+/* line 128, ../sass/screen.sass */
 #stopwatchcontrols button:hover,
 #timercontrols button:hover,
 #timers button:hover,
-#startCountdown:hover {
+#startCountdown:hover,
+#countdowns button:hover {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #141414), color-stop(100%, #000000));
   background-image: -webkit-linear-gradient(#141414, #000000);
   background-image: -moz-linear-gradient(#141414, #000000);
   background-image: -o-linear-gradient(#141414, #000000);
   background-image: linear-gradient(#141414, #000000);
 }
-/* line 123, ../sass/screen.sass */
+/* line 130, ../sass/screen.sass */
 #stopwatchcontrols button:active,
 #timercontrols button:active,
 #timers button:active,
-#startCountdown:active {
+#startCountdown:active,
+#countdowns button:active {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #0a0a0a), color-stop(100%, #141414));
   background-image: -webkit-linear-gradient(#0a0a0a, #141414);
   background-image: -moz-linear-gradient(#0a0a0a, #141414);
@@ -162,7 +170,7 @@ em {
   background-image: linear-gradient(#0a0a0a, #141414);
 }
 
-/* line 128, ../sass/screen.sass */
+/* line 135, ../sass/screen.sass */
 input[type="time"], input[type="text"], input[type="date"] {
   border-radius: 5px;
   color: white;
@@ -178,7 +186,7 @@ input[type="time"], input[type="text"], input[type="date"] {
   box-shadow: 0px 2px 2px rgba(255, 255, 255, 0.2), 0px -2px 1px rgba(0, 0, 0, 0.2);
 }
 
-/* line 143, ../sass/screen.sass */
+/* line 150, ../sass/screen.sass */
 #alarmDays,
 select {
   display: inline-block;
@@ -193,7 +201,7 @@ select {
   padding: 0 10px 0 10px;
 }
 
-/* line 159, ../sass/screen.sass */
+/* line 166, ../sass/screen.sass */
 body > nav {
   color: #d2d2d2;
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #323232), color-stop(100%, #000000));
@@ -208,12 +216,12 @@ body > nav {
   text-align: left;
 }
 
-/* line 168, ../sass/screen.sass */
+/* line 175, ../sass/screen.sass */
 #links {
   display: inline-block;
 }
 
-/* line 171, ../sass/screen.sass */
+/* line 178, ../sass/screen.sass */
 #links a,
 #home {
   height: 50px;
@@ -227,24 +235,24 @@ body > nav {
   padding: 0 20px;
   cursor: pointer;
 }
-/* line 183, ../sass/screen.sass */
+/* line 190, ../sass/screen.sass */
 #links a:active, #links a:focus,
 #home:active,
 #home:focus {
   box-shadow: inset 2px 0px 20px black;
 }
 
-/* line 187, ../sass/screen.sass */
+/* line 194, ../sass/screen.sass */
 #links a {
   background-repeat: no-repeat;
   background-size: 60%;
 }
-/* line 190, ../sass/screen.sass */
+/* line 197, ../sass/screen.sass */
 #links a:hover {
   background-size: 60%, 100%;
 }
 
-/* line 193, ../sass/screen.sass */
+/* line 200, ../sass/screen.sass */
 #adrian {
   display: inline-block;
   font: 100 12px/50px "", serif;
@@ -253,16 +261,16 @@ body > nav {
   float: right;
   padding: 0 10px 0 0;
 }
-/* line 200, ../sass/screen.sass */
+/* line 207, ../sass/screen.sass */
 #adrian:hover {
   color: #c8c8c8;
 }
 
-/* line 206, ../sass/screen.sass */
+/* line 213, ../sass/screen.sass */
 #clock {
   background-image: url("../img/clock.svg");
 }
-/* line 208, ../sass/screen.sass */
+/* line 215, ../sass/screen.sass */
 #clock:hover, #clock:active {
   background-image: url("../img/clock.svg"), -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #008cff), color-stop(100%, #003cf0));
   background-image: url("../img/clock.svg"), -webkit-linear-gradient(#008cff, #003cf0);
@@ -271,11 +279,11 @@ body > nav {
   background-image: url("../img/clock.svg"), linear-gradient(#008cff, #003cf0);
 }
 
-/* line 211, ../sass/screen.sass */
+/* line 218, ../sass/screen.sass */
 #alarm {
   background-image: url("../img/alarm.svg");
 }
-/* line 213, ../sass/screen.sass */
+/* line 220, ../sass/screen.sass */
 #alarm:hover {
   background-image: url("../img/alarm.svg"), -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #008cff), color-stop(100%, #003cf0));
   background-image: url("../img/alarm.svg"), -webkit-linear-gradient(#008cff, #003cf0);
@@ -284,11 +292,11 @@ body > nav {
   background-image: url("../img/alarm.svg"), linear-gradient(#008cff, #003cf0);
 }
 
-/* line 215, ../sass/screen.sass */
+/* line 222, ../sass/screen.sass */
 #timer {
   background-image: url("../img/timer.svg");
 }
-/* line 217, ../sass/screen.sass */
+/* line 224, ../sass/screen.sass */
 #timer:hover {
   background-image: url("../img/timer.svg"), -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #008cff), color-stop(100%, #003cf0));
   background-image: url("../img/timer.svg"), -webkit-linear-gradient(#008cff, #003cf0);
@@ -297,11 +305,11 @@ body > nav {
   background-image: url("../img/timer.svg"), linear-gradient(#008cff, #003cf0);
 }
 
-/* line 219, ../sass/screen.sass */
+/* line 226, ../sass/screen.sass */
 #stopwatch {
   background-image: url("../img/stopwatch.svg");
 }
-/* line 221, ../sass/screen.sass */
+/* line 228, ../sass/screen.sass */
 #stopwatch:hover {
   background-image: url("../img/stopwatch.svg"), -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #008cff), color-stop(100%, #003cf0));
   background-image: url("../img/stopwatch.svg"), -webkit-linear-gradient(#008cff, #003cf0);
@@ -310,11 +318,11 @@ body > nav {
   background-image: url("../img/stopwatch.svg"), linear-gradient(#008cff, #003cf0);
 }
 
-/* line 223, ../sass/screen.sass */
+/* line 230, ../sass/screen.sass */
 #countdown {
   background-image: url("../img/countdown.svg");
 }
-/* line 225, ../sass/screen.sass */
+/* line 232, ../sass/screen.sass */
 #countdown:hover {
   background-image: url("../img/countdown.svg"), -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #008cff), color-stop(100%, #003cf0));
   background-image: url("../img/countdown.svg"), -webkit-linear-gradient(#008cff, #003cf0);
@@ -323,11 +331,11 @@ body > nav {
   background-image: url("../img/countdown.svg"), linear-gradient(#008cff, #003cf0);
 }
 
-/* line 227, ../sass/screen.sass */
+/* line 234, ../sass/screen.sass */
 #worldclock {
   background-image: url("../img/worldclock.svg");
 }
-/* line 229, ../sass/screen.sass */
+/* line 236, ../sass/screen.sass */
 #worldclock:hover {
   background-image: url("../img/worldclock.svg"), -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #008cff), color-stop(100%, #003cf0));
   background-image: url("../img/worldclock.svg"), -webkit-linear-gradient(#008cff, #003cf0);
@@ -336,45 +344,45 @@ body > nav {
   background-image: url("../img/worldclock.svg"), linear-gradient(#008cff, #003cf0);
 }
 
-/* line 234, ../sass/screen.sass */
+/* line 241, ../sass/screen.sass */
 #homewrapper img {
   width: 800px;
   height: 234px;
   margin-bottom: 20px;
 }
-/* line 238, ../sass/screen.sass */
+/* line 245, ../sass/screen.sass */
 #homewrapper em {
   margin: 0 0 30px 0;
 }
 
-/* line 241, ../sass/screen.sass */
+/* line 248, ../sass/screen.sass */
 #footer {
   width: 960px;
   padding: 30px 0 30px 0;
   vertical-align: top;
   border-top: 1px dashed rgba(255, 255, 255, 0.3);
 }
-/* line 248, ../sass/screen.sass */
+/* line 255, ../sass/screen.sass */
 #footer div#social > {
   vertical-align: top;
 }
 
-/* line 253, ../sass/screen.sass */
+/* line 260, ../sass/screen.sass */
 #alarmwrapper form {
   display: inline-block;
   vertical-align: top;
 }
-/* line 256, ../sass/screen.sass */
+/* line 263, ../sass/screen.sass */
 #alarmwrapper form input[type="time"] {
   width: 200px;
 }
-/* line 258, ../sass/screen.sass */
+/* line 265, ../sass/screen.sass */
 #alarmwrapper select {
   font-size: 30px;
   margin-right: 20px;
 }
 
-/* line 262, ../sass/screen.sass */
+/* line 269, ../sass/screen.sass */
 #alarmDays {
   font-size: 20px;
   line-height: 20px;
@@ -383,16 +391,16 @@ body > nav {
   text-align: left;
 }
 
-/* line 270, ../sass/screen.sass */
+/* line 277, ../sass/screen.sass */
 #stopwatchwrapper {
   padding: 0 0 50px 0;
 }
-/* line 272, ../sass/screen.sass */
+/* line 279, ../sass/screen.sass */
 #stopwatchwrapper h2 {
   font-size: 120px;
   margin: 50px 0;
 }
-/* line 275, ../sass/screen.sass */
+/* line 282, ../sass/screen.sass */
 #stopwatchwrapper table {
   display: inline-block;
   border-spacing: 4px;
@@ -403,11 +411,11 @@ body > nav {
   margin: 20px 0 0 0;
   border: 10px;
 }
-/* line 284, ../sass/screen.sass */
+/* line 291, ../sass/screen.sass */
 #stopwatchwrapper thead {
   margin-bottom: 10px;
 }
-/* line 286, ../sass/screen.sass */
+/* line 293, ../sass/screen.sass */
 #stopwatchwrapper thead th {
   box-shadow: 0px -1px 2px rgba(255, 255, 255, 0.1), 0px 2px 2px rgba(0, 0, 0, 0.5);
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(0, 0, 0, 0.2)), color-stop(100%, rgba(0, 0, 0, 0.4)));
@@ -417,29 +425,29 @@ body > nav {
   background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
   padding: 15px;
 }
-/* line 290, ../sass/screen.sass */
+/* line 297, ../sass/screen.sass */
 #stopwatchwrapper tbody {
   color: #aaaaaa;
 }
-/* line 292, ../sass/screen.sass */
+/* line 299, ../sass/screen.sass */
 #stopwatchwrapper tbody tr:nth-of-type(2n + 1) {
   background: rgba(0, 0, 0, 0.1);
 }
-/* line 294, ../sass/screen.sass */
+/* line 301, ../sass/screen.sass */
 #stopwatchwrapper tbody tr:nth-of-type(2n + 1) td {
   box-shadow: 0px -1px 2px rgba(255, 255, 255, 0.2), 0px 2px 2px rgba(0, 0, 0, 0.3);
 }
-/* line 296, ../sass/screen.sass */
+/* line 303, ../sass/screen.sass */
 #stopwatchwrapper td {
   padding: 8px 50px;
 }
 
-/* line 299, ../sass/screen.sass */
+/* line 306, ../sass/screen.sass */
 #stopwatchcontrols {
   margin-bottom: 40px;
 }
 
-/* line 302, ../sass/screen.sass */
+/* line 309, ../sass/screen.sass */
 #stopwatchcontrols button,
 #startCountdown {
   width: 200px;
@@ -448,13 +456,13 @@ body > nav {
   font-weight: 100;
   font-size: 32px;
 }
-/* line 309, ../sass/screen.sass */
+/* line 316, ../sass/screen.sass */
 #stopwatchcontrols button:last-of-type, #stopwatchcontrols button:nth-last-of-type(2),
 #startCountdown:last-of-type,
 #startCountdown:nth-last-of-type(2) {
   margin-left: 40px;
 }
-/* line 312, ../sass/screen.sass */
+/* line 319, ../sass/screen.sass */
 #stopwatchcontrols button:before,
 #startCountdown:before {
   content: "";
@@ -469,18 +477,18 @@ body > nav {
   margin: -12px -17px;
 }
 
-/* line 325, ../sass/screen.sass */
+/* line 332, ../sass/screen.sass */
 #timerwrapper {
   padding-top: 20px;
 }
 
-/* line 328, ../sass/screen.sass */
+/* line 335, ../sass/screen.sass */
 #timercontrols {
   text-align: left;
   display: inline-block;
   margin-bottom: 50px;
 }
-/* line 332, ../sass/screen.sass */
+/* line 339, ../sass/screen.sass */
 #timercontrols input[type="text"] {
   line-height: 74px;
   font-size: 60px;
@@ -488,7 +496,7 @@ body > nav {
   width: 340px;
   margin-right: 60px;
 }
-/* line 338, ../sass/screen.sass */
+/* line 345, ../sass/screen.sass */
 #timercontrols button {
   width: 180px;
   height: 50px;
@@ -500,7 +508,7 @@ body > nav {
   top: 2px;
   margin: 10px;
 }
-/* line 348, ../sass/screen.sass */
+/* line 355, ../sass/screen.sass */
 #timercontrols button:active {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #000000), color-stop(100%, #141414));
   background-image: -webkit-linear-gradient(#000000, #141414);
@@ -509,7 +517,7 @@ body > nav {
   background-image: linear-gradient(#000000, #141414);
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
 }
-/* line 351, ../sass/screen.sass */
+/* line 358, ../sass/screen.sass */
 #timercontrols button:before {
   content: "";
   z-index: -1;
@@ -524,7 +532,7 @@ body > nav {
   box-shadow: 0px 2px 2px rgba(255, 255, 255, 0.2), 0px -2px 1px rgba(0, 0, 0, 0.2);
 }
 
-/* line 364, ../sass/screen.sass */
+/* line 371, ../sass/screen.sass */
 #timers {
   border-radius: 5px;
   background-color: rgba(255, 255, 255, 0.05);
@@ -532,11 +540,11 @@ body > nav {
   display: inline-block;
   width: 600px;
 }
-/* line 370, ../sass/screen.sass */
+/* line 377, ../sass/screen.sass */
 #timers:not(:empty) {
   padding: 20px 20px 0;
 }
-/* line 372, ../sass/screen.sass */
+/* line 379, ../sass/screen.sass */
 #timers > div {
   text-align: left;
   display: inline-block;
@@ -555,20 +563,20 @@ body > nav {
   margin-bottom: 20px;
   padding-left: 40px;
 }
-/* line 386, ../sass/screen.sass */
+/* line 393, ../sass/screen.sass */
 #timers > div span {
   vertical-align: middle;
   font-size: 36px;
   line-height: 80px;
 }
-/* line 390, ../sass/screen.sass */
+/* line 397, ../sass/screen.sass */
 #timers > div div {
   position: absolute;
   right: 20px;
   top: 25px;
   display: inline-block;
 }
-/* line 395, ../sass/screen.sass */
+/* line 402, ../sass/screen.sass */
 #timers button {
   vertical-align: middle;
   z-index: 1;
@@ -579,7 +587,7 @@ body > nav {
   border-radius: 5px;
   font-size: 16px;
 }
-/* line 404, ../sass/screen.sass */
+/* line 411, ../sass/screen.sass */
 #timers button:before {
   content: "";
   display: block;
@@ -591,16 +599,16 @@ body > nav {
   box-shadow: 0px 1px 2px rgba(255, 255, 255, 0.2), 0px -1px 1px rgba(0, 0, 0, 0.2);
   margin: -12px -10px;
 }
-/* line 414, ../sass/screen.sass */
+/* line 421, ../sass/screen.sass */
 #timers button:last-of-type {
   width: 50px;
 }
-/* line 416, ../sass/screen.sass */
+/* line 423, ../sass/screen.sass */
 #timers button:last-of-type:before {
   width: 68px;
 }
 
-/* line 421, ../sass/screen.sass */
+/* line 429, ../sass/screen.sass */
 #countdownName {
   margin-bottom: 30px;
   width: 600px;
@@ -608,7 +616,7 @@ body > nav {
   box-shadow: 0px 2px 2px rgba(255, 255, 255, 0.2), 0px -2px 1px rgba(0, 0, 0, 0.2);
 }
 
-/* line 426, ../sass/screen.sass */
+/* line 434, ../sass/screen.sass */
 #countdownDate {
   margin-right: 30px;
   width: 370px;
@@ -616,12 +624,21 @@ body > nav {
   box-shadow: 0px 2px 2px rgba(255, 255, 255, 0.2), 0px -2px 1px rgba(0, 0, 0, 0.2);
 }
 
-/* line 431, ../sass/screen.sass */
+/* line 439, ../sass/screen.sass */
 #countdownTime {
   margin-bottom: 60px;
   width: 200px;
   background-color: rgba(255, 255, 255, 0.05);
   box-shadow: 0px 2px 2px rgba(255, 255, 255, 0.2), 0px -2px 1px rgba(0, 0, 0, 0.2);
+}
+
+/* line 446, ../sass/screen.sass */
+#countdowns h2 {
+  font-size: 92px;
+}
+/* line 448, ../sass/screen.sass */
+#countdowns span {
+  font-size: 34px;
 }
 
 /*@media all and (max-width: 480px)

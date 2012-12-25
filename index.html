@@ -10,14 +10,15 @@
 	<link type=image/png rel=icon id=favicon href=img/favicon.png>
 	<link type=image/png rel=apple-touch-icon-precomposed href=img/icon.png>
 	<link type=text/css rel=stylesheet href=css/screen.css>
-	<script type=text/javascript src=js/dominate.extended.js></script>
+	<script type=text/javascript src=js/dominate.min.js></script>
 </head>
 <body>
 <nav>
 	<h1 id=home title=Timeomat>
 		Timeomat
 	</h1><div id=links>
-		<a id=clock title=Clock></a><!--<a id=alarm title=Alarmclock></a>--><a id=stopwatch title=Stopwatch></a><a id=timer title=Timer></a><a id=countdown title=Countdown><!--</a><a id=worldclock title=Worldclock></a>-->
+		<a id=clock title=Clock></a><!--<a id=alarm title=Alarmclock></a>--><a id=stopwatch title=Stopwatch></a><a id=timer title=Timer></a><a
+			id=countdown title=Countdown></a><!--<a id=worldclock title=Worldclock></a>-->
 	</div>
 	<a id=adrian href=http://adriansieber.com>By Adrian Sieber</a>
 </nav>
@@ -65,39 +66,50 @@
 
 		<div id=stopwatchcontrols>
 			<button id=stopwatchStart>Start</button>
-			<button id=stopwatchRound style="display: none">Round</button>
-			<button id=stopwatchReset style="display: none">x</button>
+			<button id=stopwatchRound class="hidden">Round</button>
+			<button id=stopwatchReset class="hidden">x</button>
 		</div>
 
 		<table id=rounds class="hidden">
 			<thead>
-				<tr>
-					<th>Round</th>
-					<th>Duration</th>
-					<th>Time</th>
-				</tr>
+			<tr>
+				<th>Round</th>
+				<th>Duration</th>
+				<th>Time</th>
+			</tr>
 			</thead>
 			<tbody>
 			</tbody>
+			<tfoot>
+			<tr>
+				<td id="nextRound"></td>
+				<td id="nextDuration"></td>
+				<td id="nextTime"></td>
+			</tr>
+			</tfoot>
 		</table>
 	</div>
 
 	<div id=timerwrapper class="wrapper, hidden">
 		<form id="timercontrols">
-			<input id=timerTime type=text value=00:20:00><button type="submit" id=startTimer>Start</button>
+			<input id=timerTime type=text value=00:20:00>
+			<button type="submit" id=startTimer>Start</button>
 		</form>
 
 		<div id=timers></div>
 	</div>
 
 	<div id=countdownwrapper class="wrapper, hidden">
-		<input id=countdownName type=text placeholder=Name>
-		<input id=countdownDate type=text placeholder=2013-01-01><input id=countdownTime type=text placeholder=12:00>
-		<br>
-		<button id=startCountdown type=submit>Start</button>
+		<form id="countdownControls">
+			<input id=countdownName type=text value=Name>
+			<input id=countdownDate type=text value=2013-01-01><input id=countdownTime type=text value=12:00>
+			<br>
+			<button id=startCountdown type=submit>Start</button>
+		</form>
 
 		<div id="countdowns"></div>
 	</div>
+
 	<!--
 	<div id=worldclockwrapper class="wrapper, hidden">
 

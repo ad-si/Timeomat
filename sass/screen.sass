@@ -3,6 +3,12 @@
 @function gray($value, $opacity: 1)
 	@return rgba($value, $value, $value, $opacity)
 
+/*@function getBackground($name)
+	@return #alarm
+				+background-image(url("../img/$name.svg"))
+				&:hover
+					asssa+background-image(url('../img/alarm.svg'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
+
 @font-face
 	font-family: 'Pacifico'
 	font-style: normal
@@ -107,7 +113,8 @@ em
 #stopwatchcontrols button,
 #timercontrols button,
 #timers button,
-#startCountdown
+#startCountdown,
+#countdowns button
 	font-family: "Play", sans-serif
 	display: inline-block
 	text-align: center
@@ -418,6 +425,7 @@ body > nav
 
 
 
+
 #countdownName
 	margin-bottom: 30px
 	width: 600px
@@ -432,6 +440,14 @@ body > nav
 	margin-bottom: 60px
 	width: 200px
 	+brightbg
+
+
+#countdowns
+	h2
+		font-size: 92px
+	span
+		font-size: 34px
+
 
 
 
