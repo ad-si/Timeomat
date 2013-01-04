@@ -1,24 +1,62 @@
 (function (window, document, undefined) {
 
-	var baseURL = '/~adrian/timeomat',
-		clock = new Clock(),
+	var clock = new Clock(),
 	//alarm = new Alarm(),
 		stopwatch = new Stopwatch(),
 		presentView = '',
-		presentTitle
+		presentTitle,
+		i,
+		router = new Router({
+			'^/$': viewPage,
+			'^/clock$': viewPage,
+			'^/alarm$': viewPage,
+			'^/stopwatch$': viewPage,
+			'^/countdown$': viewPage,
+			'^/worldclock$': viewPage,
+			'^/stopwatch/start$': [viewPage, stopwatch.startStop],
+
+			'^/timer': viewPage,
+			'^/timer/([0-9]+:[0-9]+:[0-9]+)$': function (params) {
+
+				new Timer(toEndTime(params[1]))
+					.start()
+			},
+			'^/nap$': '/timer/00:20:00',
+			'^/brushteeth$': '/timer/00:05:00',
+			'^/quickie|quicky$': '/timer/00:10:00',
+			'^/404$': viewPage
+
+			/*
+			 '^/(\d+)\:(\d+)\:(\d+)$': function (ctx) {
+
+			 //viewPage('timer')
+
+			 //var endTime =  + (ctx.params[0] || 0)  + ':' + (ctx.params[3] || 0) + ':' + (ctx.params[7] || 0)
+
+			 console.log(ctx.params)
+
+			 //new Timer(toEndTime(endTime))
+			 //	.start()
+			 },
+			 '^/([0-9]*h)?([0-9]*(m|min))?([0-9]*(s|sec|sek))?$': function (ctx) {
+
+			 viewPage('timer')
+
+			 var endTime = +(ctx.params[0] || 0) + ':' + (ctx.params[3] || 0) + ':' + (ctx.params[7] || 0)
+
+			 console.log(ctx.params, endTime)
+
+			 new Timer(toEndTime(endTime))
+			 .start()
+			 }
+			 */
+		})
+
 
 	function $(e) {
-		return document.querySelector(e)
-	}
+		var elements = document.querySelectorAll(e)
 
-	function show(element) {
-
-		var stopwatch
-
-		if (status) stopwatchRound.classList.remove('hidden')
-		else
-
-			return not()
+		return (elements.length == 1) ? elements[0] : elements;
 	}
 
 	function capitalise(string) {
@@ -29,7 +67,7 @@
 		element.parentNode.removeChild(element)
 	}
 
-	function toHours(value) {
+	function toTimeString(value) {
 
 		var time = '',
 			a,
@@ -64,8 +102,39 @@
 		return time
 	}
 
-	function setState(url) {
-		history.pushState({'url': url}, url, baseURL + '/' + url)
+	function toSimpleTimeString(value) {
+		var time = '',
+			a,
+			d,
+			h,
+			m,
+			s,
+			ms,
+			floor = Math.floor
+
+		value = (value >= 0) ? value : 0
+
+		a = floor(value / 31536000000)
+		value %= 31536000000
+		d = floor(value / 86400000)
+		value %= 86400000
+		h = floor(value / 3600000)
+		value %= 3600000
+		m = floor(value / 60000)
+		value %= 60000
+		s = floor(value / 1000)
+
+		time += (h > 9) ? h + ':' : '0' + h + ':'
+		time += (m > 9) ? m + ':' : (m == 0) ? '0' + m + ':' : '0' + m + ':'
+		time += (s > 9) ? s : '0' + s
+
+		return time
+	}
+
+	function toEndTime(time) {
+		var dur = time.split(':')
+
+		return  new Date((dur[0] * 60 * 60 * 1000) + (dur[1] * 60 * 1000) + (dur[2] * 1000) + new Date().getTime())
 	}
 
 	function setTitle(value) {
@@ -148,30 +217,29 @@
 		}
 	}
 
-	/*function Alarm() {
+	function Alarm() {
 
-	 var now,
-	 alarmTimer,
-	 weekdays = new Array('sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday')
+		var now,
+			alarmTimer,
+			weekdays = new Array('sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday')
 
-	 this.check = function (time, days, sound) {
-	 now = new Date()
+		this.check = function (time, days, sound) {
+			now = new Date()
 
-	 if (time == now.toLocaleTimeString().substr(0, 5)) {
-	 days.forEach(function (day) {
-	 if (day == weekdays[now.getDay()]) {
-	 clearTimeout(alarmTimer)
-	 timeIsOver()
-	 }
-	 })
-	 } else {
-	 alarmTimer = window.setTimeout(function () {
-	 alarm.check(time, days, sound)
-	 }, 900)
-	 }
-	 }
-	 }
-	 */
+			if (time == now.toLocaleTimeString().substr(0, 5)) {
+				days.forEach(function (day) {
+					if (day == weekdays[now.getDay()]) {
+						clearTimeout(alarmTimer)
+						timeIsOver()
+					}
+				})
+			} else {
+				alarmTimer = window.setTimeout(function () {
+					alarm.check(time, days, sound)
+				}, 900)
+			}
+		}
+	}
 
 	function Stopwatch() {
 
@@ -223,12 +291,12 @@
 				var now = new Date()
 				time = now - startTime
 
-				stopwatchDisplay.innerHTML = toHours(time)
+				stopwatchDisplay.innerHTML = toTimeString(time)
 
 				if (tableStatus) {
 					nextRound.innerHTML = roundCounter + 1
-					nextDuration.innerHTML = toHours(time - lastRound)
-					nextTime.innerHTML = toHours(time)
+					nextDuration.innerHTML = toTimeString(time - lastRound)
+					nextTime.innerHTML = toTimeString(time)
 				}
 
 				timer = window.setTimeout(function () {
@@ -248,8 +316,8 @@
 				[table.tBodies[0],
 					['tr.row',
 						['td', String(++roundCounter)],
-						['td', toHours(time - lastRound)],
-						['td', toHours(time)]
+						['td', toTimeString(time - lastRound)],
+						['td', toTimeString(time)]
 					]
 				]
 			)
@@ -271,15 +339,14 @@
 
 			var rows = document.querySelectorAll('.row')
 
-			for(var a = 0; a < rows.length; a++){
+			for (var a = 0; a < rows.length; a++) {
 				removeElement(rows[a]);
 			}
 		}
 	}
 
-	function Timer() {
+	function Timer(endTime) {
 		var running = false,
-			endTime,
 			leftTime,
 			timeout,
 			delayStart,
@@ -302,8 +369,8 @@
 		function update() {
 			leftTime = endTime - new Date()
 
-			timer.time.innerHTML = toHours(leftTime)
-			//setTitle(toHours(leftTime))
+			timer.time.innerHTML = toTimeString(leftTime)
+			//setTitle(toTimeString(leftTime))
 
 			if (leftTime <= 0) {
 				clearTimeout(timeout)
@@ -335,12 +402,9 @@
 
 		this.start = function () {
 			running = true
-			update()
-			return this
-		}
 
-		this.stop = function (value) {
-			endTime = value
+			update()
+
 			return this
 		}
 	}
@@ -357,8 +421,8 @@
 		function update() {
 			leftTime = endTime - new Date()
 
-			countdown.time.innerHTML = toHours(leftTime)
-			//setTitle(toHours(leftTime))
+			countdown.time.innerHTML = toTimeString(leftTime)
+			//setTitle(toTimeString(leftTime))
 
 			if (leftTime <= 0) {
 				clearTimeout(timeout)
@@ -414,7 +478,7 @@
 		 countdownElement = DOMinate(
 		 ['div',
 		 ['h2'],
-		 ['h3', toHours(leftTime)]
+		 ['h3', toTimeString(leftTime)]
 		 ]
 		 )[0]
 
@@ -430,7 +494,7 @@
 
 		 countdownElement = DOMinate(
 		 ['div',
-		 ['span', toHours(leftTime)],
+		 ['span', toTimeString(leftTime)],
 		 ['div',
 		 [pauseButton],
 		 [cancelButton]
@@ -444,7 +508,7 @@
 			[$('#countdowns'),
 				['div$el',
 					['h2$name'],
-					['span$time', toHours(leftTime)],
+					['span$time', toTimeString(leftTime)],
 					['div',
 						['button$pauseButton', 'Pause', function (e) {
 							e.addEventListener('click', pauseResume)
@@ -465,73 +529,28 @@
 	}
 
 
-	function route(state) {
+	function viewPage(params) {
 
-		// History object or URL
-		if (typeof (state) === 'object') {
+		var page,
+			url,
+			title,
+			wrapper = $('.wrapper')
 
-			if (state.url !== undefined) {
-				fromURL(state.url)
-			} else {
-				throw new Error('History Object does not contain an URL: ' + state.url)
-			}
+		if (typeof params !== 'string')
+			url = params[0]
+		else
+			url = params
 
-		} else if (typeof(state) === 'string') {
-			fromURL(state)
-		} else {
-			throw new Error('The variable passed to route() is not an object or a string: ' + state)
-		}
+		page = (url == '/') ? 'home' : url.split('/')[1]
 
-		function fromURL(url) {
-			var dirs = url.split('/'),
-				pages = [
-					'clock',
-					'alarm',
-					'stopwatch',
-					'timer',
-					'countdown',
-					'worldclock',
-					'([0-9]*h)?([0-9]*(m|min))?([0-9]*(s|sec|sek))?'
-				]
-
-			function testIfWebsite(string) {
-				return pages.some(function (page) {
-					return new RegExp('^' + page + '$', 'i').test(string)
-				})
-			}
-
-			if (dirs.length <= 1) {
-
-				if (url === '' || url === '/') {
-					viewPage('home')
-				} else if (testIfWebsite(dirs[0])) {
-					viewPage(dirs[0])
-				} else {
-					var error = 'The Website "' + dirs[0] + '" is not available'
-					viewPage('home')
-
-					alert(error)
-					throw new Error(error)
-				}
-
-			} else if (dirs.length == 2) {
-				throw new Error('The URL is too long:' + url)
-			} else {
-				throw new Error('Can not route the URL ' + dirs)
-			}
-		}
-	}
-
-	function viewPage(page) {
-
-		var title;
+		//console.log(page)
 
 		if (page != presentView) {
 
-			if (presentView)
-				$('#' + presentView + 'wrapper').classList.add('hidden')
+			for (i = 0; i < wrapper.length; i++)
+				wrapper[i].classList.remove('visible')
 
-			$('#' + page + 'wrapper').classList.remove('hidden')
+			$('#' + page + 'wrapper').classList.add('visible')
 
 			title = capitalise(page) + ' | Timeomat';
 			setTitle(title)
@@ -571,6 +590,7 @@
 	function initEvents() {
 
 		var menuItems = [
+			'home',
 			'clock',
 			//'alarm',
 			'stopwatch',
@@ -579,32 +599,32 @@
 			//'worldclock'
 		]
 
-		menuItems.forEach(function (e) {
-			$('#' + e).addEventListener('click', function () {
-				viewPage(e)
-				setState(e)
+		menuItems.forEach(function (item) {
+			$('#' + item).addEventListener('click', function (event) {
+				event.preventDefault()
+
+				if (item == 'home')
+					router.route('/')
+				else
+					router.route('/' + item)
 			}, false)
 		})
-
-		$('#home').addEventListener('click', function () {
-			viewPage('home')
-			setState('')
-		}, false)
-
 
 		$('#startTimer').addEventListener('click', function (e) {
 
 			e.preventDefault()
 
-			var dur = $('#timerTime').value.split(':'),
-				endTime = new Date((dur[0] * 60 * 60 * 1000) + (dur[1] * 60 * 1000) + (dur[2] * 1000) + new Date().getTime())
+			var duration = $('#timerTime').value,
+				endTime = toEndTime(duration)
 
-			new Timer()
-				.stop(endTime)
+			new Timer(endTime)
 				.start()
 
-			//var url = 'timer'
-			//history.pushState({'url': url}, url, baseURL + url)
+
+			var url = duration
+
+			//history.pushState({'url': url}, url , baseURL + '/timer/' + url)
+
 		}, false)
 
 		$('#startCountdown').addEventListener('click', function (e) {
@@ -659,41 +679,248 @@
 			stopwatch.reset()
 		}, false)
 
+	}
 
+	function Router(routes) {
+
+		var baseURL = '',
+			relativePath,
+			firstCall = true
+
+		function execRoute(path) {
+
+			var available = false
+
+			for (var direction in routes) {
+				if (routes.hasOwnProperty(direction)) {
+
+					var pattern = new RegExp(direction, "ig"),
+						result = pattern.exec(path);
+
+					if (result) {
+
+						//If Function
+						if (routes[direction].call) {
+
+							routes[direction](result)
+
+							//If Array
+						} else if (routes[direction].pop) {
+
+							routes[direction].forEach(function (func) {
+								func(result)
+							})
+
+							//If String
+						} else if (routes[direction].big)
+							showRoute(routes[direction])
+
+						available = true
+					}
+				}
+			}
+
+			return available
+		}
+
+		function route(path) {
+
+			path = path || relativePath
+
+			showRoute(path)
+
+			if (firstCall)
+				history.replaceState({'url': path}, path, baseURL + path)
+			else
+				history.pushState({'url': path}, path, baseURL + path)
+
+
+			return this
+		}
+
+		function fromURL(url) {
+
+			var dirs = url.split('/')
+
+			function testIfWebsite(string) {
+				return routes.some(function (page) {
+					return new RegExp('^' + page + '$', 'i').test(string)
+				})
+			}
+
+			if (dirs.length <= 1) {
+
+				if (url === '' || url === '/') {
+					viewPage('home')
+				} else if (testIfWebsite(dirs[0])) {
+					viewPage(dirs[0])
+				} else {
+					var error = 'The Website "' + dirs[0] + '" is not available'
+					viewPage('home')
+
+					alert(error)
+					throw new Error(error)
+				}
+
+			} else if (dirs.length == 2) {
+				throw new Error('The URL is too long:' + url)
+			} else {
+				throw new Error('Can not route the URL ' + dirs)
+			}
+		}
+
+		/*
+		 function route(state) {
+		 // History object or URL
+		 if (typeof (state) === 'object') {
+
+		 if (state.url !== undefined) {
+		 fromURL(state.url)
+		 } else {
+		 throw new Error('History Object does not contain an URL: ' + state.url)
+		 }
+
+		 } else if (typeof(state) === 'string') {
+		 fromURL(state)
+		 } else {
+
+		 fromURL(path)
+
+		 //throw new Error('The variable passed to route() is not an object or a string: ' + state)
+		 }
+		 }
+		 */
+
+		function setRoute(url) {
+
+			showRoute(url)
+
+			history.pushState({'url': url}, url, baseURL + url)
+
+			return this
+		}
+
+		function showRoute(url) {
+
+			if (!execRoute(url))
+				showRoute('404')
+
+			return this
+		}
+
+		this.setBaseURL = function (url) {
+
+			baseURL = url
+
+			relativePath = location.pathname.substr(baseURL.length, location.pathname.length)
+
+			return this
+		}
+
+		this.route = route
+
+		window.addEventListener('popstate', function (event) {
+
+			if (!firstCall) {
+
+				if (event.state)
+					showRoute(event.state.url)
+				else
+					console.log('Can not route the event "' + event.state + '".')
+
+			} else
+				firstCall = false
+
+		}, false)
 	}
 
 	// Initialize Website
 	function init() {
 
-		var path = location.pathname.substr(baseURL.length + 1, location.pathname.length)
-
-		history.replaceState({'url': path}, path, baseURL + '/' + path)
+		//history.replaceState({'url': path}, path, baseURL + '/' + path)
 
 		initEvents()
-
-		route(path)
 
 		//setShortcuts()
 
 		//preload favicon
 		new Image().src = 'img/favicon2.png'
-
-		//Popstate
-		window.addEventListener('popstate', function (event) {
-
-			try {
-				if (event.state !== null)
-					route(event.state)
-				else
-					throw new Error('Can not route the event "' + event.state + '".')
-
-			} catch (e) {
-
-			}
-
-		}, false)
 	}
 
-	init()
+
+	/*
+	 page.base(baseURL);
+	 for (i in router) {
+	 if (router.hasOwnProperty(i))
+	 page(i, router[i])
+	 }
+
+
+	 page.base(baseURL);
+	 page('/', viewPage)
+	 page('/clock', viewPage)
+	 page('/alarm', viewPage)
+	 page('/stopwatch', viewPage)
+	 page('/stopwatch/start', function (ctx) {
+	 viewPage(ctx)
+	 stopwatch.startStop()
+	 })
+	 page('/timer', viewPage)
+	 page('/timer/:time', function (ctx) {
+	 viewPage(ctx)
+
+	 var endTime = toEndTime(ctx.params.time)
+
+	 new Timer(endTime)
+	 .start()
+	 })
+
+	 page('\/(([0-9]+:[0-9]+:[0-9]+))', function (ctx) {
+	 console.log(ctx.params)
+
+	 viewPage('timer')
+
+	 new Timer(toEndTime(ctx.params[0]))
+	 .start()
+	 })
+
+	 page('\/(\d+)\:(\d+)\:(\d+)', function (ctx) {
+
+	 //viewPage('timer')
+
+	 //var endTime =  + (ctx.params[0] || 0)  + ':' + (ctx.params[3] || 0) + ':' + (ctx.params[7] || 0)
+
+	 console.log(ctx.params)
+
+	 //new Timer(toEndTime(endTime))
+	 //	.start()
+	 })
+
+	 page('/\/(([0-9]*)h)?(([0-9]*)(m|min))?(([0-9]*)(s|sec|sek))?/', function (ctx) {
+
+	 viewPage('timer')
+
+	 var endTime = +(ctx.params[0] || 0) + ':' + (ctx.params[3] || 0) + ':' + (ctx.params[7] || 0)
+
+	 console.log(ctx.params, endTime)
+
+	 new Timer(toEndTime(endTime))
+	 .start()
+	 })
+	 page('/countdown', viewPage)
+	 page('/worldclock', viewPage)
+	 //page('*', notFound)
+	 page();
+	 */
+
+	initEvents()
+
+	//preload favicon
+	new Image().src = 'img/favicon2.png'
+
+	router
+		.setBaseURL('/~adrian/timeomat')
+		.route()
+
 
 }(window, document))
