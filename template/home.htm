@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+<html id="html">
+
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<title>Timeomat{TITLE}</title>
+		<meta name="description" content="Timer, Stopwatch, Alarmclock, Clock" />
+		<meta name="keywords" content="timer, stopwatch, alarmclock, clock" />
+		
+		{HEADER}
+	
+	</head>
+	
+	<body>
+	<div id="fb-root"></div>
+	<script>
+		(function(d, s, id) {
+		  var js, fjs = d.getElementsByTagName(s)[0];
+		  if (d.getElementById(id)) {return;}
+		  js = d.createElement(s); js.id = id;
+		  js.src = "//connect.facebook.net/de_DE/all.js#xfbml=1&appId=248799211809224";
+		  fjs.parentNode.insertBefore(js, fjs);
+		}(document, 'script', 'facebook-jssdk'));
+	</script>
+
+	<div id="UpdateYourBrowser"></div> 
+	<script type="text/javascript" src="https://raw.github.com/adius/UpdateYourBrowser/master/UpdateYourBrowser.js"></script>
+	
+			
+		<div id="wrapper">
+		<div id="nav">
+			
+			{MENU}
+		
+		</div><!--nav-->
+		
+			  
+		<div id="wrapcontent">
+		
+		{CONTENT}
+		
+		</div><!-- #wrapcontent -->
+		
+		  <div id="footer">
+			 {FOOTER}
+		  </div><!-- #footer -->
+		  
+		</div><!-- #wrapper -->
+	
+	
+	<!-- Piwik -->
+	<script type="text/javascript">
+	var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.adriansieber.com/" : "http://piwik.adriansieber.com/");
+	document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+	</script><script type="text/javascript">
+	try {
+	var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 9);
+	piwikTracker.trackPageView();
+	piwikTracker.enableLinkTracking();
+	} catch( err ) {}
+	</script><noscript><p><img src="http://piwik.adriansieber.com/piwik.php?idsite=9" style="border:0" alt="" /></p></noscript>
+	<!-- End Piwik Tracking Code -->
+	</body>
+</html>

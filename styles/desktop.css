@@ -1,0 +1,419 @@
+@import url(http://fonts.googleapis.com/css?family=Play|Pacifico);
+
+* {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+}
+
+
+html {
+	background: url(../img/bg.jpg) black;
+    height: 100%;
+}
+
+body {
+	font: 500 18px/18px "Play", sans-serif;
+	color: rgba(200,200,200,1);
+    height: 100%;
+}
+
+div#wrapper {
+	width: 960px;
+    margin: 0 auto 0 auto;
+    height: 100%;
+}
+
+div#wrapcontent {
+	min-height: 440px;
+}
+
+h1 {	
+	display: inline-block;
+}
+
+h1 a {
+	font: 100 24px/50px "Play", serif;
+}
+
+h1:hover {
+	background: -o-linear-gradient(rgb(0,140,255), rgb(0,40,230));
+	background: -moz-linear-gradient(rgb(0,140,255), rgb(0,40,230));
+	background: -webkit-linear-gradient(rgb(0,140,255), rgb(0,40,230));
+	color: rgb(255,255,255);
+	text-shadow: 0px 0px 2px black;
+	border-radius: 0 0 0 10px;
+}
+
+h2 {
+	text-align: center;
+	vertical-align: middle;
+	font: 500 180px/220px "Play", sans-serif;
+	color: rgba(220,220,220,1);
+	text-shadow: 5px 5px 20px rgb(0,0,0),
+	1px -2px 0px rgb(210,210,210), 
+	2px -4px 0px rgb(210,210,210), 3px -6px 0px rgb(210,210,210), 4px -8px 0px rgb(210,210,210);
+	border-radius: 10px;
+	margin: 0 0px 0 0px;
+}
+
+h3 {
+	display: inline-block;
+	text-align: center;
+	vertical-align: middle;
+	font: 500 50px/180px "Play", sans-serif;
+	color: rgba(220,220,220,1);
+	text-shadow: 2px 2px 2px rgb(0,0,0);
+	/*1px -2px 0px rgb(210,210,210), 
+	2px -4px 0px rgb(210,210,210);*/
+	text-decoration: none;
+	margin: 0 20px 0 20px;
+}
+
+h4 {
+	display: inline-block;
+	text-align: center;
+	font: 500 20px/50px "Play", sans-serif;
+	color: rgba(200,200,200,1);
+	text-shadow: 1px 1px 4px rgb(0,0,0);
+	text-decoration: none;
+	margin: 50px 0 0 0;
+}
+
+em {
+	display: inline-block;
+	text-align: center;
+	vertical-align: middle;
+	font: 400 50px/80px "Pacifico", serif;
+	font-style: italic;
+	color: rgba(220,220,220,1);
+	text-shadow: 2px 2px 2px rgb(0,0,0);
+	text-decoration: none;
+	margin: 0 20px 0 20px;
+}
+
+input[type="submit"], button{
+	text-align: center;	
+	vertical-align: middle;
+	background: -o-linear-gradient(rgba(30,30,30,1), rgba(0,0,0,1));
+	background: -moz-linear-gradient(rgba(50,50,50,1), rgba(20,20,20,1));
+	background: -webkit-linear-gradient(rgba(30,30,30,1), rgba(0,0,0,1));
+	border: none;
+	font: 500 30px/30px "Play", sans-serif;
+	color: rgb(200,200,200);
+	box-shadow: 4px -4px 0px rgba(0,0,0,1);
+	padding: 5px 20px 5px 20px ;
+	border-radius: 10px;
+}
+
+input[type="submit"]:active, button:active{
+	vertical-align: middle;
+	background: -o-linear-gradient(rgba(0,0,0,1), rgba(20,20,20,1));
+	background: -moz-linear-gradient(rgba(0,0,0,1), rgba(20,20,20,1));
+	background: -webkit-linear-gradient(rgba(0,0,0,1), rgba(20,20,20,1));	
+	box-shadow: 2px -2px 0px rgba(0,0,0,1);
+	position: relative;
+	bottom: 4px;
+	left: 4px;
+}
+
+input[type="time"], input[type="text"], div#repeat, select{
+	display: inline-block;
+	vertical-align: middle;
+	font: 500 60px/60px "Play", sans-serif;
+	color: white;
+	background: rgb(60,60,60);
+	width: 240px;
+	border-radius: 10px;
+	margin: 0 20px 0 0px;
+	box-shadow: inset 2px 2px 4px rgba(0,0,0,0.6);
+	padding: 0 10px 0 10px;
+}
+
+
+/*------------------------------------------------------Navigation----------------*/
+
+div#nav {
+	color: white;
+	background: -o-linear-gradient(rgb(50,50,50), black);
+	background: -moz-linear-gradient(rgb(50,50,50), black);
+	background: -webkit-linear-gradient(rgb(50,50,50), black);
+	margin: 0 0 30px 0;
+	position: relative;
+	border-radius: 0 0 10px 10px;
+	box-shadow: 2px 2px 2px rgba(0,0,0,0.5);
+}
+
+div#links {
+	display: inline-block;
+}
+
+div#nav a:not(#adrian) {
+	height: 50px;
+	min-width: 40px;
+	display: inline-block;
+	text-decoration: none;
+	color: rgb(200,200,200);
+	padding: 0px 10px 0px 10px;
+	border-right: 2px solid rgba(255,255,255,0.3);
+	background-position: center;
+	vertical-align: top;
+}
+
+div#nav a:active:not(#adrian), div#nav a:focus:not(#adrian) {
+	background: -o-linear-gradient(rgb(0,140,255), rgb(0,60,240));
+	background: -moz-linear-gradient(rgb(0,140,255), rgb(0,60,240));
+	background: -webkit-linear-gradient(rgb(0,140,255), rgb(0,60,240));
+	color: rgb(255,255,255);
+	box-shadow: inset 2px 0px 20px rgb(0,0,0);
+}
+
+div#nav a:nth-of-type(1):active, div#nav a:nth-of-type(1):focus {
+	border-radius: 0 0 0 10px;
+}
+
+a#clock {
+	background: url(../img/clock.png) no-repeat;
+}
+a#clock:hover {
+	background: url(../img/clock.png) no-repeat, -o-linear-gradient(rgb(0,140,255), rgb(0,60,240));
+	background: url(../img/clock.png) no-repeat, -moz-linear-gradient(rgb(0,140,255), rgb(0,60,240));
+	background: url(../img/clock.png) no-repeat, -webkit-linear-gradient(rgb(0,140,255), rgb(0,60,240));	
+	background-position: center;
+}
+
+a#alarm {
+	background: url(../img/alarm.png) no-repeat;
+}
+a#alarm:hover {
+	background: url(../img/alarm.png) no-repeat, -o-linear-gradient(rgb(0,140,255), rgb(0,60,240));	
+	background: url(../img/alarm.png) no-repeat, -moz-linear-gradient(rgb(0,140,255), rgb(0,60,240));	
+	background: url(../img/alarm.png) no-repeat, -webkit-linear-gradient(rgb(0,140,255), rgb(0,60,240));	
+	background-position: center;
+}
+
+a#timer {
+	background: url(../img/timer.png) no-repeat;
+}
+a#timer:hover {
+	background: url(../img/timer.png) no-repeat, -o-linear-gradient(rgb(0,140,255), rgb(0,60,240));
+	background: url(../img/timer.png) no-repeat, -moz-linear-gradient(rgb(0,140,255), rgb(0,60,240));
+	background: url(../img/timer.png) no-repeat, -webkit-linear-gradient(rgb(0,140,255), rgb(0,60,240));	
+	background-position: center;
+}
+
+a#stop {
+	background: url(../img/stop.png) no-repeat;
+}
+a#stop:hover {
+	background: url(../img/stop.png) no-repeat, -o-linear-gradient(rgb(0,140,255), rgb(0,60,240));	
+	background: url(../img/stop.png) no-repeat, -moz-linear-gradient(rgb(0,140,255), rgb(0,60,240));	
+	background: url(../img/stop.png) no-repeat, -webkit-linear-gradient(rgb(0,140,255), rgb(0,60,240));	
+	background-position: center;
+}
+
+
+div#nav a#adrian{
+	display: inline-block;
+	font: 100 12px/50px "", serif;
+	color: rgb(120,120,120);
+	text-decoration: none;
+	float: right;
+	padding: 0 10px 0 0;
+}
+
+div#nav a#adrian:hover{
+	color: rgb(200,200,200);
+}
+
+
+/*------------------------------------------------Home-------------------------------------------*/
+
+div#home{
+	text-align: center;
+}
+
+div#home img{
+	width: 800px;
+}
+
+div#home em{
+	margin: 0 0 30px 0;
+}
+
+/*------------------------------------------------Footer-------------------------------------------*/
+
+div#footer {
+	width: 960px;
+	padding: 30px 0 30px 0;
+	text-align: center;
+	vertical-align: top;
+	border-top: 1px dashed rgba(255,255,255,0.3);
+}
+
+div#footer div#social {
+	text-align: center;
+}
+
+div#footer div#social > * {
+	vertical-align: top;
+}
+
+
+/*------------------------------------------------Clock-------------------------------------------*/
+
+div#clockwrapper {
+	text-align: center;
+}
+
+
+/*---------------------------------------------------Alarm----------------------------------------*/
+div#alarmwrapper{
+	text-align: center;
+}
+
+div#alarmwrapper form {
+	display: inline-block;
+	vertical-align: top;
+}
+
+div#alarmwrapper form input[type="time"]{
+	width: 200px;
+	
+}
+
+div#repeat {
+	font-size: 20px;
+	line-height: 20px;
+	padding: 20px;
+	width: inherit;
+	text-align: left;
+}
+
+div#alarmwrapper select{
+	font-size: 30px;
+	margin-right: 20px;
+}
+
+/*
+div#repeat {
+	display: inline-block;
+	text-align: left;
+	vertical-align: middle;
+	border-radius: 10px;
+	background: -o-linear-gradient(rgba(20,20,20,1), rgba(0,0,0,1));
+	background: -moz-linear-gradient(rgba(20,20,20,1), rgba(0,0,0,1));
+	background: -webkit-linear-gradient(rgba(20,20,20,1), rgba(0,0,0,1));
+	padding:  10px 20px 10px 20px;
+	margin: 30px;
+	box-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+}
+
+div#alarmwrapper select{
+	text-align: center;
+	background: -o-linear-gradient(rgba(30,30,30,1), rgba(0,0,0,1));
+	background: -moz-linear-gradient(rgba(30,30,30,1), rgba(0,0,0,1));
+	background: -webkit-linear-gradient(rgba(30,30,30,1), rgba(0,0,0,1));
+	border: none;
+	border-radius: 10px;
+	font: 500 30px/30px "Play", sans-serif;
+	color: rgb(200,200,200);
+	width: 200px;
+	box-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+	margin: 0 30px 0 0;
+}*/
+
+/*----------------------------------------Stopwatch--------------------------------------------------*/
+div#stopwatchwrapper {
+	text-align: center;
+	padding: 0 0 50px 0;
+}
+
+div#stopwatchwrapper h2 {
+	font-size: 120px;
+	line-height: 160px;
+	margin: 50px 0 0 0px;
+}
+
+div#stopwatchwrapper button{
+	font: 900 40px/60px "Play", sans-serif;
+	padding: 0px 30px 0px 30px;
+}
+
+div#stopwatchcontrols {
+	width: 500px;
+	display: inline-block;
+}
+
+
+div#stopwatchwrapper table{
+	margin: 20px 0 0 0;
+}
+
+div#stopwatchwrapper table tr:nth-of-type(2n + 1){
+	background: rgba(0,0,0,0.1);
+}
+
+div#stopwatchwrapper th{
+	text-align: center;
+	color: rgb(200,200,200);
+	padding: 15px;
+}
+
+div#stopwatchwrapper td {
+	text-align: center;
+	padding: 5px 20px 5px 20px;
+}
+
+/*----------------------------------------Timer--------------------------------------------------*/
+div#timerwrapper {
+	text-align: center;
+}
+
+div#timerwrapper h2 {
+	font-size: 120px;
+	line-height: 160px;
+	margin: 50px 0 0 0px;
+}
+
+div#timerwrapper form {
+}
+
+div#timerwrapper form input[type="date"],
+div#timerwrapper form:nth-of-type(2) input[type="text"],
+div#timerwrapper form:nth-of-type(2) input[type="time"]{
+	vertical-align: middle;
+	font: 500 24px/24px "Play", sans-serif;
+	color: white;
+	background: rgb(60,60,60);
+	width: 150px;
+	border-radius: 5px;
+	margin: 0 0 0 20px;
+	box-shadow: inset 2px 2px 4px rgba(0,0,0,0.6);
+	padding: 2px 6px 2px 6px;
+}
+
+div#timerwrapper form:nth-of-type(2) input[type="time"]{
+	width: 80px;
+	margin: 0 0 0 5px;
+}
+
+div#timerwrapper form input[type="submit"]{
+	margin:  0 0 0 40px;
+	padding: 10px 30px 10px 30px;
+}
+
+div#timerwrapper form:last-child input[type="submit"]{
+	font-size: 24px;
+	margin:  0 0 0 30px;
+	padding: 5px 20px 5px 20px;
+}
+
+div#timerwrapper form input[type="submit"]:active{
+	background: -o-linear-gradient(rgba(0,0,0,1), rgba(20,20,20,1));
+	background: -moz-linear-gradient(rgba(0,0,0,1), rgba(20,20,20,1));
+	background: -webkit-linear-gradient(rgba(0,0,0,1), rgba(20,20,20,1));
+	box-shadow: inset 0 0 10px rgba(0,0,0,0.6);
+	border-radius: 10px;
+}

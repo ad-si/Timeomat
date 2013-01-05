@@ -1,0 +1,371 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/*-------------------------------------------------------------------------------*/
+
+
+
+html {
+	background: url(../img/bg.jpg) black;
+}
+
+body {
+	font: 500 18px/18px "Helvetica", sans-serif;
+	color: rgba(100,100,100,1);
+}
+
+div#wrapper {
+    margin: 0 auto 0 auto;
+}
+
+div#wrapcontent {
+	text-align: center;
+}
+
+h1 {	
+	display: inline-block;
+}
+
+h1 a {
+	font: 100 20px/40px "Palatino", serif;
+	text-shadow: 0px 0px 2px black;
+}
+
+h1:hover {
+	background: -o-linear-gradient(rgb(0,140,255), rgb(0,40,230));
+	background: -moz-linear-gradient(rgb(0,140,255), rgb(0,40,230));
+	background: -webkit-linear-gradient(rgb(0,140,255), rgb(0,40,230));
+	color: rgb(255,255,255);
+}
+
+h2 {
+	text-align: center;
+	font: 500 70px/130px "Arial", sans-serif;
+	color: rgba(200,200,200,1);
+	text-shadow: 3px 3px 10px rgb(0,0,0);
+	text-decoration: none;
+}
+
+h3 {
+	text-align: center;
+	font: 500 40px/80px "Arial", sans-serif;
+	color: rgba(200,200,200,1);
+	text-shadow: 2px 2px 6px rgb(0,0,0);
+	text-decoration: none;
+}
+
+h4 {
+	text-align: center;
+	font: 500 20px/50px "Arial", sans-serif;
+	color: rgba(200,200,200,1);
+	text-shadow: 1px 1px 4px rgb(0,0,0);
+	text-decoration: none;
+	margin: 50px 0 0 0;
+}
+
+input:not([type="checkbox"]), button{
+	text-align: center;
+	background: -o-linear-gradient(rgba(30,30,30,1), rgba(0,0,0,1));
+	background: -moz-linear-gradient(rgba(30,30,30,1), rgba(0,0,0,1));
+	background: -webkit-linear-gradient(rgba(30,30,30,1), rgba(0,0,0,1));
+	border: none;
+	font: 500 30px/30px "Arial", sans-serif;
+	color: rgb(150,150,150);
+	box-shadow: 0 0 10px rgba(0,0,0,0.6);
+	padding: 5px 20px 5px 20px ;
+	border-radius: 10px;
+}
+
+
+/*------------------------------------------------------Navigation----------------*/
+
+div#nav {
+	color: white;
+	background: -o-linear-gradient(rgb(50,50,50), black);
+	background: -moz-linear-gradient(rgb(50,50,50), black);
+	background: -webkit-linear-gradient(rgb(50,50,50), black);
+	width: 100%;
+	margin: 0 0 30px 0;
+	position: relative;
+}
+
+div#links {
+	display: inline-block;
+}
+
+div#nav a:not(#adrian) {
+	height: 40px;
+	min-width: 23px;
+	display: inline-block;
+	text-decoration: none;
+	color: rgb(200,200,200);
+	padding: 0px 10px 0px 10px;
+	border-left: 1px solid rgba(255,255,255,0.2);	
+	border-right: 1px solid rgba(255,255,255,0.2);
+	background-position: center;
+	vertical-align: top;
+}
+
+div#links a:last-child {
+	border-right: 2px solid rgba(255,255,255,0.2);
+}
+
+div#nav a:active:not(#adrian), div#nav a:focus:not(#adrian) {
+	background: -o-linear-gradient(rgb(0,140,255), rgb(0,60,240));
+	background: -moz-linear-gradient(rgb(0,140,255), rgb(0,60,240));
+	background: -webkit-linear-gradient(rgb(0,140,255), rgb(0,60,240));
+	color: rgb(255,255,255);
+	box-shadow:inset 2px 0px 20px rgb(0,0,0);
+}
+
+a#clock {
+	background: url(../img/clock.png) no-repeat;
+}
+a#clock:hover {
+	background: url(../img/clock.png) no-repeat, -o-linear-gradient(rgb(0,140,255), rgb(0,60,240));
+	background: url(../img/clock.png) no-repeat, -moz-linear-gradient(rgb(0,140,255), rgb(0,60,240));
+	background: url(../img/clock.png) no-repeat, -webkit-linear-gradient(rgb(0,140,255), rgb(0,60,240));	
+	background-position: center;
+}
+
+a#alarm {
+	background: url(../img/alarm.png) no-repeat;
+}
+a#alarm:hover {
+	background: url(../img/alarm.png) no-repeat, -o-linear-gradient(rgb(0,140,255), rgb(0,60,240));	
+	background: url(../img/alarm.png) no-repeat, -moz-linear-gradient(rgb(0,140,255), rgb(0,60,240));	
+	background: url(../img/alarm.png) no-repeat, -webkit-linear-gradient(rgb(0,140,255), rgb(0,60,240));	
+	background-position: center;
+}
+
+a#timer {
+	background: url(../img/timer.png) no-repeat;
+}
+a#timer:hover {
+	background: url(../img/timer.png) no-repeat, -o-linear-gradient(rgb(0,140,255), rgb(0,60,240));
+	background: url(../img/timer.png) no-repeat, -moz-linear-gradient(rgb(0,140,255), rgb(0,60,240));
+	background: url(../img/timer.png) no-repeat, -webkit-linear-gradient(rgb(0,140,255), rgb(0,60,240));	
+	background-position: center;
+}
+
+a#stop {
+	background: url(../img/stop.png) no-repeat;
+}
+a#stop:hover {
+	background: url(../img/stop.png) no-repeat, -o-linear-gradient(rgb(0,140,255), rgb(0,60,240));	
+	background: url(../img/stop.png) no-repeat, -moz-linear-gradient(rgb(0,140,255), rgb(0,60,240));	
+	background: url(../img/stop.png) no-repeat, -webkit-linear-gradient(rgb(0,140,255), rgb(0,60,240));	
+	background-position: center;
+}
+
+
+div#nav a#adrian{
+	display: inline-block;
+	font: 100 10px/40px "", serif;
+	color: rgb(100,100,100);
+	text-decoration: none;
+	float: right;
+	padding: 0 10px 0 0;
+}
+
+div#nav a#adrian:hover{
+	color: rgb(200,200,200);
+}
+
+
+/*------------------------------------------------Home-------------------------------------------*/
+
+div#home{
+	text-align: center;
+	padding: 40px 0 0px 0;
+}
+
+div#home img{
+	width: 250px;
+	margin: 10px 0 0px 0;
+}
+
+
+
+/*------------------------------------------------Clock-------------------------------------------*/
+
+div#clock{
+	text-align: center;
+	padding: 40px 0 0px 0;
+}
+
+
+/*---------------------------------------------------Alarm----------------------------------------*/
+div#alarmwrapper{
+}
+
+div#alarmwrapper form {
+	display: inline-block;
+	vertical-align: top;
+}
+
+div#alarmwrapper input[type="time"]{
+	font: 500 80px/80px "Arial", sans-serif;
+	width: 250px;
+}
+
+div#repeat {
+	display: inline-block;
+	text-align: left;
+	border-radius: 10px;
+	background: -o-linear-gradient(rgba(20,20,20,1), rgba(0,0,0,1));
+	background: -moz-linear-gradient(rgba(20,20,20,1), rgba(0,0,0,1));
+	background: -webkit-linear-gradient(rgba(20,20,20,1), rgba(0,0,0,1));
+	padding:  10px 60px 10px 60px;
+	margin: 30px;
+	box-shadow: 0 0 10px rgba(0,0,0,0.6);
+}
+
+div#alarmwrapper select{
+	text-align: center;
+	background: -o-linear-gradient(rgba(30,30,30,1), rgba(0,0,0,1));
+	background: -moz-linear-gradient(rgba(30,30,30,1), rgba(0,0,0,1));
+	background: -webkit-linear-gradient(rgba(30,30,30,1), rgba(0,0,0,1));
+	border: none;
+	border-radius: 10px;
+	font: 500 30px/30px "Arial", sans-serif;
+	color: rgb(200,200,200);
+	width: 240px;
+	box-shadow: 0 0 10px rgba(0,0,0,0.6);
+}
+
+/*----------------------------------------Stopwatch--------------------------------------------------*/
+div#stopwatchwrapper {
+}
+
+div#stopwatchwrapper button{
+	padding: 10px 30px 10px 30px;
+}
+
+div#stopwatchwrapper button:active{
+	background: -o-linear-gradient(rgba(0,0,0,1), rgba(20,20,20,1));
+	background: -moz-linear-gradient(rgba(0,0,0,1), rgba(20,20,20,1));
+	background: -webkit-linear-gradient(rgba(0,0,0,1), rgba(20,20,20,1));
+	box-shadow: inset 0 0 10px rgba(0,0,0,0.6);
+	border-radius: 10px;
+}
+
+div#stopwatchwrapper table{
+	display: inline-block;
+	margin: 20px;
+}
+
+div#stopwatchwrapper table tr:nth-of-type(2n + 1){
+	background: rgba(0,0,0,0.1);
+}
+
+div#stopwatchwrapper th{
+	color: rgb(200,200,200);
+	padding: 15px;
+}
+
+div#stopwatchwrapper td{
+	padding: 5px 15px 5px 15px;
+}
+
+/*----------------------------------------Timer--------------------------------------------------*/
+div#timerwrapper {
+}
+
+div#timerwrapper form {
+	display: inline-block;
+	vertical-align: top;
+}
+
+div#timerwrapper input[type="time"]{
+	font: 500 60px/60px "Arial", sans-serif;
+	width: 250px;
+}
+
+div#timerwrapper input[type="datetime-local"]{
+	width: 250px;
+}
+
+div#timerwrapper input[type="submit"]{
+	margin: 60px;
+	padding: 10px 30px 10px 30px;
+}
+
+div#timerwrapper input[type="submit"]:active{
+	background: -o-linear-gradient(rgba(0,0,0,1), rgba(20,20,20,1));
+	background: -moz-linear-gradient(rgba(0,0,0,1), rgba(20,20,20,1));
+	background: -webkit-linear-gradient(rgba(0,0,0,1), rgba(20,20,20,1));
+	box-shadow: inset 0 0 10px rgba(0,0,0,0.6);
+	border-radius: 10px;
+}
+
+/*--------------------------------Footer------------------------------------*/
+div#footer{
+	text-align: center;
+}
+
+
+/*------------Contact----------------*/
+div#contact{
+	text-align: center;
+	margin: 40px 0 0px 0;
+}
+
+div#contact a.websites {
+	display: inline-block;
+	height: 50px;
+	background-position: center;
+	margin: 40px 20px 0 20px;
+}
+
+a#kickstarter {
+	width: 350px;
+	background: url(../img/kickstarter.png) no-repeat;
+}
+
+a#twitter {
+	width: 200px;
+	background: url(../img/twitter.png) no-repeat;
+}
