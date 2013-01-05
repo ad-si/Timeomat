@@ -2,9 +2,7 @@ function Routor(routes) {
 
 	var baseURL = '',
 		relativePath = location.pathname,
-	firstCall = true
-
-	console.log(location.pathname)
+		firstCall = true
 
 	function execRoute(path) {
 
@@ -17,6 +15,8 @@ function Routor(routes) {
 					result = pattern.exec(path);
 
 				if (result) {
+
+					console.log(direction)
 
 					//If Function
 					if (routes[direction].call) {
@@ -37,8 +37,12 @@ function Routor(routes) {
 					} else
 
 					//If String
-					if (routes[direction].big)
-						showRoute(routes[direction])
+					if (routes[direction].big) {
+
+						direction = relativePath.replace(new RegExp(direction, "ig"), routes[direction])
+
+						showRoute(direction)
+					}
 
 					available = true
 				}
@@ -59,68 +63,6 @@ function Routor(routes) {
 		else
 			history.pushState({'url': path}, path, baseURL + path)
 
-
-		return this
-	}
-
-	function fromURL(url) {
-
-		var dirs = url.split('/')
-
-		function testIfWebsite(string) {
-			return routes.some(function (page) {
-				return new RegExp('^' + page + '$', 'i').test(string)
-			})
-		}
-
-		if (dirs.length <= 1) {
-
-			if (url === '' || url === '/') {
-				viewPage('home')
-			} else if (testIfWebsite(dirs[0])) {
-				viewPage(dirs[0])
-			} else {
-				var error = 'The Website "' + dirs[0] + '" is not available'
-				viewPage('home')
-
-				alert(error)
-				throw new Error(error)
-			}
-
-		} else if (dirs.length == 2) {
-			throw new Error('The URL is too long:' + url)
-		} else {
-			throw new Error('Can not route the URL ' + dirs)
-		}
-	}
-
-	/*
-	 function route(state) {
-	 // History object or URL
-	 if (typeof (state) === 'object') {
-
-	 if (state.url !== undefined) {
-	 fromURL(state.url)
-	 } else {
-	 throw new Error('History Object does not contain an URL: ' + state.url)
-	 }
-
-	 } else if (typeof(state) === 'string') {
-	 fromURL(state)
-	 } else {
-
-	 fromURL(path)
-
-	 //throw new Error('The variable passed to route() is not an object or a string: ' + state)
-	 }
-	 }
-	 */
-
-	function setRoute(url) {
-
-		showRoute(url)
-
-		history.pushState({'url': url}, url, baseURL + url)
 
 		return this
 	}

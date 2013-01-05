@@ -7,39 +7,47 @@
 		presentTitle,
 		i,
 		routor = new Routor({
+			//'^/$': '/countdown',
 			'^/$': viewPage,
 			'^/clock$': viewPage,
 			'^/alarm$': viewPage,
-			'^/stopwatch$': viewPage,
+			'^/stopwatch': viewPage,
 			'^/worldclock$': viewPage,
-			'^/stopwatch/start$': [viewPage, stopwatch.startStop],
+			'^/stopwatch/start$': stopwatch.start,
 
 
 			'^/timer': viewPage,
-			'^/timer/(\\d+:\\d+:\\d+)$': function (params) {
+			'^/timer/(\\d*:\\d*:\\d*)$': function (params) {
+
+				$('#timers').innerHTML = ''
 
 				new Timer(toEndTime(params[1])).start()
+			},
+			'^/(\\d+:\\d+:\\d+)$': '/timer/$1',
+			'^/(?:(\\d+)h)?(?:(\\d+)(?:m|min))?(?:(\\d+)(?:s|sec|sek))?$': function (params) {
 
-				console.log(toEndTime(params[1]))
+				var array = params.slice(1, 4)
+
+				if (array.join('')) {
+
+					viewPage('/timer')
+
+					new Timer(toEndTime(array.join(':'))).start()
+				}
+
 			},
 			'^/nap$': '/timer/00:20:00',
 			'^/brushteeth$': '/timer/00:05:00',
 			'^/quickie|quicky$': '/timer/00:10:00',
 
-			'^/countdown': function (params) {
-				viewPage(params)
-			},
-			'^/countdown$': function (params) {
-				$('#countdownControls').classList.remove('hidden')
-				$('#countdowns').classList.add('hidden')
-			},
+			'^/countdown': viewPage,
 			'^/countdown/(.+)/(\\d{4}-\\d{2}-\\d{2}t\\d{2}:\\d{2})$': function (params) {
+
+				$('#countdowns').innerHTML = ''
 
 				new Countdown(new Date(params[2]))
 					.name(decodeURIComponent(params[1]))
 					.start()
-
-				$('#countdowns').classList.remove('hidden')
 			},
 			'^/christmas|xmas|x-mas$': '/countdown/Christmas/2013-12-24T20:00',
 			'^/newyear|new-year|new year$': '/countdown/New Year/2013-12-24T20:00',
@@ -48,31 +56,6 @@
 			},
 
 			'^/error$': viewPage
-
-			/*
-			 '^/(\d+)\:(\d+)\:(\d+)$': function (ctx) {
-
-			 //viewPage('timer')
-
-			 //var endTime =  + (ctx.params[0] || 0)  + ':' + (ctx.params[3] || 0) + ':' + (ctx.params[7] || 0)
-
-			 console.log(ctx.params)
-
-			 //new Timer(toEndTime(endTime))
-			 //	.start()
-			 },
-			 '^/([0-9]*h)?([0-9]*(m|min))?([0-9]*(s|sec|sek))?$': function (ctx) {
-
-			 viewPage('timer')
-
-			 var endTime = +(ctx.params[0] || 0) + ':' + (ctx.params[3] || 0) + ':' + (ctx.params[7] || 0)
-
-			 console.log(ctx.params, endTime)
-
-			 new Timer(toEndTime(endTime))
-			 .start()
-			 }
-			 */
 		})
 
 
@@ -283,7 +266,7 @@
 			nextDuration = $('#nextDuration'),
 			nextTime = $('#nextTime')
 
-		this.startStop = function () {
+		function start() {
 
 			if (!isRunning) {
 				if (firstTime) {
@@ -298,14 +281,24 @@
 				stopwatchStart.innerHTML = 'Stop'
 				stopwatchReset.classList.add('hidden')
 				stopwatchRound.classList.remove('hidden')
-
-			} else {
-				clearTimeout(timer)
-				isRunning = false
-				stopwatchStart.innerHTML = 'Continue'
-				stopwatchReset.classList.remove('hidden')
-				stopwatchRound.classList.add('hidden')
 			}
+		}
+
+		function stop() {
+
+			clearTimeout(timer)
+			isRunning = false
+			stopwatchStart.innerHTML = 'Continue'
+			stopwatchReset.classList.remove('hidden')
+			stopwatchRound.classList.add('hidden')
+		}
+
+		this.startStop = function () {
+
+			if (!isRunning)
+				start()
+			else
+				stop()
 		}
 
 		this.showTime = function () {
@@ -366,6 +359,8 @@
 				removeElement(rows[a]);
 			}
 		}
+
+		this.start = start
 	}
 
 	function Timer(endTime) {
@@ -438,8 +433,23 @@
 			timeout,
 			delayStart,
 			name,
-			countdown,
-			countdowns = $('#countdowns')
+			countdowns = $('#countdowns'),
+			countdown = DOMinate(
+				[countdowns,
+					['div$el',
+						['div',
+							['p$name'],
+							['time$time', toTimeString(leftTime)]
+						],
+						['div',
+							['button$cancelButton', 'x', function (e) {
+								e.addEventListener('click', cancel)
+							}]
+						]
+					]
+				]
+			);
+
 
 		function update() {
 			leftTime = endTime - new Date()
@@ -474,7 +484,7 @@
 		}
 
 		function cancel() {
-			removeElement(countdown[0])
+			removeElement(countdown.el)
 			clearTimeout(timeout)
 		}
 
@@ -485,34 +495,11 @@
 		}
 
 		this.start = function () {
-			$('#countdownControls').classList.add('hidden')
 			update()
-			countdown.name.innerHTML = name
+			countdown.name.innerHTML = name || ' '
 			running = true
 			return this
 		}
-
-
-		countdowns.innerHTML = ''
-
-		countdown = DOMinate(
-			[countdowns,
-				['div$el',
-					['h2$name'],
-					['span$time', toTimeString(leftTime)]
-					/*
-					 ['div',
-					 ['button$pauseButton', 'Pause', function (e) {
-					 e.addEventListener('click', pauseResume)
-					 }],
-					 ['button$cancelButton', 'x', function (e) {
-					 e.addEventListener('click', cancel)
-					 }]
-					 ]
-					 */
-				]
-			]
-		);
 
 
 	}
@@ -616,14 +603,23 @@
 		$('#startCountdown').addEventListener('click', function (e) {
 			e.preventDefault()
 
-			routor.route('/countdown/' +
-				$('#countdownName').value +
-				'/' +
-				$('#countdownDate').value +
-				'T' +
-				$('#countdownTime').value)
+			new Countdown(new Date($('#countdownDate').value + 'T' + $('#countdownTime').value))
+				.name($('#countdownName').value)
+				.start()
 
 		}, false)
+
+		/*
+		 $('#showFullscreen').addEventListener('click', function () {
+
+		 routor.route('/countdown/' +
+		 $('#countdownName').value +
+		 '/' +
+		 $('#countdownDate').value +
+		 'T' +
+		 $('#countdownTime').value)
+		 })
+		 */
 
 		/*
 		 $('#setAlarm').addEventListener('click', function (e) {
@@ -671,7 +667,9 @@
 	//Preload favicon
 	new Image().src = 'img/favicon2.png'
 
-	routor.route()
+	routor
+		//.setBaseURL('/~adrian/timeomat')
+		.route()
 
 
 }(window, document))

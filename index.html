@@ -2,7 +2,7 @@
 <html manifest=timeomat.manifest>
 <head>
 	<title>Timeomat</title>
-	<base href="http://dev.timeomat.com/">
+	<base href="/">
 	<meta charset="utf-8">
 	<meta name=description content='Clock, Alarm, Stopwatch & Timer in your Browser'>
 	<meta name=keywords content='Clock, Alarm, Stopwatch, Timer'>
@@ -105,10 +105,8 @@
 
 	<div id=countdownwrapper class="wrapper">
 		<form id="countdownControls">
-			<input id=countdownName type=text value=Name>
-			<input id=countdownDate type=text value=2014-01-01><input id=countdownTime type=text value=12:00>
-			<br>
-			<button id=startCountdown type=submit>Start</button>
+			<input id=countdownName type=text placeholder=Name><br>
+			<input id=countdownDate type=text value=2014-01-01><input id=countdownTime type=text value=12:00><button id=startCountdown type=submit>Start</button>
 		</form>
 
 		<div id="countdowns"></div>
