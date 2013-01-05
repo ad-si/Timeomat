@@ -648,7 +648,10 @@ body > nav {
 }
 /* line 455, ../sass/screen.sass */
 #countdowns span {
-  font-size: 34px;
+  font-size: 36px;
+  vertical-align: middle;
+  color: gainsboro;
+  text-shadow: 1px 1px 1px black;
 }
 
 /*@media all and (max-width: 480px)

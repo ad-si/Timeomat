@@ -2,18 +2,18 @@
 <html manifest=timeomat.manifest>
 <head>
 	<title>Timeomat</title>
-	<base href="/~adrian/timeomat/">
+	<base href="http://dev.timeomat.com/">
 	<meta charset="utf-8">
 	<meta name=description content='Clock, Alarm, Stopwatch & Timer in your Browser'>
 	<meta name=keywords content='Clock, Alarm, Stopwatch, Timer'>
 	<meta name=apple-mobile-web-app-capable content=yes>
 	<meta name=apple-mobile-web-app-status-bar-style content=none>
-	<meta name=viewport content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
+	<!--<meta name=viewport content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">-->
 	<link type=image/png rel=icon id=favicon href=img/favicon.png>
 	<link type=image/png rel=apple-touch-icon-precomposed href=img/icon.png>
 	<link type=text/css rel=stylesheet href=css/screen.css>
 	<script type=text/javascript src=js/dominate.min.js></script>
-	<script type=text/javascript src="js/page.js"></script>
+	<script type=text/javascript src=js/routor.js></script>
 </head>
 <body>
 
@@ -106,7 +106,7 @@
 	<div id=countdownwrapper class="wrapper">
 		<form id="countdownControls">
 			<input id=countdownName type=text value=Name>
-			<input id=countdownDate type=text value=2013-01-01><input id=countdownTime type=text value=12:00>
+			<input id=countdownDate type=text value=2014-01-01><input id=countdownTime type=text value=12:00>
 			<br>
 			<button id=startCountdown type=submit>Start</button>
 		</form>
@@ -114,8 +114,8 @@
 		<div id="countdowns"></div>
 	</div>
 
-	<div id=404wrapper class="wrapper">
-		<h1>404</h1>
+	<div id=errorwrapper class="wrapper">
+		<h3>The requested view does not exist.</h3>
 	</div>
 
 	<!--

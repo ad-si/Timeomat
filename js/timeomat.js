@@ -6,25 +6,48 @@
 		presentView = '',
 		presentTitle,
 		i,
-		router = new Router({
+		routor = new Routor({
 			'^/$': viewPage,
 			'^/clock$': viewPage,
 			'^/alarm$': viewPage,
 			'^/stopwatch$': viewPage,
-			'^/countdown$': viewPage,
 			'^/worldclock$': viewPage,
 			'^/stopwatch/start$': [viewPage, stopwatch.startStop],
 
-			'^/timer': viewPage,
-			'^/timer/([0-9]+:[0-9]+:[0-9]+)$': function (params) {
 
-				new Timer(toEndTime(params[1]))
-					.start()
+			'^/timer': viewPage,
+			'^/timer/(\\d+:\\d+:\\d+)$': function (params) {
+
+				new Timer(toEndTime(params[1])).start()
+
+				console.log(toEndTime(params[1]))
 			},
 			'^/nap$': '/timer/00:20:00',
 			'^/brushteeth$': '/timer/00:05:00',
 			'^/quickie|quicky$': '/timer/00:10:00',
-			'^/404$': viewPage
+
+			'^/countdown': function (params) {
+				viewPage(params)
+			},
+			'^/countdown$': function (params) {
+				$('#countdownControls').classList.remove('hidden')
+				$('#countdowns').classList.add('hidden')
+			},
+			'^/countdown/(.+)/(\\d{4}-\\d{2}-\\d{2}t\\d{2}:\\d{2})$': function (params) {
+
+				new Countdown(new Date(params[2]))
+					.name(decodeURIComponent(params[1]))
+					.start()
+
+				$('#countdowns').classList.remove('hidden')
+			},
+			'^/christmas|xmas|x-mas$': '/countdown/Christmas/2013-12-24T20:00',
+			'^/newyear|new-year|new year$': '/countdown/New Year/2013-12-24T20:00',
+			'^/test/(.*)': function (params) {
+				console.log(decodeURIComponent(params[1]))
+			},
+
+			'^/error$': viewPage
 
 			/*
 			 '^/(\d+)\:(\d+)\:(\d+)$': function (ctx) {
@@ -53,10 +76,10 @@
 		})
 
 
-	function $(e) {
-		var elements = document.querySelectorAll(e)
+	function $(query) {
+		query = document.querySelectorAll(query)
 
-		return (elements.length == 1) ? elements[0] : elements;
+		return (query[1]) ? query : query[0]
 	}
 
 	function capitalise(string) {
@@ -131,8 +154,8 @@
 		return time
 	}
 
-	function toEndTime(time) {
-		var dur = time.split(':')
+	function toEndTime(duration) {
+		var dur = duration.split(':')
 
 		return  new Date((dur[0] * 60 * 60 * 1000) + (dur[1] * 60 * 1000) + (dur[2] * 1000) + new Date().getTime())
 	}
@@ -409,14 +432,14 @@
 		}
 	}
 
-	function Countdown() {
+	function Countdown(endTime) {
 		var running = false,
-			endTime,
 			leftTime,
 			timeout,
 			delayStart,
 			name,
-			countdown;
+			countdown,
+			countdowns = $('#countdowns')
 
 		function update() {
 			leftTime = endTime - new Date()
@@ -462,61 +485,31 @@
 		}
 
 		this.start = function () {
-			$('#countdownControls').style.display = 'none'
+			$('#countdownControls').classList.add('hidden')
 			update()
 			countdown.name.innerHTML = name
 			running = true
 			return this
 		}
 
-		this.stop = function (value) {
-			endTime = value
-			return this
-		}
 
-		/*
-		 countdownElement = DOMinate(
-		 ['div',
-		 ['h2'],
-		 ['h3', toTimeString(leftTime)]
-		 ]
-		 )[0]
-
-
-		 DOMinate([$('#countdowns'), [countdownElement]])
-
-
-		 pauseButton = DOMinate(['button', 'Pause'])
-		 pauseButton.addEventListener('click', this.pauseResume)
-
-		 cancelButton = DOMinate(['button', 'x'])
-		 cancelButton.addEventListener('click', cancel)
-
-		 countdownElement = DOMinate(
-		 ['div',
-		 ['span', toTimeString(leftTime)],
-		 ['div',
-		 [pauseButton],
-		 [cancelButton]
-		 ]
-		 ]
-		 )
-		 DOMinate([$('#countdowns'), [countdownElement]])
-		 */
+		countdowns.innerHTML = ''
 
 		countdown = DOMinate(
-			[$('#countdowns'),
+			[countdowns,
 				['div$el',
 					['h2$name'],
-					['span$time', toTimeString(leftTime)],
-					['div',
-						['button$pauseButton', 'Pause', function (e) {
-							e.addEventListener('click', pauseResume)
-						}],
-						['button$cancelButton', 'x', function (e) {
-							e.addEventListener('click', cancel)
-						}]
-					]
+					['span$time', toTimeString(leftTime)]
+					/*
+					 ['div',
+					 ['button$pauseButton', 'Pause', function (e) {
+					 e.addEventListener('click', pauseResume)
+					 }],
+					 ['button$cancelButton', 'x', function (e) {
+					 e.addEventListener('click', cancel)
+					 }]
+					 ]
+					 */
 				]
 			]
 		);
@@ -604,9 +597,9 @@
 				event.preventDefault()
 
 				if (item == 'home')
-					router.route('/')
+					routor.route('/')
 				else
-					router.route('/' + item)
+					routor.route('/' + item)
 			}, false)
 		})
 
@@ -614,31 +607,22 @@
 
 			e.preventDefault()
 
-			var duration = $('#timerTime').value,
-				endTime = toEndTime(duration)
+			new Timer(toEndTime($('#timerTime').value)).start()
 
-			new Timer(endTime)
-				.start()
-
-
-			var url = duration
-
-			//history.pushState({'url': url}, url , baseURL + '/timer/' + url)
+			//routor.route('/timer/' + $('#timerTime').value)
 
 		}, false)
 
 		$('#startCountdown').addEventListener('click', function (e) {
 			e.preventDefault()
 
-			var endTime = new Date($('#countdownDate').value + 'T' + $('#countdownTime').value)
+			routor.route('/countdown/' +
+				$('#countdownName').value +
+				'/' +
+				$('#countdownDate').value +
+				'T' +
+				$('#countdownTime').value)
 
-			new Countdown()
-				.name($('#countdownName').value)
-				.stop(endTime)
-				.start()
-
-			//var url = 'timer'
-			//history.pushState({'url': url}, url, baseURL + url)
 		}, false)
 
 		/*
@@ -681,246 +665,13 @@
 
 	}
 
-	function Router(routes) {
-
-		var baseURL = '',
-			relativePath,
-			firstCall = true
-
-		function execRoute(path) {
-
-			var available = false
-
-			for (var direction in routes) {
-				if (routes.hasOwnProperty(direction)) {
-
-					var pattern = new RegExp(direction, "ig"),
-						result = pattern.exec(path);
-
-					if (result) {
-
-						//If Function
-						if (routes[direction].call) {
-
-							routes[direction](result)
-
-							//If Array
-						} else if (routes[direction].pop) {
-
-							routes[direction].forEach(function (func) {
-								func(result)
-							})
-
-							//If String
-						} else if (routes[direction].big)
-							showRoute(routes[direction])
-
-						available = true
-					}
-				}
-			}
-
-			return available
-		}
-
-		function route(path) {
-
-			path = path || relativePath
-
-			showRoute(path)
-
-			if (firstCall)
-				history.replaceState({'url': path}, path, baseURL + path)
-			else
-				history.pushState({'url': path}, path, baseURL + path)
-
-
-			return this
-		}
-
-		function fromURL(url) {
-
-			var dirs = url.split('/')
-
-			function testIfWebsite(string) {
-				return routes.some(function (page) {
-					return new RegExp('^' + page + '$', 'i').test(string)
-				})
-			}
-
-			if (dirs.length <= 1) {
-
-				if (url === '' || url === '/') {
-					viewPage('home')
-				} else if (testIfWebsite(dirs[0])) {
-					viewPage(dirs[0])
-				} else {
-					var error = 'The Website "' + dirs[0] + '" is not available'
-					viewPage('home')
-
-					alert(error)
-					throw new Error(error)
-				}
-
-			} else if (dirs.length == 2) {
-				throw new Error('The URL is too long:' + url)
-			} else {
-				throw new Error('Can not route the URL ' + dirs)
-			}
-		}
-
-		/*
-		 function route(state) {
-		 // History object or URL
-		 if (typeof (state) === 'object') {
-
-		 if (state.url !== undefined) {
-		 fromURL(state.url)
-		 } else {
-		 throw new Error('History Object does not contain an URL: ' + state.url)
-		 }
-
-		 } else if (typeof(state) === 'string') {
-		 fromURL(state)
-		 } else {
-
-		 fromURL(path)
-
-		 //throw new Error('The variable passed to route() is not an object or a string: ' + state)
-		 }
-		 }
-		 */
-
-		function setRoute(url) {
-
-			showRoute(url)
-
-			history.pushState({'url': url}, url, baseURL + url)
-
-			return this
-		}
-
-		function showRoute(url) {
-
-			if (!execRoute(url))
-				showRoute('404')
-
-			return this
-		}
-
-		this.setBaseURL = function (url) {
-
-			baseURL = url
-
-			relativePath = location.pathname.substr(baseURL.length, location.pathname.length)
-
-			return this
-		}
-
-		this.route = route
-
-		window.addEventListener('popstate', function (event) {
-
-			if (!firstCall) {
-
-				if (event.state)
-					showRoute(event.state.url)
-				else
-					console.log('Can not route the event "' + event.state + '".')
-
-			} else
-				firstCall = false
-
-		}, false)
-	}
-
-	// Initialize Website
-	function init() {
-
-		//history.replaceState({'url': path}, path, baseURL + '/' + path)
-
-		initEvents()
-
-		//setShortcuts()
-
-		//preload favicon
-		new Image().src = 'img/favicon2.png'
-	}
-
-
-	/*
-	 page.base(baseURL);
-	 for (i in router) {
-	 if (router.hasOwnProperty(i))
-	 page(i, router[i])
-	 }
-
-
-	 page.base(baseURL);
-	 page('/', viewPage)
-	 page('/clock', viewPage)
-	 page('/alarm', viewPage)
-	 page('/stopwatch', viewPage)
-	 page('/stopwatch/start', function (ctx) {
-	 viewPage(ctx)
-	 stopwatch.startStop()
-	 })
-	 page('/timer', viewPage)
-	 page('/timer/:time', function (ctx) {
-	 viewPage(ctx)
-
-	 var endTime = toEndTime(ctx.params.time)
-
-	 new Timer(endTime)
-	 .start()
-	 })
-
-	 page('\/(([0-9]+:[0-9]+:[0-9]+))', function (ctx) {
-	 console.log(ctx.params)
-
-	 viewPage('timer')
-
-	 new Timer(toEndTime(ctx.params[0]))
-	 .start()
-	 })
-
-	 page('\/(\d+)\:(\d+)\:(\d+)', function (ctx) {
-
-	 //viewPage('timer')
-
-	 //var endTime =  + (ctx.params[0] || 0)  + ':' + (ctx.params[3] || 0) + ':' + (ctx.params[7] || 0)
-
-	 console.log(ctx.params)
-
-	 //new Timer(toEndTime(endTime))
-	 //	.start()
-	 })
-
-	 page('/\/(([0-9]*)h)?(([0-9]*)(m|min))?(([0-9]*)(s|sec|sek))?/', function (ctx) {
-
-	 viewPage('timer')
-
-	 var endTime = +(ctx.params[0] || 0) + ':' + (ctx.params[3] || 0) + ':' + (ctx.params[7] || 0)
-
-	 console.log(ctx.params, endTime)
-
-	 new Timer(toEndTime(endTime))
-	 .start()
-	 })
-	 page('/countdown', viewPage)
-	 page('/worldclock', viewPage)
-	 //page('*', notFound)
-	 page();
-	 */
 
 	initEvents()
 
-	//preload favicon
+	//Preload favicon
 	new Image().src = 'img/favicon2.png'
 
-	router
-		.setBaseURL('/~adrian/timeomat')
-		.route()
+	routor.route()
 
 
 }(window, document))

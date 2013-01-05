@@ -1,9 +1,10 @@
 CACHE MANIFEST
-#2012-11-15T00:00
+#2013-01-04T00:00
 
 #js
 js/UpdateYourBrowser.min.js
-js/dominate.extended.js
+js/dominate.min.js
+js/routor.js
 js/timeomat.js
 
 #css
