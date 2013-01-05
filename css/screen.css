@@ -1,1 +1,789 @@
-@font-face{font-family:"Pacifico";font-style:normal;font-weight:400;src:url("../fonts/Pacifico.ttf")}@font-face{font-family:"Play";font-style:normal;font-weight:400;src:url("../fonts/Play.ttf")}*{margin:0;padding:0;border:0;font-size:100%;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;-ms-box-sizing:border-box;box-sizing:border-box}html{background:url(../img/bg.jpg) #000;height:100%}body{font-weight:500;font-size:18px;line-height:1.3;font-family:"Play",sans-serif;color:#c8c8c8;width:960px;margin:0 auto 0 auto;height:100%}#clockwrapper,#alarmwrapper,#stopwatchwrapper,#timerwrapper{display:none}#logo{font-weight:100;font-size:24px;line-height:50px;font-family:"Play",sans-serif}#logo:hover{background-image:-webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #008cff), color-stop(100%, #0028e6));background-image:-webkit-linear-gradient(#008cff,#0028e6);background-image:-moz-linear-gradient(#008cff,#0028e6);background-image:-o-linear-gradient(#008cff,#0028e6);background-image:-ms-linear-gradient(#008cff,#0028e6);background-image:linear-gradient(#008cff,#0028e6);color:#fff;text-shadow:0px 0px 2px #000;border-radius:0 0 0 10px}h2{text-align:center;vertical-align:middle;font-weight:500;font-size:180px;font-family:"Play",sans-serif;color:#dcdcdc;text-shadow:5px 5px 20px #000,1px -2px 0px #d2d2d2,2px -4px 0px #d2d2d2,3px -6px 0px #d2d2d2,4px -8px 0px #d2d2d2;border-radius:10px}h3{display:inline-block;text-align:center;vertical-align:middle;font-weight:500;font-size:50px;font-family:"Play",sans-serif;color:#dcdcdc;text-shadow:2px 2px 2px #000;text-decoration:none;margin:0 20px}h4{display:inline-block;text-align:center;font:500 20px/50px "Play",sans-serif;color:#c8c8c8;text-shadow:1px 1px 4px #000;text-decoration:none;margin:50px 0 0 0}em{display:inline-block;text-align:center;vertical-align:middle;font-weight:400;font-size:50px;font-family:"Pacifico",serif;font-style:italic;color:#dcdcdc;text-shadow:2px 2px 2px #000;text-decoration:none;margin:0 20px 0 20px}input[type="submit"],button{text-align:center;vertical-align:middle;background-image:-webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #1e1e1e), color-stop(100%, #000000));background-image:-webkit-linear-gradient(#1e1e1e,#000000);background-image:-moz-linear-gradient(#1e1e1e,#000000);background-image:-o-linear-gradient(#1e1e1e,#000000);background-image:-ms-linear-gradient(#1e1e1e,#000000);background-image:linear-gradient(#1e1e1e,#000000);border:none;font:500 30px/30px "Play",sans-serif;color:#c8c8c8;box-shadow:4px -4px 0px #000;padding:5px 20px 5px 20px;border-radius:10px}input[type="submit"]:active,button:active{vertical-align:middle;background-image:-webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #000000), color-stop(100%, #141414));background-image:-webkit-linear-gradient(#000000,#141414);background-image:-moz-linear-gradient(#000000,#141414);background-image:-o-linear-gradient(#000000,#141414);background-image:-ms-linear-gradient(#000000,#141414);background-image:linear-gradient(#000000,#141414);box-shadow:2px -2px 0px #000;position:relative;bottom:4px;left:4px}input[type="time"],input[type="text"]{display:inline-block;vertical-align:middle;font:500 60px/60px "Play",sans-serif;color:#fff;background:#3c3c3c;width:240px;border-radius:10px;margin:0 20px 0 0px;box-shadow:inset 2px 2px 4px rgba(0,0,0,0.6);padding:0 10px 0 10px}#alarmDays,select{display:inline-block;vertical-align:middle;font:500 60px/60px "Play",sans-serif;color:#fff;background:#3c3c3c;width:240px;border-radius:10px;margin:0 20px 0 0px;box-shadow:inset 2px 2px 4px rgba(0,0,0,0.6);padding:0 10px 0 10px}body > nav{color:#fff;background-image:-webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #323232), color-stop(100%, #000000));background-image:-webkit-linear-gradient(#323232,#000000);background-image:-moz-linear-gradient(#323232,#000000);background-image:-o-linear-gradient(#323232,#000000);background-image:-ms-linear-gradient(#323232,#000000);background-image:linear-gradient(#323232,#000000);margin:0 0 30px 0;position:relative;border-radius:0 0 10px 10px;box-shadow:2px 2px 2px rgba(0,0,0,0.5)}#links{display:inline-block}#links a,#logo{height:50px;line-height:50px;min-width:60px;display:inline-block;text-decoration:none;color:#c8c8c8;border-right:2px solid rgba(255,255,255,0.3);background-position:center;vertical-align:top;padding:0 20px}#links a:active,#links a:focus,#logo:active,#logo:focus{background-image:-webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #008cff), color-stop(100%, #003cf0));background-image:-webkit-linear-gradient(#008cff,#003cf0);background-image:-moz-linear-gradient(#008cff,#003cf0);background-image:-o-linear-gradient(#008cff,#003cf0);background-image:-ms-linear-gradient(#008cff,#003cf0);background-image:linear-gradient(#008cff,#003cf0);color:#fff;box-shadow:inset 2px 0px 20px #000}#links a:nth-of-type(1):active,#links a:nth-of-type(1):focus,#logo:nth-of-type(1):active,#logo:nth-of-type(1):focus{border-radius:0 0 0 10px}#adrian{display:inline-block;font:100 12px/50px "",serif;color:#787878;text-decoration:none;float:right;padding:0 10px 0 0}#adrian:hover{color:#c8c8c8}#logo,#clock,#alarm,#stopwatch,#timer{background-repeat:no-repeat;background-position:center}#clock{background-image:url("../img/clock.png")}#clock:hover{background-image:url("../img/clock.png"),-webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #008cff), color-stop(100%, #003cf0));background-image:url("../img/clock.png"),-webkit-linear-gradient(#008cff,#003cf0);background-image:url("../img/clock.png"),-moz-linear-gradient(#008cff,#003cf0);background-image:url("../img/clock.png"),-o-linear-gradient(#008cff,#003cf0);background-image:url("../img/clock.png"),-ms-linear-gradient(#008cff,#003cf0);background-image:url("../img/clock.png"),linear-gradient(#008cff,#003cf0)}#alarm{background-image:url("../img/alarm.png")}#alarm:hover{background-image:url("../img/alarm.png"),-webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #008cff), color-stop(100%, #003cf0));background-image:url("../img/alarm.png"),-webkit-linear-gradient(#008cff,#003cf0);background-image:url("../img/alarm.png"),-moz-linear-gradient(#008cff,#003cf0);background-image:url("../img/alarm.png"),-o-linear-gradient(#008cff,#003cf0);background-image:url("../img/alarm.png"),-ms-linear-gradient(#008cff,#003cf0);background-image:url("../img/alarm.png"),linear-gradient(#008cff,#003cf0)}#timer{background-image:url("../img/timer.png")}#timer:hover{background-image:url("../img/timer.png"),-webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #008cff), color-stop(100%, #003cf0));background-image:url("../img/timer.png"),-webkit-linear-gradient(#008cff,#003cf0);background-image:url("../img/timer.png"),-moz-linear-gradient(#008cff,#003cf0);background-image:url("../img/timer.png"),-o-linear-gradient(#008cff,#003cf0);background-image:url("../img/timer.png"),-ms-linear-gradient(#008cff,#003cf0);background-image:url("../img/timer.png"),linear-gradient(#008cff,#003cf0)}#stopwatch{background-image:url("../img/stop.png")}#stopwatch:hover{background-image:url("../img/stop.png"),-webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #008cff), color-stop(100%, #003cf0));background-image:url("../img/stop.png"),-webkit-linear-gradient(#008cff,#003cf0);background-image:url("../img/stop.png"),-moz-linear-gradient(#008cff,#003cf0);background-image:url("../img/stop.png"),-o-linear-gradient(#008cff,#003cf0);background-image:url("../img/stop.png"),-ms-linear-gradient(#008cff,#003cf0);background-image:url("../img/stop.png"),linear-gradient(#008cff,#003cf0)}#home{text-align:center}#home img{width:800px;height:234px;margin-bottom:20px}#home em{margin:0 0 30px 0}#footer{width:960px;padding:30px 0 30px 0;text-align:center;vertical-align:top;border-top:1px dashed rgba(255,255,255,0.3)}#footer div#social{text-align:center}#footer div#social >{vertical-align:top}#clockwrapper{text-align:center}#alarmwrapper{text-align:center}#alarmwrapper form{display:inline-block;vertical-align:top}#alarmwrapper form input[type="time"]{width:200px}#alarmwrapper select{font-size:30px;margin-right:20px}#alarmDays{font-size:20px;line-height:20px;padding:20px;width:inherit;text-align:left}#stopwatchwrapper{text-align:center;padding:0 0 50px 0}#stopwatchwrapper h2{font-size:120px;margin:50px 0 0 0px}#stopwatchwrapper button{display:inline-block;font-weight:900;font-size:40px;line-height:1.5;font-family:"Play",sans-serif;padding:0px 30px 0px 30px}#stopwatchwrapper table{margin:20px 0 0 0}#stopwatchwrapper table tr:nth-of-type(2n + 1){background:rgba(0,0,0,0.1)}#stopwatchwrapper th{text-align:center;color:#c8c8c8;padding:15px}#stopwatchwrapper td{text-align:center;padding:5px 20px 5px 20px}#timerwrapper{text-align:center}#timerwrapper h2{font-size:120px;line-height:160px;margin:50px 0 0 0px}#timerwrapper form input[type="date"]{vertical-align:middle;font:500 24px/24px "Play",sans-serif;color:#fff;background:#3c3c3c;width:150px;border-radius:5px;margin:0 0 0 20px;box-shadow:inset 2px 2px 4px rgba(0,0,0,0.6);padding:2px 6px 2px 6px}#timerwrapper form input[type="submit"]{margin:0 0 0 40px;padding:10px 30px 10px 30px}#timerwrapper form:nth-of-type(2) input[type="text"]{width:140px;vertical-align:middle;font:500 24px/24px "Play",sans-serif;color:#fff;background:#3c3c3c;border-radius:5px;margin:0 0 0 20px;box-shadow:inset 2px 2px 4px rgba(0,0,0,0.6);padding:2px 6px 2px 6px}#timerwrapper form:nth-of-type(2) input[type="time"]{vertical-align:middle;font:500 24px/24px "Play",sans-serif;color:#fff;background:#3c3c3c;border-radius:5px;margin:0 0 0 20px;box-shadow:inset 2px 2px 4px rgba(0,0,0,0.6);padding:2px 6px 2px 6px;width:80px;margin:0 0 0 5px}#timerwrapper form:nth-of-type(2) input[type="submit"]{font-size:24px;margin:0 0 0 30px;padding:5px 20px 5px 20px}#timerwrapper form input[type="submit"]:active{background-image:-webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #000000), color-stop(100%, #141414));background-image:-webkit-linear-gradient(#000000,#141414);background-image:-moz-linear-gradient(#000000,#141414);background-image:-o-linear-gradient(#000000,#141414);background-image:-ms-linear-gradient(#000000,#141414);background-image:linear-gradient(#000000,#141414);box-shadow:inset 0 0 10px rgba(0,0,0,0.6);border-radius:10px}@media all and (max-width: 480px){body{font-size:14px;width:100%}body > nav{width:100%}#links a,#logo{height:40px;line-height:40px;min-width:40px;padding:0 16px}#logo{background-size:100%}#clock,#alarm,#stopwatch,#timer{background-size:50%,100%}#home img{width:100%;height:auto}#stopwatchwrapper h2{font-size:50px}#stopwatchwrapper button{font-size:24px}h2{font-size:70px;text-shadow:5px 5px 20px #000,1px -2px 0px #d2d2d2,2px -4px 0px #d2d2d2}h3{font-size:32px}em{font-size:24px}}
+/*@function getBackground($name)
+ * @return #alarm
+ * 			+background-image(url("../img/$name.svg"))
+ * 			&:hover
+ * 				asssa+background-image(url('../img/alarm.svg'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240))) */
+@font-face {
+  font-family: "Pacifico";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/Pacifico.ttf");
+}
+
+@font-face {
+  font-family: "Play";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/Play.ttf");
+}
+
+/* line 31, ../sass/screen.sass */
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+/* line 38, ../sass/screen.sass */
+html {
+  background: url(../img/bg.jpg) black;
+  height: 100%;
+}
+
+/* line 42, ../sass/screen.sass */
+body {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 1;
+  font-family: "Play", sans-serif;
+  color: #c8c8c8;
+  width: 960px;
+  margin: 0 auto 0 auto;
+  height: 100%;
+  text-align: center;
+}
+
+/* line 53, ../sass/screen.sass */
+.hidden {
+  display: none !important;
+}
+
+/* line 56, ../sass/screen.sass */
+.wrapper {
+  display: none;
+}
+
+/* line 59, ../sass/screen.sass */
+.visible {
+  display: inherit !important;
+}
+
+/* line 62, ../sass/screen.sass */
+#home {
+  font-weight: 100;
+  font-size: 24px;
+  line-height: 50px;
+  font-family: "Play", sans-serif;
+}
+/* line 67, ../sass/screen.sass */
+#home:hover {
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #008cff), color-stop(100%, #0028e6));
+  background-image: -webkit-linear-gradient(#008cff, #0028e6);
+  background-image: -moz-linear-gradient(#008cff, #0028e6);
+  background-image: -o-linear-gradient(#008cff, #0028e6);
+  background-image: linear-gradient(#008cff, #0028e6);
+  color: white;
+  text-shadow: 0px 0px 2px black;
+  border-radius: 0 0 0 10px;
+}
+
+/* line 73, ../sass/screen.sass */
+h2 {
+  text-align: center;
+  vertical-align: middle;
+  font-weight: 500;
+  font-size: 180px;
+  font-family: "Play", sans-serif;
+  color: #e6e6e6;
+  text-shadow: 2px 2px 2px black;
+  border-radius: 10px;
+  margin-bottom: 40px;
+}
+
+/* line 84, ../sass/screen.sass */
+h3 {
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  font-weight: 500;
+  font-size: 50px;
+  font-family: "Play", sans-serif;
+  color: #c8c8c8;
+  text-shadow: 2px 2px 2px black;
+  text-decoration: none;
+  margin: 0 20px;
+}
+
+/* line 96, ../sass/screen.sass */
+h4 {
+  display: inline-block;
+  text-align: center;
+  font: 500 20px/50px "Play", sans-serif;
+  color: #c8c8c8;
+  text-shadow: 1px 1px 4px black;
+  text-decoration: none;
+  margin: 50px 0 0 0;
+}
+
+/* line 105, ../sass/screen.sass */
+em {
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  font-weight: 400;
+  font-size: 50px;
+  font-family: "Pacifico", serif;
+  font-style: italic;
+  color: gainsboro;
+  text-shadow: 2px 2px 2px black;
+  text-decoration: none;
+  margin: 0 20px 0 20px;
+}
+
+/* line 119, ../sass/screen.sass */
+#stopwatchcontrols button,
+#timercontrols button,
+#timers button,
+#startCountdown,
+#countdowns button {
+  font-family: "Play", sans-serif;
+  display: inline-block;
+  text-align: center;
+  position: relative;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #282828), color-stop(100%, #141414));
+  background-image: -webkit-linear-gradient(#282828, #141414);
+  background-image: -moz-linear-gradient(#282828, #141414);
+  background-image: -o-linear-gradient(#282828, #141414);
+  background-image: linear-gradient(#282828, #141414);
+  border: 2px solid #0a0a0a;
+  text-shadow: 0 -2px black;
+  color: #c8c8c8;
+  box-shadow: inset 0px 1px 1px rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+/* line 134, ../sass/screen.sass */
+#stopwatchcontrols button:hover,
+#timercontrols button:hover,
+#timers button:hover,
+#startCountdown:hover,
+#countdowns button:hover {
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #141414), color-stop(100%, #000000));
+  background-image: -webkit-linear-gradient(#141414, #000000);
+  background-image: -moz-linear-gradient(#141414, #000000);
+  background-image: -o-linear-gradient(#141414, #000000);
+  background-image: linear-gradient(#141414, #000000);
+}
+/* line 136, ../sass/screen.sass */
+#stopwatchcontrols button:active,
+#timercontrols button:active,
+#timers button:active,
+#startCountdown:active,
+#countdowns button:active {
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #0a0a0a), color-stop(100%, #141414));
+  background-image: -webkit-linear-gradient(#0a0a0a, #141414);
+  background-image: -moz-linear-gradient(#0a0a0a, #141414);
+  background-image: -o-linear-gradient(#0a0a0a, #141414);
+  background-image: linear-gradient(#0a0a0a, #141414);
+}
+
+/* line 141, ../sass/screen.sass */
+input[type="time"], input[type="text"], input[type="date"] {
+  border-radius: 5px;
+  color: #e6e6e6;
+  display: inline-block;
+  font-size: 50px;
+  font-weight: 500;
+  font-family: "Play", sans-serif;
+  line-height: 70px;
+  padding: 0 30px;
+  text-shadow: 2px 2px 1px #1e1e1e;
+  vertical-align: top;
+  background-color: rgba(255, 255, 255, 0.05);
+  box-shadow: 0px 2px 2px rgba(255, 255, 255, 0.2), 0px -2px 1px rgba(0, 0, 0, 0.2);
+}
+
+/* line 156, ../sass/screen.sass */
+#alarmDays,
+select {
+  display: inline-block;
+  vertical-align: middle;
+  font: 500 60px/60px "Play", sans-serif;
+  color: white;
+  background: #3c3c3c;
+  width: 240px;
+  border-radius: 10px;
+  margin: 0 20px 0 0px;
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.6);
+  padding: 0 10px 0 10px;
+}
+
+/* line 172, ../sass/screen.sass */
+body > nav {
+  color: #d2d2d2;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #323232), color-stop(100%, #000000));
+  background-image: -webkit-linear-gradient(#323232, #000000);
+  background-image: -moz-linear-gradient(#323232, #000000);
+  background-image: -o-linear-gradient(#323232, #000000);
+  background-image: linear-gradient(#323232, #000000);
+  margin: 0 0 80px 0;
+  position: relative;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.6);
+  text-align: left;
+}
+
+/* line 181, ../sass/screen.sass */
+#links {
+  display: inline-block;
+}
+
+/* line 184, ../sass/screen.sass */
+#links a,
+#home {
+  height: 50px;
+  line-height: 50px;
+  min-width: 60px;
+  display: inline-block;
+  text-decoration: none;
+  border-right: 2px solid rgba(255, 255, 255, 0.3);
+  background-position: center;
+  vertical-align: top;
+  padding: 0 20px;
+  cursor: pointer;
+}
+/* line 196, ../sass/screen.sass */
+#links a:active, #links a:focus,
+#home:active,
+#home:focus {
+  box-shadow: inset 2px 0px 20px black;
+}
+
+/* line 200, ../sass/screen.sass */
+#links a {
+  background-repeat: no-repeat;
+  background-size: 60%;
+}
+/* line 203, ../sass/screen.sass */
+#links a:hover {
+  background-size: 60%, 100%;
+}
+
+/* line 206, ../sass/screen.sass */
+#adrian {
+  display: inline-block;
+  font: 100 12px/50px "", serif;
+  color: #787878;
+  text-decoration: none;
+  float: right;
+  padding: 0 10px 0 0;
+}
+/* line 213, ../sass/screen.sass */
+#adrian:hover {
+  color: #c8c8c8;
+}
+
+/* line 219, ../sass/screen.sass */
+#clock {
+  background-image: url("../img/clock.svg");
+}
+/* line 221, ../sass/screen.sass */
+#clock:hover, #clock:active {
+  background-image: url("../img/clock.svg"), -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #008cff), color-stop(100%, #003cf0));
+  background-image: url("../img/clock.svg"), -webkit-linear-gradient(#008cff, #003cf0);
+  background-image: url("../img/clock.svg"), -moz-linear-gradient(#008cff, #003cf0);
+  background-image: url("../img/clock.svg"), -o-linear-gradient(#008cff, #003cf0);
+  background-image: url("../img/clock.svg"), linear-gradient(#008cff, #003cf0);
+}
+
+/* line 224, ../sass/screen.sass */
+#alarm {
+  background-image: url("../img/alarm.svg");
+}
+/* line 226, ../sass/screen.sass */
+#alarm:hover {
+  background-image: url("../img/alarm.svg"), -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #008cff), color-stop(100%, #003cf0));
+  background-image: url("../img/alarm.svg"), -webkit-linear-gradient(#008cff, #003cf0);
+  background-image: url("../img/alarm.svg"), -moz-linear-gradient(#008cff, #003cf0);
+  background-image: url("../img/alarm.svg"), -o-linear-gradient(#008cff, #003cf0);
+  background-image: url("../img/alarm.svg"), linear-gradient(#008cff, #003cf0);
+}
+
+/* line 228, ../sass/screen.sass */
+#timer {
+  background-image: url("../img/timer.svg");
+}
+/* line 230, ../sass/screen.sass */
+#timer:hover {
+  background-image: url("../img/timer.svg"), -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #008cff), color-stop(100%, #003cf0));
+  background-image: url("../img/timer.svg"), -webkit-linear-gradient(#008cff, #003cf0);
+  background-image: url("../img/timer.svg"), -moz-linear-gradient(#008cff, #003cf0);
+  background-image: url("../img/timer.svg"), -o-linear-gradient(#008cff, #003cf0);
+  background-image: url("../img/timer.svg"), linear-gradient(#008cff, #003cf0);
+}
+
+/* line 232, ../sass/screen.sass */
+#stopwatch {
+  background-image: url("../img/stopwatch.svg");
+}
+/* line 234, ../sass/screen.sass */
+#stopwatch:hover {
+  background-image: url("../img/stopwatch.svg"), -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #008cff), color-stop(100%, #003cf0));
+  background-image: url("../img/stopwatch.svg"), -webkit-linear-gradient(#008cff, #003cf0);
+  background-image: url("../img/stopwatch.svg"), -moz-linear-gradient(#008cff, #003cf0);
+  background-image: url("../img/stopwatch.svg"), -o-linear-gradient(#008cff, #003cf0);
+  background-image: url("../img/stopwatch.svg"), linear-gradient(#008cff, #003cf0);
+}
+
+/* line 236, ../sass/screen.sass */
+#countdown {
+  background-image: url("../img/countdown.svg");
+}
+/* line 238, ../sass/screen.sass */
+#countdown:hover {
+  background-image: url("../img/countdown.svg"), -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #008cff), color-stop(100%, #003cf0));
+  background-image: url("../img/countdown.svg"), -webkit-linear-gradient(#008cff, #003cf0);
+  background-image: url("../img/countdown.svg"), -moz-linear-gradient(#008cff, #003cf0);
+  background-image: url("../img/countdown.svg"), -o-linear-gradient(#008cff, #003cf0);
+  background-image: url("../img/countdown.svg"), linear-gradient(#008cff, #003cf0);
+}
+
+/* line 240, ../sass/screen.sass */
+#worldclock {
+  background-image: url("../img/worldclock.svg");
+}
+/* line 242, ../sass/screen.sass */
+#worldclock:hover {
+  background-image: url("../img/worldclock.svg"), -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #008cff), color-stop(100%, #003cf0));
+  background-image: url("../img/worldclock.svg"), -webkit-linear-gradient(#008cff, #003cf0);
+  background-image: url("../img/worldclock.svg"), -moz-linear-gradient(#008cff, #003cf0);
+  background-image: url("../img/worldclock.svg"), -o-linear-gradient(#008cff, #003cf0);
+  background-image: url("../img/worldclock.svg"), linear-gradient(#008cff, #003cf0);
+}
+
+/* line 247, ../sass/screen.sass */
+#homewrapper img {
+  width: 800px;
+  height: 234px;
+  margin-bottom: 20px;
+}
+/* line 251, ../sass/screen.sass */
+#homewrapper em {
+  margin: 0 0 30px 0;
+}
+
+/* line 254, ../sass/screen.sass */
+#footer {
+  width: 960px;
+  padding: 30px 0 30px 0;
+  vertical-align: top;
+  border-top: 1px dashed rgba(255, 255, 255, 0.3);
+}
+/* line 261, ../sass/screen.sass */
+#footer div#social > {
+  vertical-align: top;
+}
+
+/* line 266, ../sass/screen.sass */
+#alarmwrapper form {
+  display: inline-block;
+  vertical-align: top;
+}
+/* line 269, ../sass/screen.sass */
+#alarmwrapper form input[type="time"] {
+  width: 200px;
+}
+/* line 271, ../sass/screen.sass */
+#alarmwrapper select {
+  font-size: 30px;
+  margin-right: 20px;
+}
+
+/* line 275, ../sass/screen.sass */
+#alarmDays {
+  font-size: 20px;
+  line-height: 20px;
+  padding: 20px;
+  width: inherit;
+  text-align: left;
+}
+
+/* line 283, ../sass/screen.sass */
+#stopwatchwrapper {
+  padding: 0 0 50px 0;
+}
+/* line 285, ../sass/screen.sass */
+#stopwatchwrapper h2 {
+  font-size: 120px;
+  margin: 50px 0;
+}
+/* line 288, ../sass/screen.sass */
+#stopwatchwrapper table {
+  display: inline-block;
+  border-spacing: 4px;
+  text-shadow: 0 -1px black;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.05);
+  box-shadow: 0px 2px 2px rgba(255, 255, 255, 0.2), 0px -2px 1px rgba(0, 0, 0, 0.2);
+  margin: 20px 0 0 0;
+  border: 10px;
+}
+/* line 297, ../sass/screen.sass */
+#stopwatchwrapper thead {
+  margin-bottom: 10px;
+}
+/* line 299, ../sass/screen.sass */
+#stopwatchwrapper thead th {
+  box-shadow: 0px -1px 2px rgba(255, 255, 255, 0.1), 0px 2px 2px rgba(0, 0, 0, 0.5);
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(0, 0, 0, 0.2)), color-stop(100%, rgba(0, 0, 0, 0.4)));
+  background-image: -webkit-linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
+  background-image: -moz-linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
+  background-image: -o-linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
+  background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
+  padding: 15px;
+}
+/* line 303, ../sass/screen.sass */
+#stopwatchwrapper tbody {
+  color: #aaaaaa;
+}
+/* line 305, ../sass/screen.sass */
+#stopwatchwrapper tbody tr:nth-of-type(2n + 1) {
+  background: rgba(0, 0, 0, 0.1);
+}
+/* line 307, ../sass/screen.sass */
+#stopwatchwrapper tbody tr:nth-of-type(2n + 1) td {
+  box-shadow: 0px -1px 2px rgba(255, 255, 255, 0.2), 0px 2px 2px rgba(0, 0, 0, 0.3);
+}
+/* line 310, ../sass/screen.sass */
+#stopwatchwrapper td {
+  padding: 8px 50px;
+}
+
+/* line 313, ../sass/screen.sass */
+#stopwatchcontrols {
+  margin-bottom: 40px;
+}
+
+/* line 316, ../sass/screen.sass */
+#stopwatchcontrols button {
+  width: 200px;
+  height: 60px;
+  line-height: 56px;
+  font-weight: 100;
+  font-size: 32px;
+}
+/* line 322, ../sass/screen.sass */
+#stopwatchcontrols button:last-of-type, #stopwatchcontrols button:nth-last-of-type(2) {
+  margin-left: 40px;
+}
+/* line 325, ../sass/screen.sass */
+#stopwatchcontrols button:before {
+  content: "";
+  z-index: -1;
+  display: block;
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
+  width: 230px;
+  height: 80px;
+  box-shadow: 0px 2px 2px rgba(255, 255, 255, 0.2), 0px -2px 1px rgba(0, 0, 0, 0.2);
+  margin: -12px -17px;
+}
+
+/* line 338, ../sass/screen.sass */
+#timerwrapper {
+  padding-top: 20px;
+}
+
+/* line 341, ../sass/screen.sass */
+#timercontrols {
+  text-align: left;
+  display: inline-block;
+  margin-bottom: 50px;
+}
+/* line 345, ../sass/screen.sass */
+#timercontrols input[type="text"] {
+  line-height: 70px;
+  font-size: 60px;
+  padding: 0 20px 0 20px;
+  width: 340px;
+  margin-right: 60px;
+}
+
+/* line 352, ../sass/screen.sass */
+#startTimer,
+#startCountdown {
+  vertical-align: top;
+  width: 180px;
+  height: 50px;
+  line-height: 46px;
+  font-weight: 100;
+  font-size: 24px;
+  padding: 0 30px;
+  margin: 10px;
+}
+/* line 362, ../sass/screen.sass */
+#startTimer:active,
+#startCountdown:active {
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #000000), color-stop(100%, #141414));
+  background-image: -webkit-linear-gradient(#000000, #141414);
+  background-image: -moz-linear-gradient(#000000, #141414);
+  background-image: -o-linear-gradient(#000000, #141414);
+  background-image: linear-gradient(#000000, #141414);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
+}
+/* line 365, ../sass/screen.sass */
+#startTimer:before,
+#startCountdown:before {
+  content: "";
+  z-index: -1;
+  display: block;
+  position: absolute;
+  top: -12px;
+  left: -12px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
+  width: 200px;
+  height: 70px;
+  box-shadow: 0px 2px 2px rgba(255, 255, 255, 0.2), 0px -2px 1px rgba(0, 0, 0, 0.2);
+}
+
+/* line 379, ../sass/screen.sass */
+#timers {
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.05);
+  box-shadow: 0px 2px 2px rgba(255, 255, 255, 0.2), 0px -2px 1px rgba(0, 0, 0, 0.2);
+  display: inline-block;
+  width: 600px;
+}
+/* line 385, ../sass/screen.sass */
+#timers:not(:empty) {
+  padding: 20px 20px 0;
+}
+/* line 387, ../sass/screen.sass */
+#timers > div {
+  text-align: left;
+  display: inline-block;
+  position: relative;
+  width: 560px;
+  height: 80px;
+  background-color: rgba(255, 255, 255, 0.05);
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(0, 0, 0, 0.2)), color-stop(100%, rgba(0, 0, 0, 0.4)));
+  background-image: -webkit-linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
+  background-image: -moz-linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
+  background-image: -o-linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
+  background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
+  box-shadow: 0px -1px 2px rgba(255, 255, 255, 0.1), 0px 2px 2px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 -2px 0px black;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  padding-left: 40px;
+}
+/* line 401, ../sass/screen.sass */
+#timers > div span {
+  vertical-align: middle;
+  font-size: 36px;
+  line-height: 80px;
+}
+/* line 405, ../sass/screen.sass */
+#timers > div div {
+  position: absolute;
+  right: 20px;
+  top: 25px;
+  display: inline-block;
+}
+/* line 410, ../sass/screen.sass */
+#timers button {
+  vertical-align: middle;
+  z-index: 1;
+  width: 80px;
+  height: 28px;
+  margin-right: 30px;
+  border-width: 1px;
+  border-radius: 5px;
+  font-size: 16px;
+}
+/* line 419, ../sass/screen.sass */
+#timers button:before {
+  content: "";
+  display: block;
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 5px;
+  width: 98px;
+  height: 43px;
+  box-shadow: 0px 1px 2px rgba(255, 255, 255, 0.2), 0px -1px 1px rgba(0, 0, 0, 0.2);
+  margin: -12px -10px;
+}
+/* line 429, ../sass/screen.sass */
+#timers button:last-of-type {
+  width: 50px;
+}
+/* line 431, ../sass/screen.sass */
+#timers button:last-of-type:before {
+  width: 68px;
+}
+
+/* line 434, ../sass/screen.sass */
+#countdowns {
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.05);
+  box-shadow: 0px 2px 2px rgba(255, 255, 255, 0.2), 0px -2px 1px rgba(0, 0, 0, 0.2);
+  display: inline-block;
+  width: 700px;
+}
+/* line 440, ../sass/screen.sass */
+#countdowns:not(:empty) {
+  padding: 20px 20px 0;
+}
+/* line 442, ../sass/screen.sass */
+#countdowns > div {
+  text-align: left;
+  display: inline-block;
+  position: relative;
+  width: 660px;
+  background-color: rgba(255, 255, 255, 0.05);
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(0, 0, 0, 0.2)), color-stop(100%, rgba(0, 0, 0, 0.4)));
+  background-image: -webkit-linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
+  background-image: -moz-linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
+  background-image: -o-linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
+  background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
+  box-shadow: 0px -1px 2px rgba(255, 255, 255, 0.1), 0px 2px 2px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 -2px 0px black;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  padding: 18px 40px;
+}
+/* line 454, ../sass/screen.sass */
+#countdowns > div p {
+  display: block;
+  width: 480px;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+/* line 459, ../sass/screen.sass */
+#countdowns > div time {
+  color: #a0a0a0;
+}
+/* line 461, ../sass/screen.sass */
+#countdowns > div div:last-of-type {
+  position: absolute;
+  right: 20px;
+  top: 30px;
+  display: inline-block;
+}
+/* line 466, ../sass/screen.sass */
+#countdowns button {
+  vertical-align: middle;
+  z-index: 1;
+  width: 80px;
+  height: 28px;
+  margin-right: 30px;
+  border-width: 1px;
+  border-radius: 5px;
+  font-size: 16px;
+}
+/* line 475, ../sass/screen.sass */
+#countdowns button:before {
+  content: "";
+  display: block;
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 5px;
+  width: 98px;
+  height: 43px;
+  box-shadow: 0px 1px 2px rgba(255, 255, 255, 0.2), 0px -1px 1px rgba(0, 0, 0, 0.2);
+  margin: -12px -10px;
+}
+/* line 485, ../sass/screen.sass */
+#countdowns button:last-of-type {
+  width: 50px;
+}
+/* line 487, ../sass/screen.sass */
+#countdowns button:last-of-type:before {
+  width: 68px;
+}
+
+/* line 491, ../sass/screen.sass */
+#countdownFullscreen h2 {
+  font-size: 92px;
+}
+/* line 493, ../sass/screen.sass */
+#countdownFullscreen span {
+  font-size: 36px;
+  vertical-align: middle;
+  color: gainsboro;
+  text-shadow: 1px 1px 1px black;
+}
+
+/* line 500, ../sass/screen.sass */
+#countdownName {
+  margin-bottom: 30px;
+  width: 700px;
+  background-color: rgba(255, 255, 255, 0.05);
+  box-shadow: 0px 2px 2px rgba(255, 255, 255, 0.2), 0px -2px 1px rgba(0, 0, 0, 0.2);
+}
+
+/* line 505, ../sass/screen.sass */
+#countdownDate {
+  margin-right: 35px;
+  width: 310px;
+  padding: 0 20px;
+  background-color: rgba(255, 255, 255, 0.05);
+  box-shadow: 0px 2px 2px rgba(255, 255, 255, 0.2), 0px -2px 1px rgba(0, 0, 0, 0.2);
+}
+
+/* line 511, ../sass/screen.sass */
+#countdownTime {
+  margin-bottom: 60px;
+  margin-right: 35px;
+  width: 160px;
+  padding: 0 15px;
+  background-color: rgba(255, 255, 255, 0.05);
+  box-shadow: 0px 2px 2px rgba(255, 255, 255, 0.2), 0px -2px 1px rgba(0, 0, 0, 0.2);
+}
+
+/* line 518, ../sass/screen.sass */
+#startCountdown {
+  width: 140px;
+}
+/* line 520, ../sass/screen.sass */
+#startCountdown:before {
+  width: 160px;
+}
+
+/*@media all and (max-width: 480px)
+ * body
+ * 	font-size: 14px
+ * 	width: 100%
+ *
+ * body > nav
+ * 	width: 100%
+ *
+ * #links a,
+ * #home
+ * 	height: 40px
+ * 	line-height: 40px
+ * 	min-width: 40px
+ * 	padding: 0 16px
+ * #home
+ * 	background-size: 100%
+ *
+ * #clock,
+ * #alarm,
+ * #stopwatch,
+ * #timer,
+ * 	background-size: 50%, 100%
+ *
+ * #homewrapper
+ * 	img
+ * 		width: 100%
+ * 		height: auto
+ *
+ * #stopwatchwrapper
+ * 	h2
+ * 		font-size: 50px
+ * 	button
+ * 		font-size: 24px
+ *
+ * h2
+ * 	font-size: 70px
+ * 	text-shadow: 5px 5px 20px rgb(0, 0, 0), 1px -2px 0px rgb(210, 210, 210), 2px -4px 0px rgb(210, 210, 210
+ *
+ * h3
+ * 	font-size: 32px
+ * em
+ * 	font-size: 24px */

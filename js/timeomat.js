@@ -1,16 +1,79 @@
 (function (window, document, undefined) {
 
-	var baseURL = "",
-		clock = new Clock(),
-		alarm = new Alarm(),
+	var clock = new Clock(),
+	//alarm = new Alarm(),
 		stopwatch = new Stopwatch(),
-		countdown = new Countdown();
+		presentView = '',
+		presentTitle,
+		i,
+		routor = new Routor({
+			//'^/$': '/countdown',
+			'^/$': viewPage,
+			'^/clock$': viewPage,
+			'^/alarm$': viewPage,
+			'^/stopwatch': viewPage,
+			'^/worldclock$': viewPage,
+			'^/stopwatch/start$': stopwatch.start,
 
-	function $(e) {
-		return document.getElementById(e);
+
+			'^/timer': viewPage,
+			'^/timer/(\\d*:\\d*:\\d*)$': function (params) {
+
+				$('#timers').innerHTML = ''
+
+				new Timer(toEndTime(params[1])).start()
+			},
+			'^/(\\d+:\\d+:\\d+)$': '/timer/$1',
+			'^/(?:(\\d+)h)?(?:(\\d+)(?:m|min))?(?:(\\d+)(?:s|sec|sek))?$': function (params) {
+
+				var array = params.slice(1, 4)
+
+				if (array.join('')) {
+
+					viewPage('/timer')
+
+					new Timer(toEndTime(array.join(':'))).start()
+				}
+
+			},
+			'^/nap$': '/timer/00:20:00',
+			'^/brushteeth$': '/timer/00:05:00',
+			'^/quickie|quicky$': '/timer/00:10:00',
+
+			'^/countdown': viewPage,
+			'^/countdown/(.+)/(\\d{4}-\\d{2}-\\d{2}t\\d{2}:\\d{2})$': function (params) {
+
+				$('#countdowns').innerHTML = ''
+
+				new Countdown(new Date(params[2]))
+					.name(decodeURIComponent(params[1]))
+					.start()
+			},
+			'^/christmas|xmas|x-mas$': '/countdown/Christmas/2013-12-24T20:00',
+			'^/newyear|new-year|new year$': '/countdown/New Year/2013-12-24T20:00',
+			'^/test/(.*)': function (params) {
+				console.log(decodeURIComponent(params[1]))
+			},
+
+			'^/error$': viewPage
+		})
+
+
+	function $(query) {
+		query = document.querySelectorAll(query)
+
+		return (query[1]) ? query : query[0]
 	}
 
-	function toHours(value) {
+	function capitalise(string) {
+		return string.charAt(0).toUpperCase() + string.slice(1)
+	}
+
+	function removeElement(element) {
+		element.parentNode.removeChild(element)
+	}
+
+	function toTimeString(value) {
 
 		var time = '',
 			a,
@@ -19,151 +82,171 @@
 			m,
 			s,
 			ms,
-			floor = Math.floor;
+			floor = Math.floor
 
-		value = (value >= 0) ? value : 0;
+		value = (value >= 0) ? value : 0
 
-		a = floor(value / 31536000000);
-		value %= 31536000000;
-		d = floor(value / 86400000);
-		value %= 86400000;
-		h = floor(value / 3600000);
-		value %= 3600000;
-		m = floor(value / 60000);
-		value %= 60000;
-		s = floor(value / 1000);
-		value %= 1000;
-		ms = floor(value / 10);
+		a = floor(value / 31536000000)
+		value %= 31536000000
+		d = floor(value / 86400000)
+		value %= 86400000
+		h = floor(value / 3600000)
+		value %= 3600000
+		m = floor(value / 60000)
+		value %= 60000
+		s = floor(value / 1000)
+		value %= 1000
+		ms = floor(value / 10)
 
-		time += (a) ? ((a == 1) ? a + ' Year, ' : a + ' Years, ') : '';
-		time += (d) ? ((d == 1) ? d + ' Day, ' : d + ' Days, ') : '';
-		time += (h > 9) ? h + ':' : "0" + h + ':';
-		time += (m > 9) ? m + ':' : (m == 0) ? "0" + m + ':' : "0" + m + ':';
-		time += (s > 9) ? s + '.' : "0" + s + '.';
-		time += (ms >= 10) ? ms : (ms < 10 && ms >= 0) ? "0" + ms : "00" + ms;
+		time += (a) ? ((a == 1) ? a + ' Year, ' : a + ' Years, ') : ''
+		time += (d) ? ((d == 1) ? d + ' Day, ' : d + ' Days, ') : ''
+		time += (h > 9) ? h + ':' : '0' + h + ':'
+		time += (m > 9) ? m + ':' : (m == 0) ? '0' + m + ':' : '0' + m + ':'
+		time += (s > 9) ? s + '.' : '0' + s + '.'
+		time += (ms >= 10) ? ms : (ms < 10 && ms >= 0) ? '0' + ms : '00' + ms
 
-		return time;
+		return time
 	}
 
+	function toSimpleTimeString(value) {
+		var time = '',
+			a,
+			d,
+			h,
+			m,
+			s,
+			ms,
+			floor = Math.floor
 
-	function ajax(url, param, func) {
+		value = (value >= 0) ? value : 0
 
-		var a,
-			base = '/proxy.php', x = new XMLHttpRequest(), str = "", res, path,
-			spinner = $('spinner');
+		a = floor(value / 31536000000)
+		value %= 31536000000
+		d = floor(value / 86400000)
+		value %= 86400000
+		h = floor(value / 3600000)
+		value %= 3600000
+		m = floor(value / 60000)
+		value %= 60000
+		s = floor(value / 1000)
 
-		for (a in param) {
-			if (param.hasOwnProperty(a)) {
-				str += a + '=' + param[a] + '&';
-			}
-		}
+		time += (h > 9) ? h + ':' : '0' + h + ':'
+		time += (m > 9) ? m + ':' : (m == 0) ? '0' + m + ':' : '0' + m + ':'
+		time += (s > 9) ? s : '0' + s
 
-		// loading spinner
-		if (spinner.style.display === "none") {
-			spinner.style.display = "inline-block";
-		}
+		return time
+	}
 
-		path = base + url + '?' + str;
+	function toEndTime(duration) {
+		var dur = duration.split(':')
 
-		x.open('get', path, true);
-		x.send(null);
-		x.onreadystatechange = function () {
-			if (x.readyState === 4) {
+		return  new Date((dur[0] * 60 * 60 * 1000) + (dur[1] * 60 * 1000) + (dur[2] * 1000) + new Date().getTime())
+	}
 
-				spinner.style.display = "none";
-
-				if (x.status === 200) {
-
-					spinner.style.display = "none";
-
-					res = JSON.parse(x.responseText);
-
-					if (!res.error) {
-						if (res.data) {
-							func(res.data);
-						} else {
-							throw new Error('No data available for ' + path);
-						}
-					} else {
-						alert('This Error occured: ' + res.error);
-					}
-
-				} else {
-					throw new Error('Http error ' + x.status + ' occured during an ajax request to ' + path);
-				}
-			}
-		}
+	function setTitle(value) {
+		document.title = value
 	}
 
 	function timeIsOver() {
 
-		var audio = new Audio();
-		audio.src = 'sounds/alarm.wav';
-		audio.volume = 1;
+		function setFavicon(state) {
+			var fav = $('#favicon')
+
+			if (state == null)
+				fav.href = 'img/favicon.png'
+			else if (state == 'warn')
+				fav.href = 'img/favicon2.png'
+		}
+
+		var audio = new Audio()
+		audio.src = 'sounds/alarm.wav'
+		audio.volume = 1
 		audio.addEventListener('canplay', function () {
-			audio.play();
-			document.documentElement.style.background = "rgb(100,0,0)";
-			var notification = alert('Your Time Is Over!');
+			audio.play()
+			setFavicon('warn')
+			setTitle('+++ Time is up! +++')
+			//document.documentElement.style.background = 'rgb(100,0,0)'
+			var notification = alert('Your Time Is Up!')
 
 			if (notification === undefined) {
-				audio.pause();
-				document.documentElement.style.background = "url(img/bg.jpg) black";
+				audio.pause()
+				document.documentElement.style.background = 'url(img/bg.jpg) black'
+				setFavicon()
+				setTitle(presentTitle)
 			}
-		}, false);
+		}, false)
 	}
 
 
-	//Clock
 	function Clock() {
 
-		var weekdays = new Array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"),
-			months = new Array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+		var weekdays = [
+				'Sunday',
+				'Monday',
+				'Tuesday',
+				'Wednesday',
+				'Thursday',
+				'Friday',
+				'Saturday'
+			],
+
+			months = ['January',
+				'February',
+				'March',
+				'April',
+				'May',
+				'June',
+				'July',
+				'August',
+				'September',
+				'October',
+				'November',
+				'December'
+			]
 
 		this.showTime = function () {
-			$("digitalclock").innerHTML = new Date().toLocaleTimeString().substr(0, 8);
+			$('#digitalclock').innerHTML = new Date().toLocaleTimeString().substr(0, 8)
 
 			setTimeout(function () {
-				clock.showTime();
-			}, 200);
-		};
+				clock.showTime()
+			}, 200)
+		}
 
 		this.showDate = function () {
-			var date = new Date();
+			var d = new Date()
 
-			$("date").innerHTML = weekdays[date.getDay()] + ", " + date.getDate() + "." + months[date.getMonth()] + " " + date.getFullYear();
+			$('#date').innerHTML = weekdays[d.getDay()] + ', ' + d.getDate() + '.' + months[d.getMonth()] + ' ' + d.getFullYear()
 
 			setTimeout(function () {
-				clock.showDate();
-			}, 1000);
-		};
+				clock.showDate()
+			}, 1000)
+		}
 	}
 
-	//Alarm
 	function Alarm() {
 
 		var now,
 			alarmTimer,
-			weekdays = new Array("sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday");
+			weekdays = new Array('sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday')
 
 		this.check = function (time, days, sound) {
-			now = new Date();
+			now = new Date()
 
 			if (time == now.toLocaleTimeString().substr(0, 5)) {
 				days.forEach(function (day) {
 					if (day == weekdays[now.getDay()]) {
-						clearTimeout(alarmTimer);
-						timeIsOver();
+						clearTimeout(alarmTimer)
+						timeIsOver()
 					}
-				});
+				})
 			} else {
 				alarmTimer = window.setTimeout(function () {
-					alarm.check(time, days, sound);
-				}, 900);
+					alarm.check(time, days, sound)
+				}, 900)
 			}
-		};
+		}
 	}
 
-	//Stopwatch
 	function Stopwatch() {
 
 		var timer,
@@ -171,205 +254,290 @@
 			time = 0,
 			firstTime = true,
 			isRunning = false,
+			tableStatus = false,
 			roundCounter = 0,
 			lastRound = 0,
-			stopwatchDisplay = $("stopwatchDisplay"),
-			stopwatchStart = $("stopwatchStart"),
-			stopwatchReset = $("stopwatchReset"),
-			stopwatchRound = $("stopwatchRound"),
-			rounds = $("rounds");
+			stopwatchDisplay = $('#stopwatchDisplay'),
+			stopwatchStart = $('#stopwatchStart'),
+			stopwatchReset = $('#stopwatchReset'),
+			stopwatchRound = $('#stopwatchRound'),
+			table = $('#rounds'),
+			nextRound = $('#nextRound'),
+			nextDuration = $('#nextDuration'),
+			nextTime = $('#nextTime')
 
-
-		this.startStop = function () {
+		function start() {
 
 			if (!isRunning) {
 				if (firstTime) {
-					startTime = new Date();
-					firstTime = false;
+					startTime = new Date()
+					firstTime = false
 				}
 
-				isRunning = true;
+				isRunning = true
 
-				stopwatch.showTime();
+				stopwatch.showTime()
 
-				stopwatchStart.innerHTML = 'Stop';
-				stopwatchReset.style.display = 'none';
-				stopwatchRound.style.display = 'inline-block';
-
-			} else {
-				clearTimeout(timer);
-				isRunning = false;
-				stopwatchStart.innerHTML = 'Continue';
-				stopwatchReset.style.display = 'inline-block';
-				stopwatchRound.style.display = 'none';
+				stopwatchStart.innerHTML = 'Stop'
+				stopwatchReset.classList.add('hidden')
+				stopwatchRound.classList.remove('hidden')
 			}
-		};
+		}
+
+		function stop() {
+
+			clearTimeout(timer)
+			isRunning = false
+			stopwatchStart.innerHTML = 'Continue'
+			stopwatchReset.classList.remove('hidden')
+			stopwatchRound.classList.add('hidden')
+		}
+
+		this.startStop = function () {
+
+			if (!isRunning)
+				start()
+			else
+				stop()
+		}
 
 		this.showTime = function () {
 
 			if (isRunning) {
-				var now = new Date();
-				time = now - startTime;
+				var now = new Date()
+				time = now - startTime
 
-				stopwatchDisplay.innerHTML = toHours(time);
+				stopwatchDisplay.innerHTML = toTimeString(time)
+
+				if (tableStatus) {
+					nextRound.innerHTML = roundCounter + 1
+					nextDuration.innerHTML = toTimeString(time - lastRound)
+					nextTime.innerHTML = toTimeString(time)
+				}
 
 				timer = window.setTimeout(function () {
-					stopwatch.showTime();
-				}, 10);
+					stopwatch.showTime()
+				}, 10)
 
 			} else {
-				stopwatchDisplay.innerHTML = '00:00:00.00';
+				stopwatchDisplay.innerHTML = '00:00:00.00'
 			}
-		};
+		}
 
 		this.showRound = function () {
 
-			rounds.style.display = 'inline-block';
+			table.classList.remove('hidden')
 
-			DOMinate(
-				[rounds,
-					['tr',
+			var row = DOMinate(
+				[table.tBodies[0],
+					['tr.row',
 						['td', String(++roundCounter)],
-						['td', toHours(time)],
-						['td', toHours(time - lastRound)]
+						['td', toTimeString(time - lastRound)],
+						['td', toTimeString(time)]
+					]
+				]
+			)
+
+			lastRound = time
+			tableStatus = true
+		}
+
+		this.reset = function () {
+			firstTime = true
+			roundCounter = 0
+			lastRound = 0
+
+			stopwatchDisplay.innerHTML = '00:00:00.00'
+			stopwatchStart.innerHTML = 'Start'
+			stopwatchReset.classList.add('hidden')
+			table.classList.add('hidden')
+
+
+			var rows = document.querySelectorAll('.row')
+
+			for (var a = 0; a < rows.length; a++) {
+				removeElement(rows[a]);
+			}
+		}
+
+		this.start = start
+	}
+
+	function Timer(endTime) {
+		var running = false,
+			leftTime,
+			timeout,
+			delayStart,
+			timer = DOMinate(
+				[$('#timers'),
+					['div$el',
+						['span$time'],
+						['div',
+							['button$pauseButton', 'Pause', function (e) {
+								e.addEventListener('click', pauseResume)
+							}],
+							['button', 'x', function (e) {
+								e.addEventListener('click', cancel)
+							}]
+						]
 					]
 				]
 			);
 
-			lastRound = time;
-		};
+		function update() {
+			leftTime = endTime - new Date()
 
-		this.reset = function () {
-			firstTime = true;
-			roundCounter = 0;
-			lastRound = 0;
-
-			stopwatchDisplay.innerHTML = '00:00:00.00';
-			stopwatchStart.innerHTML = 'Start';
-			stopwatchReset.style.display = 'none';
-			rounds.style.display = 'none';
-			rounds.innerHTML = '<tr><th>Round</th><th>Time</th><th>Duration</th></tr>';
-		};
-	}
-
-	//Timer
-	function Countdown() {
-		var timer,
-			rest,
-			endTime,
-			leftTime = 0;
-
-		this.start = function (value) {
-			endTime = value;
-
-			countdown.showTime();
-		};
-
-		this.showTime = function () {
-
-			leftTime = endTime - new Date();
-
-			$('rest').innerHTML = toHours(leftTime);
+			timer.time.innerHTML = toTimeString(leftTime)
+			//setTitle(toTimeString(leftTime))
 
 			if (leftTime <= 0) {
-				clearTimeout(timer);
-				timeIsOver();
+				clearTimeout(timeout)
+				removeElement(timer.pauseButton)
+				timeIsOver()
 			} else {
-				timer = setTimeout(countdown.showTime, 10);
+				timeout = setTimeout(update, 10)
 			}
-		};
-	}
-
-
-	function route(state) {
-
-		// History object or URL
-		if (typeof (state) === "object") {
-
-			if (state.url !== undefined) {
-				fromURL(state.url);
-			} else {
-				throw new Error('History Object does not contain an URL: ' + state.url);
-			}
-
-		} else if (typeof(state) === "string") {
-			fromURL(state);
-		} else {
-			throw new Error('The variable passed to route() is not an object or a string: ' + state);
 		}
 
-		function fromURL(url) {
-			var dirs = url.split('/');
-
-			if (url === '' || url === '/') {
-				view().index();
-			} else if (dirs.length == 1) {
-				switch (dirs[0]) {
-					case 'clock':
-						view().clock();
-						break;
-					case 'alarm':
-						view().alarm();
-						break;
-					case 'stopwatch':
-						view().stopwatch();
-						break;
-					case 'timer':
-						view().timer();
-						break;
-					default:
-						var error = 'The Website "' + dirs[0] + '" is not available';
-
-						alert(error);
-						throw new Error(error);
-				}
-
-			} else if (dirs.length === 2) {
-
-				throw new Error('The URL is too long:' + url);
-
+		function pauseResume() {
+			if (running) {
+				this.innerHTML = 'Resume'
+				clearTimeout(timeout)
+				delayStart = new Date()
+				running = false
 			} else {
-				alert('The website is not available');
-				throw new Error('Can not route the URL ' + url);
+				this.innerHTML = 'Pause'
+				endTime.setTime(endTime.getTime() + (new Date() - delayStart))
+				timeout = setTimeout(update, 10)
+				running = true
 			}
+		}
+
+		function cancel() {
+			removeElement(timer.el)
+			clearTimeout(timeout)
+		}
+
+		this.start = function () {
+			running = true
+
+			update()
+
+			return this
 		}
 	}
 
-	function view() {
+	function Countdown(endTime) {
+		var running = false,
+			leftTime,
+			timeout,
+			delayStart,
+			name,
+			countdowns = $('#countdowns'),
+			countdown = DOMinate(
+				[countdowns,
+					['div$el',
+						['div',
+							['p$name'],
+							['time$time', toTimeString(leftTime)]
+						],
+						['div',
+							['button$cancelButton', 'x', function (e) {
+								e.addEventListener('click', cancel)
+							}]
+						]
+					]
+				]
+			);
 
-		function show(el) {
-			$('home').style.display =
-				$('alarmwrapper').style.display =
-					$('clockwrapper').style.display =
-						$('stopwatchwrapper').style.display =
-							$('timerwrapper').style.display = 'none';
 
-			$(el).style.display = 'block';
+		function update() {
+			leftTime = endTime - new Date()
+
+			countdown.time.innerHTML = toTimeString(leftTime)
+			//setTitle(toTimeString(leftTime))
+
+			if (leftTime <= 0) {
+				clearTimeout(timeout)
+				removeElement(countdown.pauseButton)
+				timeIsOver()
+			} else {
+				timeout = setTimeout(update, 10)
+			}
 		}
 
-		return{
-			index: function () {
-				show('home');
-			},
+		function pauseResume() {
+			if (running) {
+				this.innerHTML = 'Resume'
 
-			clock: function () {
-				show('clockwrapper');
-				clock.showTime();
-				clock.showDate();
-			},
+				clearTimeout(timeout)
+				delayStart = new Date()
+				running = false
+			} else {
+				this.innerHTML = 'Pause'
 
-			alarm: function () {
-				show('alarmwrapper');
-			},
+				endTime.setTime(endTime.getTime() + (new Date() - delayStart))
 
-			stopwatch: function () {
-				show('stopwatchwrapper');
-			},
-
-			timer: function () {
-				show('timerwrapper');
+				timeout = setTimeout(update, 10)
+				running = true
 			}
-		};
+		}
+
+		function cancel() {
+			removeElement(countdown.el)
+			clearTimeout(timeout)
+		}
+
+
+		this.name = function (value) {
+			name = value
+			return this
+		}
+
+		this.start = function () {
+			update()
+			countdown.name.innerHTML = name || ' '
+			running = true
+			return this
+		}
+
+
+	}
+
+	function Worldclock() {
+
+	}
+
+
+	function viewPage(params) {
+
+		var page,
+			url,
+			title,
+			wrapper = $('.wrapper')
+
+		if (typeof params !== 'string')
+			url = params[0]
+		else
+			url = params
+
+		page = (url == '/') ? 'home' : url.split('/')[1]
+
+		//console.log(page)
+
+		if (page != presentView) {
+
+			for (i = 0; i < wrapper.length; i++)
+				wrapper[i].classList.remove('visible')
+
+			$('#' + page + 'wrapper').classList.add('visible')
+
+			title = capitalise(page) + ' | Timeomat';
+			setTitle(title)
+			presentTitle = title
+		}
+
+		presentView = page
 	}
 
 	function setShortcuts() {
@@ -377,152 +545,131 @@
 
 			switch (e.keyCode) {
 				case 32: //spacebar
-					break;
+					break
 			}
 
-		}, false);
+		}, false)
 
 		addEventListener('keydown', function (e) {
 
 			switch (e.keyCode) {
 				case 37: //left
-					break;
+					break
 				case 39: //right
-					break;
+					break
 				case 38: //up
-					break;
+					break
 				case 40: //down
-					break;
+					break
 			}
 
-		}, false);
+		}, false)
 
 	}
 
 	function initEvents() {
 
-		$('logo').addEventListener('click', function () {
-			view().index();
+		var menuItems = [
+			'home',
+			'clock',
+			//'alarm',
+			'stopwatch',
+			'timer',
+			'countdown'
+			//'worldclock'
+		]
 
-			var url = '/';
-			history.pushState({"url": url}, url, baseURL + url);
-		}, false);
+		menuItems.forEach(function (item) {
+			$('#' + item).addEventListener('click', function (event) {
+				event.preventDefault()
 
-		$('clock').addEventListener('click', function () {
-			view().clock();
+				if (item == 'home')
+					routor.route('/')
+				else
+					routor.route('/' + item)
+			}, false)
+		})
 
-			var url = 'clock';
-			history.pushState({"url": url}, url, baseURL + url);
-		}, false);
+		$('#startTimer').addEventListener('click', function (e) {
 
-		$('alarm').addEventListener('click', function () {
-			view().alarm();
+			e.preventDefault()
 
-			var url = 'alarm';
-			history.pushState({"url": url}, url, baseURL + url);
-		}, false);
+			new Timer(toEndTime($('#timerTime').value)).start()
 
-		$('stopwatch').addEventListener('click', function () {
-			view().stopwatch();
+			//routor.route('/timer/' + $('#timerTime').value)
 
-			var url = 'stopwatch';
-			history.pushState({"url": url}, url, baseURL + url);
-		}, false);
+		}, false)
 
-		$('timer').addEventListener('click', function () {
-			view().timer();
+		$('#startCountdown').addEventListener('click', function (e) {
+			e.preventDefault()
 
-			var url = 'timer';
-			history.pushState({"url": url}, url, baseURL + url);
-		}, false);
+			new Countdown(new Date($('#countdownDate').value + 'T' + $('#countdownTime').value))
+				.name($('#countdownName').value)
+				.start()
 
-		$('startTimer').addEventListener('click', function (e) {
-			e.preventDefault();
+		}, false)
 
-			$('name').innerHTML = '';
+		/*
+		 $('#showFullscreen').addEventListener('click', function () {
 
-			var dur = $('timerTime').value.split(':'),
-				endTime = new Date((dur[0] * 60 * 60 * 1000) + (dur[1] * 60 * 1000) + (dur[2] * 1000) + new Date().getTime());
+		 routor.route('/countdown/' +
+		 $('#countdownName').value +
+		 '/' +
+		 $('#countdownDate').value +
+		 'T' +
+		 $('#countdownTime').value)
+		 })
+		 */
 
-			countdown.start(endTime);
-			countdown.showTime();
+		/*
+		 $('#setAlarm').addEventListener('click', function (e) {
+		 e.preventDefault()
 
-			//var url = 'timer';
-			//history.pushState({"url": url}, url, baseURL + url);
-		}, false);
+		 var days = [],
+		 inputs = $('#alarmDays').getElementsByTagName('input')
 
-		$('startCountdown').addEventListener('click', function (e) {
-			e.preventDefault();
+		 for (var a in inputs) {
+		 if (inputs.hasOwnProperty(a)) {
+		 if (inputs[a].checked)
+		 days.push(inputs[a].id)
+		 }
+		 }
 
-			var endTime = new Date($('countdownDate').value + 'T' + $('countdownTime').value);
-			$('name').innerHTML = $('countdownName').value;
+		 alarm.check($('#alarmTime').value, days, $('#alarmSound').value)
 
-			countdown.start(endTime);
-			countdown.showTime();
+		 //var url = 'timer'
+		 //history.pushState({'url': url}, url, baseURL + url)
+		 }, false)
+		 */
 
-			//var url = 'timer';
-			//history.pushState({"url": url}, url, baseURL + url);
-		}, false);
+		clock.showTime()
+		clock.showDate()
 
-		$('setAlarm').addEventListener('click', function (e) {
-			e.preventDefault();
+		stopwatch.showTime()
 
-			var days = [],
-				inputs = $('alarmDays').getElementsByTagName('input');
+		$('#stopwatchStart').addEventListener('click', function () {
+			stopwatch.startStop()
+		}, false)
 
-			for (var a in inputs) {
-				if (inputs.hasOwnProperty(a)) {
-					if (inputs[a].checked)
-						days.push(inputs[a].id);
-				}
-			}
+		$('#stopwatchRound').addEventListener('click', function () {
+			stopwatch.showRound()
+		}, false)
 
-			alarm.check($('alarmTime').value, days, $('alarmSound').value);
-
-			//var url = 'timer';
-			//history.pushState({"url": url}, url, baseURL + url);
-		}, false);
-
-
-		stopwatch.showTime();
-
-		$('stopwatchStart').addEventListener('click', function () {
-			stopwatch.startStop();
-		}, false);
-
-		$('stopwatchRound').addEventListener('click', function () {
-			stopwatch.showRound();
-		}, false);
-
-		$('stopwatchReset').addEventListener('click', function () {
-			stopwatch.reset();
-		}, false);
-
+		$('#stopwatchReset').addEventListener('click', function () {
+			stopwatch.reset()
+		}, false)
 
 	}
 
-	// Initialize Website
-	(function () {
-		var path = location.pathname.substr(baseURL.length + 1, location.pathname.length);
 
-		history.replaceState({"url": path}, path, baseURL + '/' + path);
+	initEvents()
 
-		initEvents();
+	//Preload favicon
+	new Image().src = 'img/favicon2.png'
 
-		route(path);
+	routor
+		//.setBaseURL('/~adrian/timeomat')
+		.route()
 
-		//setShortcuts();
 
-		//Popstate
-		window.addEventListener('popstate', function (event) {
-			if (event.state !== null) {
-				route(event.state);
-			} else {
-				throw new Error('Can not route the event "' + event.state + '".');
-			}
-
-		}, false);
-
-	})();
-
-}(window, document));
+}(window, document))

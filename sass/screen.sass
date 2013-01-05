@@ -1,5 +1,14 @@
 @import compass
 
+@function gray($value, $opacity: 1)
+	@return rgba($value, $value, $value, $opacity)
+
+/*@function getBackground($name)
+	@return #alarm
+				+background-image(url("../img/$name.svg"))
+				&:hover
+					asssa+background-image(url('../img/alarm.svg'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
+
 @font-face
 	font-family: 'Pacifico'
 	font-style: normal
@@ -11,6 +20,12 @@
 	font-style: normal
 	font-weight: 400
 	src: url('../fonts/Play.ttf')
+
+$menus: clock, alarm, stopwatch, timer, countdown, worldclock
+
+=brightbg
+	background-color: rgba(255,255,255,0.05)
+	box-shadow: 0px 2px 2px rgba(255,255,255,0.2), 0px -2px 1px rgba(0,0,0,0.2)
 
 
 *
@@ -27,27 +42,31 @@ html
 body
 	font-weight: 500
 	font-size: 18px
-	line-height: 1.3
+	line-height: 1
 	font-family: "Play", sans-serif
-	color: rgba(200, 200, 200, 1)
+	color: gray(200, 1)
 	width: 960px
 	margin: 0 auto 0 auto
 	height: 100%
+	text-align: center
 
-#clockwrapper,
-#alarmwrapper,
-#stopwatchwrapper,
-#timerwrapper
+.hidden
+	display: none !important
+
+.wrapper
 	display: none
 
-#logo
+.visible
+	display: inherit !important
+
+#home
 	font-weight: 100
 	font-size: 24px
 	line-height: 50px
 	font-family: "Play", sans-serif
 	&:hover
 		+background-image(linear-gradient(rgb(0, 140, 255), rgb(0, 40, 230)))
-		color: rgb(255, 255, 255)
+		color: gray(255)
 		text-shadow: 0px 0px 2px black
 		border-radius: 0 0 0 10px
 
@@ -57,9 +76,10 @@ h2
 	font-weight: 500
 	font-size: 180px
 	font-family: "Play", sans-serif
-	color: rgba(220, 220, 220, 1)
-	text-shadow: 5px 5px 20px rgb(0, 0, 0), 1px -2px 0px rgb(210, 210, 210), 2px -4px 0px rgb(210, 210, 210), 3px -6px 0px rgb(210, 210, 210), 4px -8px 0px rgb(210, 210, 210)
+	color: gray(230)
+	text-shadow: 2px 2px 2px rgb(0, 0, 0)
 	border-radius: 10px
+	margin-bottom: 40px
 
 h3
 	display: inline-block
@@ -68,7 +88,7 @@ h3
 	font-weight: 500
 	font-size: 50px
 	font-family: "Play", sans-serif
-	color: rgba(220, 220, 220, 1)
+	color: gray(200)
 	text-shadow: 2px 2px 2px rgb(0, 0, 0)
 	text-decoration: none
 	margin: 0 20px
@@ -95,40 +115,43 @@ em
 	text-decoration: none
 	margin: 0 20px 0 20px
 
-input[type="submit"],
-button
-	text-align: center
-	vertical-align: middle
-	+background-image(linear-gradient(rgba(30, 30, 30, 1), rgba(0, 0, 0, 1)))
-	border: none
-	font: 500 30px / 30px "Play", sans-serif
-	color: rgb(200, 200, 200)
-	box-shadow: 4px -4px 0px rgba(0, 0, 0, 1)
-	padding: 5px 20px 5px 20px
-	border-radius: 10px
 
-input[type="submit"]:active,
-button:active
-	vertical-align: middle
-	+background-image(linear-gradient(rgba(0, 0, 0, 1), rgba(20, 20, 20, 1)))
-	box-shadow: 2px -2px 0px rgba(0, 0, 0, 1)
+#stopwatchcontrols button,
+#timercontrols button,
+#timers button,
+#startCountdown,
+#countdowns button
+	font-family: "Play", sans-serif
+	display: inline-block
+	text-align: center
 	position: relative
-	bottom: 4px
-	left: 4px
+	+background-image(linear-gradient(rgba(40, 40, 40, 1), rgba(20, 20, 20, 1)))
+	border: 2px solid rgb(10,10,10)
+	text-shadow: 0 -2px black
+	color: rgb(200, 200, 200)
+	box-shadow: inset 0px 1px 1px rgba(255,255,255,0.1)
+	border-radius: 8px
+	&:hover
+		+background-image(linear-gradient(rgba(20, 20, 20, 1), rgba(0, 0, 0, 1)))
+	&:active
+		+background-image(linear-gradient(rgba(10, 10,10, 1), rgba(20, 20, 20, 1)))
+
 
 input
 	&[type="time"],
-	&[type="text"]
+	&[type="text"],
+	&[type="date"],
+		border-radius: 5px
+		color: gray(230)
 		display: inline-block
-		vertical-align: middle
-		font: 500 60px/60px "Play", sans-serif
-		color: white
-		background: rgb(60, 60, 60)
-		width: 240px
-		border-radius: 10px
-		margin: 0 20px 0 0px
-		box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.6)
-		padding: 0 10px 0 10px
+		font-size: 50px
+		font-weight: 500
+		font-family: "Play", sans-serif
+		line-height: 70px
+		padding: 0 30px
+		text-shadow: 2px 2px 1px gray(30)
+		vertical-align: top
+		+brightbg
 
 #alarmDays,
 select
@@ -147,37 +170,38 @@ select
 //-----------------------------------Navigation-----------------------------------
 
 body > nav
-	color: white
+	color: rgb(210, 210, 210)
 	+background-image(linear-gradient(rgb(50, 50, 50), rgb(0,0,0)))
-	margin: 0 0 30px 0
+	margin: 0 0 80px 0
 	position: relative
 	border-radius: 0 0 10px 10px
-	box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5)
+	box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.6)
+	text-align: left
 
 #links
 	display: inline-block
 
 #links a,
-#logo
+#home
 	height: 50px
 	line-height: 50px
 	min-width: 60px
 	display: inline-block
 	text-decoration: none
-	color: rgb(200, 200, 200)
 	border-right: 2px solid rgba(255, 255, 255, 0.3)
 	background-position: center
 	vertical-align: top
 	padding: 0 20px
+	cursor: pointer
 	&:active,
 	&:focus
-		+background-image(linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
-		color: rgb(255, 255, 255)
 		box-shadow: inset 2px 0px 20px rgb(0, 0, 0)
-	&:nth-of-type(1)
-		&:active,
-		&:focus
-			border-radius: 0 0 0 10px
+
+#links a
+	background-repeat: no-repeat
+	background-size:  60%
+	&:hover
+		background-size:  60%, 100%
 
 #adrian
 	display: inline-block
@@ -189,33 +213,37 @@ body > nav
 	&:hover
 		color: rgb(200, 200, 200)
 
-#logo,
-#clock,
-#alarm,
-#stopwatch,
-#timer,
-	background-repeat: no-repeat
-	background-position: center
+=bgimg
+
 
 #clock
-	+background-image(url('../img/clock.png'))
-	&:hover
-		+background-image(url('../img/clock.png'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
+	+background-image(url('../img/clock.svg'))
+	&:hover,
+	&:active
+		+background-image(url('../img/clock.svg'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
 #alarm
-	+background-image(url('../img/alarm.png'))
+	+background-image(url('../img/alarm.svg'))
 	&:hover
-		+background-image(url('../img/alarm.png'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
+		+background-image(url('../img/alarm.svg'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
 #timer
-	+background-image(url('../img/timer.png'))
+	+background-image(url('../img/timer.svg'))
 	&:hover
-		+background-image(url('../img/timer.png'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
+		+background-image(url('../img/timer.svg'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
 #stopwatch
-	+background-image(url('../img/stop.png'))
+	+background-image(url('../img/stopwatch.svg'))
 	&:hover
-		+background-image(url('../img/stop.png'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
+		+background-image(url('../img/stopwatch.svg'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
+#countdown
+	+background-image(url('../img/countdown.svg'))
+	&:hover
+		+background-image(url('../img/countdown.svg'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
+#worldclock
+	+background-image(url('../img/worldclock.svg'))
+	&:hover
+		+background-image(url('../img/worldclock.svg'), linear-gradient(rgb(0, 140, 255), rgb(0, 60, 240)))
 
-#home
-	text-align: center
+#homewrapper
+
 	img
 		width: 800px
 		height: 234px
@@ -226,21 +254,15 @@ body > nav
 #footer
 	width: 960px
 	padding: 30px 0 30px 0
-	text-align: center
+
 	vertical-align: top
 	border-top: 1px dashed rgba(255, 255, 255, 0.3)
 	div#social
-		text-align: center
 		>
 			vertical-align: top
 
 
-
-#clockwrapper
-	text-align: center
-
 #alarmwrapper
-	text-align: center
 	form
 		display: inline-block
 		vertical-align: top
@@ -259,87 +281,249 @@ body > nav
 
 
 #stopwatchwrapper
-	text-align: center
 	padding: 0 0 50px 0
 	h2
 		font-size: 120px
-		margin: 50px 0 0 0px
-	button
-		display: inline-block
-		font-weight: 900
-		font-size: 40px
-		line-height: 1.5
-		font-family: "Play", sans-serif
-		padding: 0px 30px 0px 30px
+		margin: 50px 0
 	table
+		display: inline-block
+		border-spacing: 4px
+		text-shadow: 0 -1px gray(0,1)
+		padding: 20px
+		background-color: rgba(255,255,255,0.05)
+		box-shadow: 0px 2px 2px rgba(255,255,255,0.2), 0px -2px 1px rgba(0,0,0,0.2)
 		margin: 20px 0 0 0
+		border: 10px
+	thead
+		margin-bottom: 10px
+		th
+			box-shadow: 0px -1px 2px rgba(255,255,255,0.1), 0px 2px 2px rgba(0,0,0,0.5)
+			+background-image(linear-gradient(gray(0, 0.2), gray(0, 0.4)))
+			padding:  15px
+	tbody
+		color: gray(170)
 		tr:nth-of-type(2n + 1)
-			background: rgba(0, 0, 0, 0.1)
-	th
-		text-align: center
-		color: rgb(200, 200, 200)
-		padding: 15px
+			background: gray(0, 0.1)
+			td
+				box-shadow: 0px -1px 2px rgba(255,255,255,0.2), 0px 2px 2px rgba(0,0,0,0.3)
+
 	td
-		text-align: center
-		padding: 5px 20px 5px 20px
+		padding: 8px 50px
+
+#stopwatchcontrols
+	margin-bottom: 40px
+
+#stopwatchcontrols button,
+	width: 200px
+	height: 60px
+	line-height: 56px
+	font-weight: 100
+	font-size: 32px
+	&:last-of-type,
+	&:nth-last-of-type(2)
+		margin-left: 40px
+	&:before
+		content: ""
+		z-index: -1
+		display: block
+		position:  absolute
+		background-color: rgba(255,255,255,0.05)
+		border-radius:  5px
+		width: 230px
+		height: 80px
+		box-shadow: 0px 2px 2px rgba(255,255,255,0.2), 0px -2px 1px rgba(0,0,0,0.2)
+		margin: -12px -17px
+
 
 #timerwrapper
-	text-align: center
-	h2
-		font-size: 120px
-		line-height: 160px
-		margin: 50px 0 0 0px
-	form
-		input[type="date"]
+	padding-top: 20px
+
+#timercontrols
+	text-align: left
+	display: inline-block
+	margin-bottom: 50px
+	input[type="text"]
+		line-height: 70px
+		font-size:  60px
+		padding: 0 20px 0 20px
+		width: 340px
+		margin-right: 60px
+
+#startTimer,
+#startCountdown
+	vertical-align: top
+	width: 180px
+	height: 50px
+	line-height: 46px
+	font-weight: 100
+	font-size: 24px
+	padding: 0 30px
+	margin: 10px
+	&:active
+		+background-image(linear-gradient(rgba(0, 0, 0, 1), rgba(20, 20, 20, 1)))
+		box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6)
+	&:before
+		content: ""
+		z-index: -1
+		display: block
+		position: absolute
+		top: -12px
+		left: -12px
+		background-color: rgba(255,255,255,0.05)
+		border-radius:  5px
+		width: 200px
+		height: 70px
+		box-shadow: 0px 2px 2px rgba(255,255,255,0.2), 0px -2px 1px rgba(0,0,0,0.2)
+
+
+#timers
+	border-radius:  5px
+	background-color: rgba(255,255,255,0.05)
+	box-shadow: 0px 2px 2px rgba(255,255,255,0.2), 0px -2px 1px rgba(0,0,0,0.2)
+	display: inline-block
+	width: 600px
+	&:not(:empty)
+		padding: 20px 20px 0
+	> div
+		text-align: left
+		display: inline-block
+		position: relative
+		width: 560px
+		height: 80px
+		background-color: rgba(255,255,255,0.05)
+		//+background-image(linear-gradient(gray(60), gray(50)))
+		+background-image(linear-gradient(gray(0, 0.2), gray(0, 0.4)))
+		box-shadow: 0px -1px 2px rgba(255,255,255,0.1), 0px 2px 2px rgba(0,0,0,0.5)
+		text-shadow: 0 -2px 0px gray(0)
+		border-radius: 8px
+		margin-bottom: 20px
+		padding-left: 40px
+		span
 			vertical-align: middle
-			font: 500 24px / 24px "Play", sans-serif
-			color: white
-			background: rgb(60, 60, 60)
-			width: 150px
-			border-radius: 5px
-			margin: 0 0 0 20px
-			box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.6)
-			padding: 2px 6px 2px 6px
-		input[type="submit"]
-			margin: 0 0 0 40px
-			padding: 10px 30px 10px 30px
-		&:nth-of-type(2)
-			input
-				&[type="text"]
-					width: 140px
-					vertical-align: middle
-					font: 500 24px/24px "Play", sans-serif
-					color: white
-					background: rgb(60, 60, 60)
-					border-radius: 5px
-					margin: 0 0 0 20px
-					box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.6)
-					padding: 2px 6px 2px 6px
-				&[type="time"]
-					vertical-align: middle
-					font: 500 24px/24px "Play", sans-serif
-					color: white
-					background: rgb(60, 60, 60)
-					border-radius: 5px
-					margin: 0 0 0 20px
-					box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.6)
-					padding: 2px 6px 2px 6px
-					width: 80px
-					margin: 0 0 0 5px
-				&[type="submit"]
-					font-size: 24px
-					margin: 0 0 0 30px
-					padding: 5px 20px 5px 20px
+			font-size: 36px
+			line-height: 80px
+		div
+			position: absolute
+			right:  20px
+			top:  25px
+			display: inline-block
+	button
+		vertical-align: middle
+		z-index: 1
+		width: 80px
+		height: 28px
+		margin-right: 30px
+		border-width: 1px
+		border-radius:  5px
+		font-size: 16px
+		&:before
+			content: ""
+			display: block
+			position: absolute
+			background-color: rgba(255,255,255,0.04)
+			border-radius:  5px
+			width: 98px
+			height: 43px
+			box-shadow: 0px 1px 2px rgba(255,255,255,0.2), 0px -1px 1px rgba(0,0,0,0.2)
+			margin: -12px -10px
+		&:last-of-type
+			width: 50px
+			&:before
+				width: 68px
 
-		input[type="submit"]:active
-			+background-image(linear-gradient(rgba(0, 0, 0, 1), rgba(20, 20, 20, 1)))
-			box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6)
-			border-radius: 10px
+#countdowns
+	border-radius:  5px
+	background-color: rgba(255,255,255,0.05)
+	box-shadow: 0px 2px 2px rgba(255,255,255,0.2), 0px -2px 1px rgba(0,0,0,0.2)
+	display: inline-block
+	width: 700px
+	&:not(:empty)
+		padding: 20px 20px 0
+	> div
+		text-align: left
+		display: inline-block
+		position: relative
+		width: 660px
+		background-color: rgba(255,255,255,0.05)
+		+background-image(linear-gradient(gray(0, 0.2), gray(0, 0.4)))
+		box-shadow: 0px -1px 2px rgba(255,255,255,0.1), 0px 2px 2px rgba(0,0,0,0.5)
+		text-shadow: 0 -2px 0px gray(0)
+		border-radius: 8px
+		margin-bottom: 20px
+		padding: 18px 40px
+		p
+			display: block
+			width:  480px
+			font-size: 24px
+			margin-bottom: 10px
+		time
+			color: gray(160)
+		div:last-of-type
+			position: absolute
+			right:  20px
+			top:  30px
+			display: inline-block
+	button
+		vertical-align: middle
+		z-index: 1
+		width: 80px
+		height: 28px
+		margin-right: 30px
+		border-width: 1px
+		border-radius:  5px
+		font-size: 16px
+		&:before
+			content: ""
+			display: block
+			position: absolute
+			background-color: rgba(255,255,255,0.04)
+			border-radius:  5px
+			width: 98px
+			height: 43px
+			box-shadow: 0px 1px 2px rgba(255,255,255,0.2), 0px -1px 1px rgba(0,0,0,0.2)
+			margin: -12px -10px
+		&:last-of-type
+			width: 50px
+			&:before
+				width: 68px
+
+#countdownFullscreen
+	h2
+		font-size: 92px
+	span
+		font-size: 36px
+		vertical-align: middle
+		color: rgba(220, 220, 220, 1)
+		text-shadow: 1px 1px 1px rgb(0, 0, 0)
+
+
+#countdownName
+	margin-bottom: 30px
+	width: 700px
+	+brightbg
+
+#countdownDate
+	margin-right: 35px
+	width: 310px
+	padding: 0 20px
+	+brightbg
+
+#countdownTime
+	margin-bottom: 60px
+	margin-right: 35px
+	width: 160px
+	padding: 0 15px
+	+brightbg
+
+#startCountdown
+	width: 140px
+	&:before
+		width: 160px
 
 
 
-@media all and (max-width: 480px)
 
+/*@media all and (max-width: 480px)
 	body
 		font-size: 14px
 		width: 100%
@@ -348,13 +532,12 @@ body > nav
 		width: 100%
 
 	#links a,
-	#logo
+	#home
 		height: 40px
 		line-height: 40px
 		min-width: 40px
 		padding: 0 16px
-
-	#logo
+	#home
 		background-size: 100%
 
 	#clock,
@@ -363,8 +546,7 @@ body > nav
 	#timer,
 		background-size: 50%, 100%
 
-
-	#home
+	#homewrapper
 		img
 			width: 100%
 			height: auto
@@ -375,10 +557,9 @@ body > nav
 		button
 			font-size: 24px
 
-
 	h2
 		font-size: 70px
-		text-shadow: 5px 5px 20px rgb(0, 0, 0), 1px -2px 0px rgb(210, 210, 210), 2px -4px 0px rgb(210, 210, 210)
+		text-shadow: 5px 5px 20px rgb(0, 0, 0), 1px -2px 0px rgb(210, 210, 210), 2px -4px 0px rgb(210, 210, 210
 
 	h3
 		font-size: 32px
