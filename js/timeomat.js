@@ -205,7 +205,7 @@
 			]
 
 		this.showTime = function () {
-			$('#digitalclock').innerHTML = new Date().toLocaleTimeString().substr(0, 8)
+			$('#digitalclock').innerHTML = new Date().toTimeString().substr(0, 8)
 
 			setTimeout(function () {
 				clock.showTime()
