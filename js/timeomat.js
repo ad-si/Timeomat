@@ -1,4 +1,4 @@
-(function (window, document, undefined) {
+(function(window, document, undefined) {
 
 	var clock = new Clock(),
 	//alarm = new Alarm(),
@@ -17,18 +17,18 @@
 
 
 			'^/timer': viewPage,
-			'^/timer/(\\d*:\\d*:\\d*)$': function (params) {
+			'^/timer/(\\d*:\\d*:\\d*)$': function(params) {
 
 				$('#timers').innerHTML = ''
 
 				new Timer(toEndTime(params[1])).start()
 			},
 			'^/(\\d+:\\d+:\\d+)$': '/timer/$1',
-			'^/(?:(\\d+)h)?(?:(\\d+)(?:m|min))?(?:(\\d+)(?:s|sec|sek))?$': function (params) {
+			'^/(?:(\\d+)h)?(?:(\\d+)(?:m|min))?(?:(\\d+)(?:s|sec|sek))?$': function(params) {
 
 				var array = params.slice(1, 4)
 
-				if (array.join('')) {
+				if(array.join('')) {
 
 					viewPage('/timer')
 
@@ -41,7 +41,7 @@
 			'^/quickie|quicky$': '/timer/00:10:00',
 
 			'^/countdown': viewPage,
-			'^/countdown/(.+)/(\\d{4}-\\d{2}-\\d{2}t\\d{2}:\\d{2})$': function (params) {
+			'^/countdown/(.+)/(\\d{4}-\\d{2}-\\d{2}t\\d{2}:\\d{2})$': function(params) {
 
 				$('#countdowns').innerHTML = ''
 
@@ -51,7 +51,7 @@
 			},
 			'^/christmas|xmas|x-mas$': '/countdown/Christmas/2013-12-24T20:00',
 			'^/newyear|new-year|new year$': '/countdown/New Year/2013-12-24T20:00',
-			'^/test/(.*)': function (params) {
+			'^/test/(.*)': function(params) {
 				console.log(decodeURIComponent(params[1]))
 			},
 
@@ -152,23 +152,23 @@
 		function setFavicon(state) {
 			var fav = $('#favicon')
 
-			if (state == null)
+			if(state == null)
 				fav.href = 'img/favicon.png'
-			else if (state == 'warn')
+			else if(state == 'warn')
 				fav.href = 'img/favicon2.png'
 		}
 
 		var audio = new Audio()
 		audio.src = 'sounds/alarm.wav'
 		audio.volume = 1
-		audio.addEventListener('canplay', function () {
+		audio.addEventListener('canplay', function() {
 			audio.play()
 			setFavicon('warn')
 			setTitle('+++ Time is up! +++')
 			//document.documentElement.style.background = 'rgb(100,0,0)'
 			var notification = alert('Your Time Is Up!')
 
-			if (notification === undefined) {
+			if(notification === undefined) {
 				audio.pause()
 				document.documentElement.style.background = 'url(img/bg.jpg) black'
 				setFavicon()
@@ -204,20 +204,23 @@
 				'December'
 			]
 
-		this.showTime = function () {
-			$('#digitalclock').innerHTML = new Date().toLocaleTimeString().substr(0, 8)
+		this.showTime = function() {
 
-			setTimeout(function () {
+			var date = new Date()
+
+			$('#digitalclock').innerHTML = toSimpleTimeString(date.getTime() - date.getTimezoneOffset() * 60000)
+
+			setTimeout(function() {
 				clock.showTime()
 			}, 200)
 		}
 
-		this.showDate = function () {
+		this.showDate = function() {
 			var d = new Date()
 
 			$('#date').innerHTML = weekdays[d.getDay()] + ', ' + d.getDate() + '.' + months[d.getMonth()] + ' ' + d.getFullYear()
 
-			setTimeout(function () {
+			setTimeout(function() {
 				clock.showDate()
 			}, 1000)
 		}
@@ -229,18 +232,18 @@
 			alarmTimer,
 			weekdays = new Array('sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday')
 
-		this.check = function (time, days, sound) {
+		this.check = function(time, days, sound) {
 			now = new Date()
 
-			if (time == now.toLocaleTimeString().substr(0, 5)) {
-				days.forEach(function (day) {
-					if (day == weekdays[now.getDay()]) {
+			if(time == now.toLocaleTimeString().substr(0, 5)) {
+				days.forEach(function(day) {
+					if(day == weekdays[now.getDay()]) {
 						clearTimeout(alarmTimer)
 						timeIsOver()
 					}
 				})
 			} else {
-				alarmTimer = window.setTimeout(function () {
+				alarmTimer = window.setTimeout(function() {
 					alarm.check(time, days, sound)
 				}, 900)
 			}
@@ -268,8 +271,8 @@
 
 		function start() {
 
-			if (!isRunning) {
-				if (firstTime) {
+			if(!isRunning) {
+				if(firstTime) {
 					startTime = new Date()
 					firstTime = false
 				}
@@ -293,29 +296,29 @@
 			stopwatchRound.classList.add('hidden')
 		}
 
-		this.startStop = function () {
+		this.startStop = function() {
 
-			if (!isRunning)
+			if(!isRunning)
 				start()
 			else
 				stop()
 		}
 
-		this.showTime = function () {
+		this.showTime = function() {
 
-			if (isRunning) {
+			if(isRunning) {
 				var now = new Date()
 				time = now - startTime
 
 				stopwatchDisplay.innerHTML = toTimeString(time)
 
-				if (tableStatus) {
+				if(tableStatus) {
 					nextRound.innerHTML = roundCounter + 1
 					nextDuration.innerHTML = toTimeString(time - lastRound)
 					nextTime.innerHTML = toTimeString(time)
 				}
 
-				timer = window.setTimeout(function () {
+				timer = window.setTimeout(function() {
 					stopwatch.showTime()
 				}, 10)
 
@@ -324,7 +327,7 @@
 			}
 		}
 
-		this.showRound = function () {
+		this.showRound = function() {
 
 			table.classList.remove('hidden')
 
@@ -342,7 +345,7 @@
 			tableStatus = true
 		}
 
-		this.reset = function () {
+		this.reset = function() {
 			firstTime = true
 			roundCounter = 0
 			lastRound = 0
@@ -355,7 +358,7 @@
 
 			var rows = document.querySelectorAll('.row')
 
-			for (var a = 0; a < rows.length; a++) {
+			for(var a = 0; a < rows.length; a++) {
 				removeElement(rows[a]);
 			}
 		}
@@ -373,10 +376,10 @@
 					['div$el',
 						['span$time'],
 						['div',
-							['button$pauseButton', 'Pause', function (e) {
+							['button$pauseButton', 'Pause', function(e) {
 								e.addEventListener('click', pauseResume)
 							}],
-							['button', 'x', function (e) {
+							['button', 'X', function(e) {
 								e.addEventListener('click', cancel)
 							}]
 						]
@@ -390,7 +393,7 @@
 			timer.time.innerHTML = toTimeString(leftTime)
 			//setTitle(toTimeString(leftTime))
 
-			if (leftTime <= 0) {
+			if(leftTime <= 0) {
 				clearTimeout(timeout)
 				removeElement(timer.pauseButton)
 				timeIsOver()
@@ -400,7 +403,7 @@
 		}
 
 		function pauseResume() {
-			if (running) {
+			if(running) {
 				this.innerHTML = 'Resume'
 				clearTimeout(timeout)
 				delayStart = new Date()
@@ -418,7 +421,7 @@
 			clearTimeout(timeout)
 		}
 
-		this.start = function () {
+		this.start = function() {
 			running = true
 
 			update()
@@ -442,7 +445,7 @@
 							['time$time', toTimeString(leftTime)]
 						],
 						['div',
-							['button$cancelButton', 'x', function (e) {
+							['button$cancelButton', 'X', function(e) {
 								e.addEventListener('click', cancel)
 							}]
 						]
@@ -457,7 +460,7 @@
 			countdown.time.innerHTML = toTimeString(leftTime)
 			//setTitle(toTimeString(leftTime))
 
-			if (leftTime <= 0) {
+			if(leftTime <= 0) {
 				clearTimeout(timeout)
 				removeElement(countdown.pauseButton)
 				timeIsOver()
@@ -467,7 +470,7 @@
 		}
 
 		function pauseResume() {
-			if (running) {
+			if(running) {
 				this.innerHTML = 'Resume'
 
 				clearTimeout(timeout)
@@ -489,12 +492,12 @@
 		}
 
 
-		this.name = function (value) {
+		this.name = function(value) {
 			name = value
 			return this
 		}
 
-		this.start = function () {
+		this.start = function() {
 			update()
 			countdown.name.innerHTML = name || ' '
 			running = true
@@ -516,7 +519,7 @@
 			title,
 			wrapper = $('.wrapper')
 
-		if (typeof params !== 'string')
+		if(typeof params !== 'string')
 			url = params[0]
 		else
 			url = params
@@ -525,9 +528,9 @@
 
 		//console.log(page)
 
-		if (page != presentView) {
+		if(page != presentView) {
 
-			for (i = 0; i < wrapper.length; i++)
+			for(i = 0; i < wrapper.length; i++)
 				wrapper[i].classList.remove('visible')
 
 			$('#' + page + 'wrapper').classList.add('visible')
@@ -540,34 +543,319 @@
 		presentView = page
 	}
 
-	function setShortcuts() {
-		addEventListener('keyup', function (e) {
+	function Shinebox() {
 
-			switch (e.keyCode) {
-				case 32: //spacebar
-					break
-			}
-
-		}, false)
-
-		addEventListener('keydown', function (e) {
-
-			switch (e.keyCode) {
-				case 37: //left
-					break
-				case 39: //right
-					break
-				case 38: //up
-					break
-				case 40: //down
-					break
-			}
-
-		}, false)
+		var height = ''
+		/*
+		 new Shinebox()
+		 .setContent()
+		 .show()
+		 */
 
 	}
 
-	function initEvents() {
+	/*
+	 function Poopup(contentClass) {
+
+	 var contentItems = contentClass || '.cOverlay';
+	 var template = $(
+	 '<div class="overlay">' +
+	 '<div class="content">' +
+	 '<div class="close">close</div>' +
+	 '</div>' +
+	 '</div>'
+	 );
+
+	 var overlay = template.css({
+	 'position': 'absolute',
+	 'width': '100%',
+	 'height': '100%',
+	 'backgroundColor': '#555',
+	 'top': '0',
+	 'left': '0',
+	 'display': 'none'
+	 });
+	 var content = template.find(".content").css({
+	 'float': 'left',
+	 'backgroundColor': '#fff'
+
+	 });
+	 var close = template.find(".close");
+
+	 content.append($(contentItems));
+	 $(contentItems).show();
+
+	 this.click(function () {
+
+	 overlay.show();
+	 content.show();
+
+
+	 var height = $(document).height() / 2 - content.height() / 2;
+	 var width = $(document).width() / 2 - content.width() / 2;
+
+	 content.css('marginTop', height);
+	 content.css('marginLeft', width);
+
+	 return false;
+	 });
+
+	 content.click(function (e) {
+	 e.stopPropagation();
+	 return false;
+	 });
+
+	 close.click(function () {
+	 overlay.hide();
+	 content.hide();
+	 return false;
+	 });
+
+
+	 overlay.click(function () {
+	 overlay.hide();
+	 content.hide();
+	 return false;
+	 });
+
+	 $(window).resize(function () {
+	 var height = $(document).height() / 2 - content.height() / 2;
+	 var width = $(document).width() / 2 - content.width() / 2;
+	 content.css('marginTop', height);
+	 content.css('marginLeft', width);
+	 });
+
+	 $('body').append(template);
+	 }
+	 */
+
+	function ShortcutsWindow() {
+
+		var shortcuts = {
+				'side wide': [
+					[
+						['?'],
+						'Bring up this Shortcut Reference',
+						function() {
+						}
+					],
+					[
+						['c'],
+						'Switch to Clock Tab',
+						function() {
+						}
+					],
+					[
+						['s'],
+						'Switch to Stopwatch Tab',
+						function() {
+						}
+					],
+					[
+						['t'],
+						'Switch to Timer Tab',
+						function() {
+						}
+					],
+					[
+						['d'],
+						'Switch to Countdown Tab',
+						function() {
+						}
+					]
+				],
+				'clock': [
+					[
+						['a'],
+						'Toggle between Analog and Digital Clock',
+						function() {
+						}
+					]
+				],
+				'timer': [
+					[
+						['spacebar'],
+						'Pause/Resume last Timer',
+						function() {
+						}
+					],
+					[
+						['n'],
+						'Start New Timer',
+						function() {
+						}
+					]
+				],
+				'stopwatch': [
+					[
+						['spacebar'],
+						'Start/Pause the Stopwatch',
+						function() {
+						}
+					],
+					[
+						['r'],
+						'New Round',
+						function() {
+						}
+					],
+					[
+						['x'],
+						'Reset Stopwatch',
+						function() {
+						}
+					]
+				],
+				'countdown': [
+					[
+						['x'],
+						'Remove most recent Countdown',
+						function() {
+						}
+					]
+				]
+			},
+			content = ['div.content',
+				['header',
+					['h1', 'Keyboard Shortcuts']
+				]
+			],
+			body,
+			visible = false
+
+
+		function Key(string) {
+
+			string = string.toLowerCase()
+
+			var object,
+				keys = {
+					shift: {
+						character: '⇧',
+						type: 'modifier'
+					},
+					alt: {
+						character: '⌥',
+						type: 'modifier'
+					},
+					ctrl: {
+						character: '⌃',
+						type: 'modifier'
+					},
+					cmd: {
+						character: '⌘',
+						type: 'modifier'
+					},
+					spacebar: {
+						character: ' ',
+						type: 'spacebar'
+					}
+				}
+
+			this.get = function() {
+
+				if(keys[string])
+					object = keys[string]
+				else
+					object = {
+						'type': '',
+						'character': string
+					}
+
+				return object
+			}
+		}
+
+
+		this.toggle = function() {
+
+			function hide(event) {
+
+				console.log(event)
+
+				if(event) {
+					event.stopPropagation()
+
+					if(event.keyCode != 27 && event.type != 'click')
+						return
+				}
+
+				body.shinebox.style.display = "none"
+				visible = false
+			}
+
+
+			function stopPropagation(event) {
+				event.stopPropagation()
+			}
+
+			if(visible) {
+				hide()
+
+				removeEventListener('keydown', hide, false)
+				body.shinebox.removeEventListener('click', stopPropagation, false)
+				document.removeEventListener('click', hide, false)
+
+			} else {
+				body.shinebox.style.display = "block"
+				visible = true
+
+				addEventListener('keydown', hide, false)
+				body.shinebox.addEventListener('click', stopPropagation, false)
+				document.addEventListener('click', hide, false)
+			}
+		}
+
+
+		for(var i in shortcuts) {
+			if(shortcuts.hasOwnProperty(i)) {
+
+				var section = ['section', ['h2', i]],
+					keys
+
+				shortcuts[i].forEach(function(item) {
+
+					var combo = ['span.keys']
+
+
+					item[0].forEach(function(k) {
+						keys = k.split('+')
+
+
+						keys.forEach(function(key) {
+
+							key = new Key(key).get()
+
+							combo.push(['kbd', {'class': 'key ' + key.type}, key.character], '+')
+						})
+
+						combo.pop()
+					})
+
+					section.push(
+						['p',
+							combo,
+							['span', item[1]]
+						]
+					)
+				})
+			}
+
+			content.push(section)
+		}
+
+		body = DOMinate(
+			[document.body,
+				['div#shinebox',
+					['div.wrap',
+						content
+					]
+				]
+			]
+		)
+	}
+
+	function initEventListeners() {
 
 		var menuItems = [
 			'home',
@@ -579,18 +867,18 @@
 			//'worldclock'
 		]
 
-		menuItems.forEach(function (item) {
-			$('#' + item).addEventListener('click', function (event) {
+		menuItems.forEach(function(item) {
+			$('#' + item).addEventListener('click', function(event) {
 				event.preventDefault()
 
-				if (item == 'home')
+				if(item == 'home')
 					routor.route('/')
 				else
 					routor.route('/' + item)
 			}, false)
 		})
 
-		$('#startTimer').addEventListener('click', function (e) {
+		$('#startTimer').addEventListener('click', function(e) {
 
 			e.preventDefault()
 
@@ -600,7 +888,7 @@
 
 		}, false)
 
-		$('#startCountdown').addEventListener('click', function (e) {
+		$('#startCountdown').addEventListener('click', function(e) {
 			e.preventDefault()
 
 			new Countdown(new Date($('#countdownDate').value + 'T' + $('#countdownTime').value))
@@ -643,33 +931,37 @@
 		 */
 
 		clock.showTime()
+
 		clock.showDate()
 
 		stopwatch.showTime()
 
-		$('#stopwatchStart').addEventListener('click', function () {
+		$('#stopwatchStart').addEventListener('click', function() {
 			stopwatch.startStop()
 		}, false)
 
-		$('#stopwatchRound').addEventListener('click', function () {
+		$('#stopwatchRound').addEventListener('click', function() {
 			stopwatch.showRound()
 		}, false)
 
-		$('#stopwatchReset').addEventListener('click', function () {
+		$('#stopwatchReset').addEventListener('click', function() {
 			stopwatch.reset()
 		}, false)
-
 	}
 
+	initEventListeners()
 
-	initEvents()
 
 	//Preload favicon
 	new Image().src = 'img/favicon2.png'
 
-	routor
-		//.setBaseURL('/~adrian/timeomat')
-		.route()
+	routor.route()
+
+	var shortcutsWindow = new ShortcutsWindow()
+
+	key('shift+/', function() {
+		shortcutsWindow.toggle()
+	})
 
 
 }(window, document))
