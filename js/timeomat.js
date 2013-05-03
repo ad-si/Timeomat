@@ -9,14 +9,26 @@
 		routor = new Routor({
 			//'^/$': '/countdown',
 			'^/$': viewPage,
-			'^/clock$': viewPage,
-			'^/alarm$': viewPage,
-			'^/stopwatch': viewPage,
-			'^/worldclock$': viewPage,
+			'^/clock$': function(params){
+				viewPage(params)
+				key.setScope('clock')
+			},
+			/*'^/alarm$':function(){
+				viewPage()
+				key.setScope('alarm')
+			},*/
+			'^/stopwatch': function(params){
+				viewPage(params)
+				key.setScope('stopwatch')
+			},
+			//'^/worldclock$': viewPage,
 			'^/stopwatch/start$': stopwatch.start,
 
 
-			'^/timer': viewPage,
+			'^/timer': function(params){
+				viewPage(params)
+				key.setScope('timer')
+			},
 			'^/timer/(\\d*:\\d*:\\d*)$': function(params) {
 
 				$('#timers').innerHTML = ''
@@ -38,9 +50,12 @@
 			},
 			'^/nap$': '/timer/00:20:00',
 			'^/brushteeth$': '/timer/00:05:00',
-			'^/quickie|quicky$': '/timer/00:10:00',
+			'^/quick(ie|y)$': '/timer/00:10:00',
 
-			'^/countdown': viewPage,
+			'^/countdown': function(params){
+				viewPage(params)
+				key.setScope('countdown')
+			},
 			'^/countdown/(.+)/(\\d{4}-\\d{2}-\\d{2}t\\d{2}:\\d{2})$': function(params) {
 
 				$('#countdowns').innerHTML = ''
@@ -49,12 +64,8 @@
 					.name(decodeURIComponent(params[1]))
 					.start()
 			},
-			'^/christmas|xmas|x-mas$': '/countdown/Christmas/2013-12-24T20:00',
-			'^/newyear|new-year|new year$': '/countdown/New Year/2013-12-24T20:00',
-			'^/test/(.*)': function(params) {
-				console.log(decodeURIComponent(params[1]))
-			},
-
+			'^/(christmas|xmas|x-mas)$': '/countdown/Christmas/2013-12-24T20:00',
+			'^/(newyear|new-year)$': '/countdown/New Year/2013-12-24T20:00',
 			'^/error$': viewPage
 		})
 
@@ -364,6 +375,7 @@
 		}
 
 		this.start = start
+		this.stop = stop
 	}
 
 	function Timer(endTime) {
@@ -637,80 +649,102 @@
 						['?'],
 						'Bring up this Shortcut Reference',
 						function() {
+							shortcutsWindow.toggle()
 						}
 					],
 					[
 						['c'],
 						'Switch to Clock Tab',
 						function() {
+							routor.route('/clock')
 						}
 					],
 					[
 						['s'],
 						'Switch to Stopwatch Tab',
 						function() {
+							routor.route('/stopwatch')
 						}
 					],
 					[
 						['t'],
 						'Switch to Timer Tab',
 						function() {
+							routor.route('/timer')
 						}
 					],
 					[
 						['d'],
 						'Switch to Countdown Tab',
 						function() {
+							routor.route('/countdown')
 						}
 					]
 				],
-				'clock': [
+				/*'clock': [
 					[
 						['a'],
 						'Toggle between Analog and Digital Clock',
 						function() {
 						}
 					]
-				],
+				],*/
 				'timer': [
-					[
-						['spacebar'],
+					/*[
+						['space'],
 						'Pause/Resume last Timer',
 						function() {
 						}
-					],
+					],*/
 					[
 						['n'],
-						'Start New Timer',
+						'Create New Timer',
 						function() {
+							$('#timerTime').focus()
+							$('#timerTime').value = ''
+							return false
 						}
 					]
 				],
 				'stopwatch': [
 					[
-						['spacebar'],
+						['space'],
 						'Start/Pause the Stopwatch',
 						function() {
+							stopwatch.startStop()
+							return false
 						}
 					],
 					[
 						['r'],
 						'New Round',
 						function() {
+							stopwatch.showRound()
 						}
 					],
 					[
 						['x'],
 						'Reset Stopwatch',
 						function() {
+							stopwatch.stop()
+							stopwatch.reset()
 						}
 					]
 				],
 				'countdown': [
-					[
+					/*[
 						['x'],
 						'Remove most recent Countdown',
 						function() {
+						}
+					],*/
+					[
+						['n'],
+						'Create New Countdown',
+						function() {
+							$('#countdownName').value = ''
+							$('#countdownName').focus()
+							return false
 						}
 					]
 				]
@@ -746,9 +780,9 @@
 						character: '⌘',
 						type: 'modifier'
 					},
-					spacebar: {
+					space: {
 						character: ' ',
-						type: 'spacebar'
+						type: 'space'
 					}
 				}
 
@@ -758,14 +792,13 @@
 					object = keys[string]
 				else
 					object = {
-						'type': '',
-						'character': string
+						'character': string,
+						'type': ''
 					}
 
 				return object
 			}
 		}
-
 
 		this.toggle = function() {
 
@@ -817,8 +850,13 @@
 
 					var combo = ['span.keys']
 
-
 					item[0].forEach(function(k) {
+
+						//console.log(k, i.replace('side wide', 'all'), item[2])
+
+						if(k != '?')
+							key(k, i.replace('side wide', 'all'), item[2])
+
 						keys = k.split('+')
 
 
@@ -828,7 +866,6 @@
 
 							combo.push(['kbd', {'class': 'key ' + key.type}, key.character], '+')
 						})
-
 						combo.pop()
 					})
 
@@ -959,7 +996,8 @@
 
 	var shortcutsWindow = new ShortcutsWindow()
 
-	key('shift+/', function() {
+	//Shortcuts window
+	Mousetrap.bind('?', function() {
 		shortcutsWindow.toggle()
 	})
 
