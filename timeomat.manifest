@@ -1,8 +1,9 @@
 CACHE MANIFEST
-#2013-01-04T00:00
+#2013-04-28T01:00
 
 #js
-js/UpdateYourBrowser.min.js
+js/keymaster.min.js
+js/mousetrap.min.js
 js/dominate.min.js
 js/routor.js
 js/timeomat.js
@@ -21,6 +22,7 @@ img/worldclock.svg
 img/bg.jpg
 img/clocks.png
 img/favicon.png
+img/favicon2.png
 img/icon.png
 
 #sounds

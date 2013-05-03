@@ -2,8 +2,7 @@
 <html manifest=timeomat.manifest>
 <head>
 	<title>Timeomat</title>
-	<base href="/">
-	<meta charset="utf-8">
+	<meta charset=utf-8>
 	<meta name=description content='Clock, Alarm, Stopwatch & Timer in your Browser'>
 	<meta name=keywords content='Clock, Alarm, Stopwatch, Timer'>
 	<meta name=apple-mobile-web-app-capable content=yes>
@@ -12,12 +11,8 @@
 	<link type=image/png rel=icon id=favicon href=img/favicon.png>
 	<link type=image/png rel=apple-touch-icon-precomposed href=img/icon.png>
 	<link type=text/css rel=stylesheet href=css/screen.css>
-	<script type=text/javascript src=js/dominate.min.js></script>
-	<script type=text/javascript src=js/routor.js></script>
 </head>
 <body>
-
-<script type=text/javascript src=js/UpdateYourBrowser.min.js></script>
 
 <nav>
 	<h1 id=home title=Timeomat>
@@ -26,26 +21,26 @@
 		<a id=clock title=Clock></a><!--<a id=alarm title=Alarmclock></a>--><a id=stopwatch title=Stopwatch></a><a id=timer title=Timer></a><a
 			id=countdown title=Countdown></a><!--<a id=worldclock title=Worldclock></a>-->
 	</div>
-	<a id=adrian target="_blank" href=http://adriansieber.com>By Adrian Sieber</a>
+	<a id=adrian target=_blank href=http://adriansieber.com>By Adrian Sieber</a>
 </nav>
 
 <div id=wrapcontent>
 
-	<div id=homewrapper class="wrapper">
+	<div id=homewrapper class=wrapper>
 		<img src=img/clocks.png alt="Clock, Alarm, Stopwatch & Timer">
 		<em>Clock, Alarm, Stopwatch & Timer.</em>
 		<br>
 		<em>All in your Browser.</em>
 	</div>
 
-	<div id=clockwrapper class="wrapper">
+	<div id=clockwrapper class=wrapper>
 		<h2 id=digitalclock>19:20:54</h2>
 
 		<h3 id=date>Wednesday, 27.June 2012</h3>
 	</div>
 
 	<!--
-	<div id=alarmwrapper class="wrapper">
+	<div id=alarmwrapper class=wrapper>
 	<input id=alarmTime type=time value=12:00>
 
 	<div id=alarmDays>
@@ -67,16 +62,16 @@
 	</div>
 	-->
 
-	<div id=stopwatchwrapper class="wrapper">
+	<div id=stopwatchwrapper class=wrapper>
 		<h2 id=stopwatchDisplay>00:00:00.00</h2>
 
 		<div id=stopwatchcontrols>
 			<button id=stopwatchStart>Start</button>
-			<button id=stopwatchRound class="hidden">Round</button>
-			<button id=stopwatchReset class="hidden">x</button>
+			<button id=stopwatchRound class=hidden>Round</button>
+			<button id=stopwatchReset class=hidden>x</button>
 		</div>
 
-		<table id=rounds class="hidden">
+		<table id=rounds class=hidden>
 			<thead>
 			<tr>
 				<th>Round</th>
@@ -86,44 +81,48 @@
 			</thead>
 			<tbody>
 			</tbody><tfoot><tr>
-				<td id="nextRound"></td>
-				<td id="nextDuration"></td>
-				<td id="nextTime"></td>
+				<td id=nextRound></td>
+				<td id=nextDuration></td>
+				<td id=nextTime></td>
 			</tr>
 			</tfoot>
 		</table>
 	</div>
 
-	<div id=timerwrapper class="wrapper">
-		<form id="timercontrols">
+	<div id=timerwrapper class=wrapper>
+		<form id=timercontrols>
 			<input id=timerTime type=text value=00:20:00>
-			<button type="submit" id=startTimer>Start</button>
+			<button type=submit id=startTimer>Start</button>
 		</form>
 
 		<div id=timers></div>
 	</div>
 
-	<div id=countdownwrapper class="wrapper">
-		<form id="countdownControls">
+	<div id=countdownwrapper class=wrapper>
+		<form id=countdownControls>
 			<input id=countdownName type=text placeholder=Name><br>
 			<input id=countdownDate type=text value=2014-01-01><input id=countdownTime type=text value=12:00><button id=startCountdown type=submit>Start</button>
 		</form>
 
-		<div id="countdowns"></div>
+		<div id=countdowns></div>
 	</div>
 
-	<div id=errorwrapper class="wrapper">
+	<div id=errorwrapper class=wrapper>
 		<h3>The requested view does not exist.</h3>
 	</div>
 
 	<!--
-	<div id=worldclockwrapper class="wrapper">
+	<div id=worldclockwrapper class=wrapper>
 
 	</div>
 	-->
 
 </div>
 
+<script type=text/javascript src=js/keymaster.min.js></script>
+<script type=text/javascript src=js/dominate.min.js></script>
+<script type=text/javascript src=js/mousetrap.min.js></script>
+<script type=text/javascript src=js/routor.js></script>
 <script type=text/javascript src=js/timeomat.js></script>
 
 
