@@ -16,7 +16,7 @@ function Routor(routes) {
 
 				if (result) {
 
-					console.log(direction)
+					//console.log(direction)
 
 					//If Function
 					if (routes[direction].call) {

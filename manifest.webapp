@@ -1,0 +1,13 @@
+{
+  "name": "timeomat",
+  "description": "timeomat",
+  "launch_path": "/",
+  "icons": {
+    "128": "/img/icon.png"
+  },
+  "developer": {
+    "name": "Adrian Sieber",
+    "url": "http://adriansieber.com"
+  },
+  "default_locale": "en"
+}

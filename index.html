@@ -1,5 +1,6 @@
 <!doctype html>
-<html manifest=timeomat.manifest>
+<!--<html manifest=timeomat.manifest>-->
+<html>
 <head>
 	<title>Timeomat</title>
 	<meta charset=utf-8>
@@ -8,9 +9,9 @@
 	<meta name=apple-mobile-web-app-capable content=yes>
 	<meta name=apple-mobile-web-app-status-bar-style content=none>
 	<!--<meta name=viewport content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">-->
-	<link type=image/png rel=icon id=favicon href=img/favicon.png>
-	<link type=image/png rel=apple-touch-icon-precomposed href=img/icon.png>
-	<link type=text/css rel=stylesheet href=css/screen.css>
+	<link type=image/png rel=icon id=favicon href=/img/favicon.png>
+	<link type=image/png rel=apple-touch-icon-precomposed href=/img/icon.png>
+	<link type=text/css rel=stylesheet href=/css/screen.css>
 </head>
 <body>
 
@@ -21,13 +22,13 @@
 		<a id=clock title=Clock></a><!--<a id=alarm title=Alarmclock></a>--><a id=stopwatch title=Stopwatch></a><a id=timer title=Timer></a><a
 			id=countdown title=Countdown></a><!--<a id=worldclock title=Worldclock></a>-->
 	</div>
-	<a id=adrian target=_blank href=http://adriansieber.com>By Adrian Sieber</a>
+	<a id=adrian target=blank href=http://adriansieber.com>By Adrian Sieber</a>
 </nav>
 
 <div id=wrapcontent>
 
 	<div id=homewrapper class=wrapper>
-		<img src=img/clocks.png alt="Clock, Alarm, Stopwatch & Timer">
+		<img src=/img/clocks.png alt="Clock, Alarm, Stopwatch & Timer">
 		<em>Clock, Alarm, Stopwatch & Timer.</em>
 		<br>
 		<em>All in your Browser.</em>
@@ -35,6 +36,8 @@
 
 	<div id=clockwrapper class=wrapper>
 		<h2 id=digitalclock>19:20:54</h2>
+
+		<div id=analogclock></div>
 
 		<h3 id=date>Wednesday, 27.June 2012</h3>
 	</div>
@@ -119,11 +122,12 @@
 
 </div>
 
-<script type=text/javascript src=js/keymaster.min.js></script>
-<script type=text/javascript src=js/dominate.min.js></script>
-<script type=text/javascript src=js/mousetrap.min.js></script>
-<script type=text/javascript src=js/routor.js></script>
-<script type=text/javascript src=js/timeomat.js></script>
+<script type=text/javascript src=/js/keymaster.min.js></script>
+<script type=text/javascript src=/js/dominate.min.js></script>
+<script type=text/javascript src=/js/mousetrap.min.js></script>
+<script type=text/javascript src=/js/routor.js></script>
+<script type=text/javascript src=/js/storage.js></script>
+<script type=text/javascript src=/js/timeomat.js></script>
 
 
 <!-- Piwik -->
