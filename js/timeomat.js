@@ -1,4 +1,4 @@
-(function(window, document, undefined) {
+!function(window, document, undefined) {
 
 	var clock = new Clock(),
 	//alarm = new Alarm(),
@@ -1000,5 +1000,4 @@
 		shortcutsWindow.toggle()
 	})
 
-
-}(window, document))
+}(window, document)
