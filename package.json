@@ -1,0 +1,33 @@
+{
+  "name": "timeomat",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build-css": "mkdir -p build/styles && stylus --out build/styles source/styles",
+    "copy-files": "cp -r source/{sounds,fonts,images,scripts,index.html,timeomat.manifest} build/",
+    "build": "npm run build-css && npm run copy-files",
+    "cleanup": "rm -rf build",
+    "test": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adius/timeomat.git"
+  },
+  "keywords": [
+    "time",
+    "clock",
+    "alarm",
+    "stopwatch",
+    "timer"
+  ],
+  "author": "Adrian Sieber",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/adius/timeomat/issues"
+  },
+  "homepage": "https://github.com/adius/timeomat#readme",
+  "devDependencies": {
+    "stylus": "^0.54.5"
+  }
+}
