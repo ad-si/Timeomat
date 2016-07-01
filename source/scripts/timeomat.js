@@ -164,9 +164,9 @@
 			var fav = $('#favicon')
 
 			if(state == null)
-				fav.href = 'img/favicon.png'
+				fav.href = 'images/favicon.png'
 			else if(state == 'warn')
-				fav.href = 'img/favicon2.png'
+				fav.href = 'images/favicon2.png'
 		}
 
 		var audio = new Audio()
@@ -181,7 +181,7 @@
 
 			if(notification === undefined) {
 				audio.pause()
-				document.documentElement.style.background = 'url(img/bg.jpg) black'
+				document.documentElement.style.background = 'url(images/bg.jpg) black'
 				setFavicon()
 				setTitle(presentTitle)
 			}
@@ -989,7 +989,7 @@
 
 
 	//Preload favicon
-	new Image().src = 'img/favicon2.png'
+	new Image().src = 'images/favicon2.png'
 
 	routor.route()
 
