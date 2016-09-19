@@ -9,7 +9,7 @@
     "build": "npm run build-css && npm run copy-files",
     "cleanup": "rm -rf build",
     "test": "npm run build",
-    "deploy": "npm run build && surge ./build"
+    "deploy": "npm run build && cp ./build/{index,200}.html && cp ./CNAME ./build/ && surge ./build"
   },
   "repository": {
     "type": "git",
