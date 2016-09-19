@@ -8,7 +8,8 @@
     "copy-files": "cp -r source/{sounds,fonts,images,scripts,index.html,timeomat.manifest} build/",
     "build": "npm run build-css && npm run copy-files",
     "cleanup": "rm -rf build",
-    "test": "npm run build"
+    "test": "npm run build",
+    "deploy": "npm run build && surge ./build"
   },
   "repository": {
     "type": "git",
