@@ -6,10 +6,11 @@ It is designed to be simple and easy to use, with a clean and modern interface.
 
 ## Related
 
-Name                                   | Features | Pros                 | Cons
----------------------------------------|----------|----------------------|------
-[Onlineclock](http://onlineclock.net/) | alarm | probably largest site   | ugly
-[Eggtimer](http://e.ggtimer.com/)      | timer | Nice Urls, clean design | few features
+Name                                   | Features | Pros                        | Cons
+---------------------------------------|----------|-----------------------------|------
+[Onlineclock](http://onlineclock.net/) | alarm    | probably largest site       | ugly
+[Eggtimer](http://e.ggtimer.com/)      | timer    | Nice Urls, clean design     | few features
+[time.fyi](https://time.fyi)           | clock, timer, stopwatch | clean design | -
 
 
 ## URLs
