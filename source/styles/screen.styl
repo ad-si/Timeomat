@@ -82,6 +82,85 @@ body
   border-radius 10px
   margin-bottom 40px
 
+#analogclock
+  display block
+  width 440px
+  height 440px
+  margin 0 auto 40px auto
+  svg
+    width 100%
+    height 100%
+    display block
+    filter drop-shadow(4px 4px 6px rgba(0, 0, 0, 0.6))
+  .face
+    fill gray(245)
+    stroke gray(20)
+    stroke-width 1
+  .pivot
+    fill gray(10)
+  #clockMarkers rect
+    fill gray(10)
+  .hand rect
+    fill gray(10)
+  .secondHand rect
+    fill rgb(200, 30, 30)
+  .secondHand circle
+    fill none
+    stroke rgb(200, 30, 30)
+    stroke-width 2.5
+
+#clockMode
+  display flex
+  width fit-content
+  margin -40px auto 80px auto
+  position relative
+  &:before
+    content ""
+    z-index -1
+    display block
+    position absolute
+    top -12px
+    left -17px
+    right -17px
+    bottom -12px
+    background-color rgba(255, 255, 255, 0.05)
+    border-radius 5px
+    box-shadow 0 2px 2px rgba(255, 255, 255, 0.2), 0 -2px 1px rgba(0, 0, 0, 0.2)
+  input[type="radio"]
+    position absolute
+    left -9999px
+  label
+    font-family "Play", sans-serif
+    display inline-block
+    text-align center
+    vertical-align middle
+    position relative
+    background-image linear-gradient(rgba(40, 40, 40, 1), rgba(20, 20, 20, 1))
+    border 2px solid rgb(10, 10, 10)
+    text-shadow 0 -2px black
+    color rgb(200, 200, 200)
+    box-shadow inset 0 1px 1px rgba(255, 255, 255, 0.1)
+    height 50px
+    line-height 46px
+    min-width 140px
+    padding 0 30px
+    font-size 20px
+    cursor pointer
+    &:first-of-type
+      border-radius 8px 0 0 8px
+    &:last-of-type
+      border-radius 0 8px 8px 0
+      margin-left -2px
+    &:hover
+      background-image linear-gradient(rgba(20, 20, 20, 1), rgba(0, 0, 0, 1))
+  input[type="radio"]:checked + label
+    background-image linear-gradient(rgba(0, 0, 0, 1), rgba(20, 20, 20, 1))
+    box-shadow inset 0 0 10px rgba(0, 0, 0, 0.6)
+    z-index 1
+
+#clockwrapper
+  text-align center
+
 h3
   display inline-block
   text-align center

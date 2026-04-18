@@ -6,9 +6,13 @@ import notificationIconUrl from '../images/icon.png'
 
 shaven.setDefaults({ document })
 
+type ClockMode = 'digital' | 'analog'
+
 interface Clock {
   showTime(): void
   showDate(): void
+  showAnalog(): void
+  setMode(mode: ClockMode): void
 }
 
 interface Stopwatch {
@@ -203,6 +207,7 @@ interface ShortcutsWindow {
   interface StoredSettings {
     timerInput?: string
     countdownName?: string
+    clockMode?: ClockMode
   }
 
   const activeTimers = new Map<string, Timer>()
@@ -496,12 +501,71 @@ interface ShortcutsWindow {
       'December',
     ]
 
+    private digitalEl = $('#digitalclock') as HTMLElement
+    private analogEl = $('#analogclock') as HTMLElement
+    private hourHand = document.getElementById('hourHandGroup') as unknown as SVGGElement
+    private minuteHand = document.getElementById('minuteHandGroup') as unknown as SVGGElement
+    private secondHand = document.getElementById('secondHandGroup') as unknown as SVGGElement
+
+    constructor() {
+      this.buildMarkers()
+    }
+
+    private buildMarkers(): void {
+      const group = document.getElementById('clockMarkers')
+      if (!group)
+        return
+      const svgNs = 'http://www.w3.org/2000/svg'
+      for (let i = 0; i < 60; i++) {
+        const isHour = i % 5 === 0
+        const rect = document.createElementNS(svgNs, 'rect')
+        if (isHour) {
+          rect.setAttribute('x', '-4')
+          rect.setAttribute('y', '-95')
+          rect.setAttribute('width', '8')
+          rect.setAttribute('height', '20')
+        }
+        else {
+          rect.setAttribute('x', '-1')
+          rect.setAttribute('y', '-95')
+          rect.setAttribute('width', '2')
+          rect.setAttribute('height', '6')
+        }
+        rect.setAttribute('transform', `rotate(${i * 6})`)
+        group.appendChild(rect)
+      }
+    }
+
+    setMode(mode: ClockMode): void {
+      this.digitalEl.classList.toggle('hidden', mode !== 'digital')
+      this.analogEl.classList.toggle('hidden', mode !== 'analog')
+      updateSetting('clockMode', mode)
+    }
+
     showTime(): void {
-      (($('#digitalclock')) as HTMLElement).innerHTML = new Date().toTimeString().substr(0, 8)
+      this.digitalEl.innerHTML = new Date().toTimeString().substr(0, 8)
 
       setTimeout(() => {
         this.showTime()
       }, 200)
+    }
+
+    showAnalog(): void {
+      const now = new Date()
+      const h = now.getHours() % 12
+      const m = now.getMinutes()
+      const s = now.getSeconds()
+      const hourAngle = (h + m / 60 + s / 3600) * 30
+      const minuteAngle = (m + s / 60) * 6
+      const secondAngle = s * 6
+      this.hourHand.setAttribute('transform', `rotate(${hourAngle})`)
+      this.minuteHand.setAttribute('transform', `rotate(${minuteAngle})`)
+      this.secondHand.setAttribute('transform', `rotate(${secondAngle})`)
+
+      const delay = 1000 - now.getMilliseconds()
+      setTimeout(() => {
+        this.showAnalog()
+      }, delay)
     }
 
     showDate(): void {
@@ -1498,7 +1562,25 @@ e.preventDefault();
      }, false)
      */
 
+    const clockModeRadios = document.querySelectorAll('input[name=clockMode]')
+    const savedMode: ClockMode = savedSettings.clockMode === 'analog' ? 'analog' : 'digital'
+    const activeRadio = document.getElementById(
+      savedMode === 'analog' ? 'clockModeAnalog' : 'clockModeDigital',
+    ) as HTMLInputElement | null
+    if (activeRadio)
+      activeRadio.checked = true
+    clock.setMode(savedMode)
+
+    clockModeRadios.forEach((radio) => {
+      radio.addEventListener('change', (event: Event) => {
+        const target = event.target as HTMLInputElement
+        if (target.checked)
+          clock.setMode(target.value as ClockMode)
+      }, false)
+    })
+
     clock.showTime()
+    clock.showAnalog()
 
     clock.showDate()
 

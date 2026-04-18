@@ -38,7 +38,33 @@
     </div>
 
     <div id=clockwrapper class=wrapper>
+      <div id=clockMode>
+        <input type=radio id=clockModeDigital name=clockMode value=digital checked>
+        <label for=clockModeDigital>Digital</label>
+        <input type=radio id=clockModeAnalog name=clockMode value=analog>
+        <label for=clockModeAnalog>Analog</label>
+      </div>
+
       <h2 id=digitalclock>19:20:54</h2>
+
+      <div id=analogclock class=hidden>
+        <svg viewBox="-100 -100 200 200">
+          <circle class=face cx=0 cy=0 r=98></circle>
+          <g id=clockMarkers></g>
+          <g id=hourHandGroup class=hand>
+            <rect x=-4 y=-52 width=8 height=64></rect>
+          </g>
+          <g id=minuteHandGroup class=hand>
+            <rect x=-3 y=-84 width=6 height=96></rect>
+          </g>
+          <g id=secondHandGroup class=secondHand>
+            <rect x=-1 y=-86 width=2 height=16></rect>
+            <rect x=-1 y=-50 width=2 height=70></rect>
+            <circle cx=0 cy=-60 r=9></circle>
+          </g>
+          <circle class=pivot cx=0 cy=0 r=3></circle>
+        </svg>
+      </div>
 
       <h3 id=date>Wednesday, 27.June 2012</h3>
     </div>
