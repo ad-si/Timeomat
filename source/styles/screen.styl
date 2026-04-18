@@ -117,7 +117,12 @@ em
   margin 0 20px 0 20px
 
 
+button,
+input[type="submit"]
+  cursor pointer
+
 #stopwatchcontrols button,
+#stopwatchExport,
 #timercontrols button,
 #timers button,
 #startCountdown,
@@ -327,6 +332,33 @@ body > nav
 
   td
     padding 8px 50px
+
+#stopwatchExportWrapper
+  margin-top 40px
+
+#stopwatchExport
+  width 130px
+  height 40px
+  line-height 36px
+  font-weight 100
+  font-size 16px
+  background-image linear-gradient(rgba(60, 60, 60, 1), rgba(40, 40, 40, 1))
+  border-color rgb(30, 30, 30)
+  &:hover
+    background-image linear-gradient(rgba(70, 70, 70, 1), rgba(50, 50, 50, 1))
+  &:active
+    background-image linear-gradient(rgba(40, 40, 40, 1), rgba(60, 60, 60, 1))
+  &:before
+    content ""
+    z-index -1
+    display block
+    position absolute
+    background-color rgba(255,255,255,0.05)
+    border-radius 5px
+    width 154px
+    height 56px
+    box-shadow 0 2px 2px rgba(255,255,255,0.2), 0 -2px 1px rgba(0,0,0,0.2)
+    margin -10px -14px
 
 #stopwatchcontrols
   margin-bottom 40px

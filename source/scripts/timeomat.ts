@@ -529,6 +529,7 @@ interface ShortcutsWindow {
     private stopwatchReset = $('#stopwatchReset') as HTMLElement
     private stopwatchRound = $('#stopwatchRound') as HTMLElement
     private table = $('#rounds') as HTMLTableElement
+    private exportWrapper = $('#stopwatchExportWrapper') as HTMLElement
     private nextRound = $('#nextRound') as HTMLElement
     private nextDuration = $('#nextDuration') as HTMLElement
     private nextTime = $('#nextTime') as HTMLElement
@@ -590,6 +591,7 @@ interface ShortcutsWindow {
 
     showRound(): void {
       this.table.classList.remove('hidden')
+      this.exportWrapper.classList.remove('hidden')
 
       const row = shaven(
         ['tr.row',
@@ -606,6 +608,29 @@ interface ShortcutsWindow {
       this.tableStatus = true
     }
 
+    exportCsv(): void {
+      const rows: string[] = ['Round,Duration,Time']
+      const bodyRows = this.table.tBodies[0]?.rows
+
+      if (!bodyRows || bodyRows.length === 0)
+        return
+
+      for (let i = 0; i < bodyRows.length; i++) {
+        const cells = bodyRows[i].cells
+        rows.push([cells[0].textContent, cells[1].textContent, cells[2].textContent].join(','))
+      }
+
+      const blob = new Blob([rows.join('\n') + '\n'], { type: 'text/csv;charset=utf-8' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'stopwatch-rounds.csv'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+    }
+
     reset(): void {
       this.firstTime = true
       this.roundCounter = 0
@@ -615,6 +640,7 @@ interface ShortcutsWindow {
       (this.stopwatchStart as HTMLElement).innerHTML = 'Start'
       this.stopwatchReset.classList.add('hidden')
       this.table.classList.add('hidden')
+      this.exportWrapper.classList.add('hidden')
 
       const rows = document.querySelectorAll('.row')
 
@@ -1488,6 +1514,10 @@ e.preventDefault();
 
     ($('#stopwatchReset') as HTMLElement).addEventListener('click', function () {
       stopwatch.reset()
+    }, false);
+
+    ($('#stopwatchExport') as HTMLElement).addEventListener('click', function () {
+      stopwatch.exportCsv()
     }, false)
   }
 
