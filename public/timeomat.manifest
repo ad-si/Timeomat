@@ -1,13 +1,6 @@
 CACHE MANIFEST
 #2016-07-01T13:05
 
-# Scripts
-scripts/keymaster.min.js
-scripts/mousetrap.min.js
-scripts/dominate.min.js
-scripts/routor.js
-scripts/timeomat.js
-
 # Styles
 styles/screen.css
 

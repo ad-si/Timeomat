@@ -1,1 +1,7 @@
+# Build and cache artifacts
 /build
+/node_modules
+/.eslintcache
+
+# Generated JS
+source/scripts/*.js

@@ -2,18 +2,12 @@
   "name": "timeomat",
   "version": "1.0.0",
   "description": "",
+  "author": "Adrian Sieber",
+  "license": "ISC",
   "main": "index.js",
-  "scripts": {
-    "build-css": "mkdir -p build/styles && stylus --out build/styles source/styles",
-    "copy-files": "cp -r source/{sounds,fonts,images,scripts,index.html,timeomat.manifest} build/",
-    "build": "npm run build-css && npm run copy-files",
-    "cleanup": "rm -rf build",
-    "test": "npm run build",
-    "deploy": "npm run build && cp ./build/{index,200}.html && cp ./CNAME ./build/ && surge ./build"
-  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/adius/timeomat.git"
+    "url": "git+https://github.com/ad-si/timeomat.git"
   },
   "keywords": [
     "time",
@@ -22,13 +16,24 @@
     "stopwatch",
     "timer"
   ],
-  "author": "Adrian Sieber",
-  "license": "ISC",
   "bugs": {
-    "url": "https://github.com/adius/timeomat/issues"
+    "url": "https://github.com/ad-si/timeomat/issues"
   },
-  "homepage": "https://github.com/adius/timeomat#readme",
+  "homepage": "https://github.com/ad-si/timeomat#readme",
   "devDependencies": {
-    "stylus": "^0.54.5"
+    "@stylistic/eslint-plugin": "^5.6.1",
+    "@typescript-eslint/parser": "^8.47.0",
+    "eslint": "^9.39.1",
+    "eslint-stylistic": "^0.0.0-0",
+    "stylus": "^0.64.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.4"
+  },
+  "dependencies": {
+    "@types/keymaster": "^1.6.33",
+    "@types/mousetrap": "^1.6.15",
+    "keymaster": "^1.6.2",
+    "mousetrap": "^1.6.5",
+    "shaven": "^2.1.0"
   }
 }

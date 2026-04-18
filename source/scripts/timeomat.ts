@@ -1,0 +1,997 @@
+import Mousetrap from 'mousetrap'
+import key from 'keymaster'
+import shaven, { ShavenResult, ShavenTree } from './shaven-wrapper.ts'
+import Routor from './routor.ts'
+
+shaven.setDefaults({ document })
+
+interface Clock {
+  showTime(): void
+  showDate(): void
+}
+
+interface Stopwatch {
+  startStop(): void
+  showTime(): void
+  showRound(): void
+  reset(): void
+  start(): void
+  stop(): void
+}
+
+interface Timer {
+  start(): Timer
+}
+
+interface Countdown {
+  name(value: string): Countdown
+  start(): Countdown
+}
+
+interface ShortcutsWindow {
+  toggle(): void
+}
+
+(function (window: Window, document: Document) {
+  let clock: Clock
+  // alarm = new Alarm(),
+  let stopwatch: Stopwatch
+  let presentView: string = ''
+  let presentTitle: string
+  let routor: Routor
+
+  function $(query: string): Element {
+    return document.querySelector(query)!
+  }
+
+  function capitalise(string: string): string {
+    return string.charAt(0).toUpperCase() + string.slice(1)
+  }
+
+  function removeElement(element: Element): void {
+    element.parentNode!.removeChild(element)
+  }
+
+  function toTimeString(value: number): string {
+    let time = ''
+    let a: number
+    let d: number
+    let h: number
+    let m: number
+    let s: number
+    let ms: number
+    const floor = Math.floor
+
+    value = (value >= 0) ? value : 0
+
+    a = floor(value / 31536000000)
+    value %= 31536000000
+    d = floor(value / 86400000)
+    value %= 86400000
+    h = floor(value / 3600000)
+    value %= 3600000
+    m = floor(value / 60000)
+    value %= 60000
+    s = floor(value / 1000)
+    value %= 1000
+    ms = floor(value / 10)
+
+    time += (a) ? ((a == 1) ? a + ' Year, ' : a + ' Years, ') : ''
+    time += (d) ? ((d == 1) ? d + ' Day, ' : d + ' Days, ') : ''
+    time += (h > 9) ? h + ':' : '0' + h + ':'
+    time += (m > 9) ? m + ':' : (m == 0) ? '0' + m + ':' : '0' + m + ':'
+    time += (s > 9) ? s + '.' : '0' + s + '.'
+    time += (ms >= 10) ? ms : (ms < 10 && ms >= 0) ? '0' + ms : '00' + ms
+
+    return time
+  }
+
+  function toEndTime(duration: string): Date {
+    const dur = duration.split(':')
+
+    return new Date((parseInt(dur[0]) * 60 * 60 * 1000) + (parseInt(dur[1]) * 60 * 1000) + (parseInt(dur[2]) * 1000) + new Date().getTime())
+  }
+
+  function isFutureDate(date: Date): boolean {
+    return !isNaN(date.getTime()) && date.getTime() > new Date().getTime()
+  }
+
+  function createCountdown(endTime: Date, countdownName: string): Countdown {
+    return (new Countdown(endTime))
+      .name(countdownName)
+      .start()
+  }
+
+  function createRoutor(): Routor {
+    return new Routor({
+      // '^/$': '/countdown',
+      '^/$': viewPage,
+      '^/clock$': function (params: RegExpExecArray) {
+        viewPage(params)
+        key.setScope('clock')
+      },
+      /* '^/alarm$':function(){
+       viewPage()
+       key.setScope('alarm')
+       }, */
+      '^/stopwatch': function (params: RegExpExecArray) {
+        viewPage(params)
+        key.setScope('stopwatch')
+      },
+      // '^/worldclock$': viewPage,
+      '^/stopwatch/start$': stopwatch.start,
+
+      '^/timer': function (params: RegExpExecArray) {
+        viewPage(params)
+        key.setScope('timer')
+      },
+      '^/timer/(\\d*:\\d*:\\d*)$': function (params: RegExpExecArray) {
+        ($('#timers') as HTMLElement).innerHTML = ''
+
+        ;(new Timer(toEndTime(params[1]))).start()
+      },
+      '^/(\\d+:\\d+:\\d+)$': '/timer/$1',
+      '^/(?:(\\d+)h)?(?:(\\d+)(?:m|min))?(?:(\\d+)(?:s|sec|sek))?$': function (params: RegExpExecArray) {
+        const array = params.slice(1, 4)
+
+        if (array.join('')) {
+          viewPage('/timer');
+
+          (new Timer(toEndTime(array.join(':')))).start()
+        }
+      },
+      '^/nap$': '/timer/00:20:00',
+      '^/brushteeth$': '/timer/00:05:00',
+      '^/quick(ie|y)$': '/timer/00:10:00',
+
+      '^/countdown': function (params: RegExpExecArray) {
+        viewPage(params)
+        key.setScope('countdown')
+      },
+      '^/countdown/(.+)/(\\d{4}-\\d{2}-\\d{2}t\\d{2}:\\d{2})$': function (params: RegExpExecArray) {
+        const endTime = new Date(params[2])
+
+        if (!isFutureDate(endTime)) {
+          alert('The countdown must end in the future.')
+          return
+        }
+
+        (($('#countdowns')) as HTMLElement).innerHTML = ''
+
+        createCountdown(endTime, decodeURIComponent(params[1]))
+      },
+      '^/(christmas|xmas|x-mas)$': '/countdown/Christmas/2013-12-24T20:00',
+      '^/(newyear|new-year)$': '/countdown/New Year/2013-12-24T20:00',
+      '^/error$': viewPage,
+    })
+  }
+
+  function setTitle(value: string): void {
+    document.title = value
+  }
+
+  function timeIsOver(): void {
+    function setFavicon(state: string | null): void {
+      const fav = $('#favicon') as HTMLLinkElement
+
+      if (state == null)
+        fav.href = 'images/favicon.png'
+      else if (state == 'warn')
+        fav.href = 'images/favicon2.png'
+    }
+
+    const audio = new Audio()
+    audio.src = 'sounds/alarm.wav'
+    audio.volume = 1
+    audio.addEventListener('canplay', function () {
+      audio.play()
+      setFavicon('warn')
+      setTitle('+++ Time is up! +++')
+      // document.documentElement.style.background = 'rgb(100,0,0)'
+      const notification = alert('Your Time Is Up!')
+
+      if (notification === undefined) {
+        audio.pause()
+        document.documentElement.style.background = 'url(images/bg.jpg) black'
+        setFavicon(null)
+        setTitle(presentTitle)
+      }
+    }, false)
+  }
+
+  class Clock {
+    private weekdays = [
+      'Sunday',
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+    ]
+
+    private months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ]
+
+    showTime(): void {
+      (($('#digitalclock')) as HTMLElement).innerHTML = new Date().toTimeString().substr(0, 8)
+
+      setTimeout(() => {
+        this.showTime()
+      }, 200)
+    }
+
+    showDate(): void {
+      const d = new Date();
+
+      (($('#date')) as HTMLElement).innerHTML = this.weekdays[d.getDay()] + ', ' + d.getDate() + '.' + this.months[d.getMonth()] + ' ' + d.getFullYear()
+
+      setTimeout(() => {
+        this.showDate()
+      }, 1000)
+    }
+  }
+
+  class Stopwatch {
+    private timer: number | undefined
+    private startTime: Date = new Date()
+    private time = 0
+    private firstTime = true
+    private isRunning = false
+    private tableStatus = false
+    private roundCounter = 0
+    private lastRound = 0
+    private stopwatchDisplay = $('#stopwatchDisplay') as HTMLElement
+    private stopwatchStart = $('#stopwatchStart') as HTMLElement
+    private stopwatchReset = $('#stopwatchReset') as HTMLElement
+    private stopwatchRound = $('#stopwatchRound') as HTMLElement
+    private table = $('#rounds') as HTMLTableElement
+    private nextRound = $('#nextRound') as HTMLElement
+    private nextDuration = $('#nextDuration') as HTMLElement
+    private nextTime = $('#nextTime') as HTMLElement
+
+    start(): void {
+      if (!this.isRunning) {
+        if (this.firstTime) {
+          this.startTime = new Date()
+          this.firstTime = false
+        }
+
+        this.isRunning = true
+
+        this.showTime();
+
+        (this.stopwatchStart as HTMLElement).innerHTML = 'Stop'
+        this.stopwatchReset.classList.add('hidden')
+        this.stopwatchRound.classList.remove('hidden')
+      }
+    }
+
+    stop(): void {
+      clearTimeout(this.timer)
+      this.isRunning = false;
+      (this.stopwatchStart as HTMLElement).innerHTML = 'Continue'
+      this.stopwatchReset.classList.remove('hidden')
+      this.stopwatchRound.classList.add('hidden')
+    }
+
+    startStop(): void {
+      if (!this.isRunning)
+        this.start()
+      else
+        this.stop()
+    }
+
+    showTime(): void {
+      if (this.isRunning) {
+        const now = new Date()
+        this.time = now.getTime() - this.startTime.getTime()
+
+        const display = this.stopwatchDisplay as HTMLElement
+        display.innerHTML = toTimeString(this.time)
+
+        if (this.tableStatus) {
+          (this.nextRound as HTMLElement).innerHTML = (this.roundCounter + 1).toString();
+          (this.nextDuration as HTMLElement).innerHTML = toTimeString(this.time - this.lastRound);
+          (this.nextTime as HTMLElement).innerHTML = toTimeString(this.time)
+        }
+
+        this.timer = window.setTimeout(() => {
+          this.showTime()
+        }, 10)
+      }
+      else {
+        (this.stopwatchDisplay as HTMLElement).innerHTML = '00:00:00.00'
+      }
+    }
+
+    showRound(): void {
+      this.table.classList.remove('hidden')
+
+      const row = shaven(
+        ['tr.row',
+          ['td', (++this.roundCounter).toString()],
+          ['td', toTimeString(this.time - this.lastRound)],
+          ['td', toTimeString(this.time)],
+        ],
+      ) as ShavenResult
+
+      if (row.rootElement)
+        (this.table.tBodies[0] as HTMLTableSectionElement).appendChild(row.rootElement as HTMLElement)
+
+      this.lastRound = this.time
+      this.tableStatus = true
+    }
+
+    reset(): void {
+      this.firstTime = true
+      this.roundCounter = 0
+      this.lastRound = 0;
+
+      (this.stopwatchDisplay as HTMLElement).innerHTML = '00:00:00.00';
+      (this.stopwatchStart as HTMLElement).innerHTML = 'Start'
+      this.stopwatchReset.classList.add('hidden')
+      this.table.classList.add('hidden')
+
+      const rows = document.querySelectorAll('.row')
+
+      for (let a = 0; a < rows.length; a++) {
+        removeElement(rows[a] as Element)
+      }
+    }
+  }
+
+  class Timer {
+    private running = false
+    private leftTime = 0
+    private timeout: number | undefined
+    private delayStart: Date | undefined
+    private timerElements: {
+      el: HTMLElement
+      time: HTMLElement
+      pauseButton: HTMLButtonElement
+      cancelButton: HTMLButtonElement
+    }
+
+    private endTime: Date
+
+    constructor(endTime: Date) {
+      this.endTime = endTime
+
+      const timerTree = shaven(
+        ['div$el',
+          ['span$time'],
+          ['div',
+            ['button$pauseButton', 'Pause'],
+            ['button$cancelButton', 'X'],
+          ],
+        ],
+      ) as ShavenResult
+
+      this.timerElements = timerTree.references as {
+        el: HTMLElement
+        time: HTMLElement
+        pauseButton: HTMLButtonElement
+        cancelButton: HTMLButtonElement
+      }
+
+      if (timerTree.rootElement)
+        ($('#timers') as HTMLElement).appendChild(timerTree.rootElement as HTMLElement)
+
+      this.timerElements.pauseButton.addEventListener('click', this.pauseResume, false)
+      this.timerElements.cancelButton.addEventListener('click', this.cancel, false)
+    }
+
+    private update = () => {
+      this.leftTime = this.endTime.getTime() - new Date().getTime()
+
+      this.timerElements.time.innerHTML = toTimeString(this.leftTime)
+      // setTitle(toTimeString(leftTime))
+
+      if (this.leftTime <= 0) {
+        clearTimeout(this.timeout)
+        removeElement(this.timerElements.pauseButton)
+        timeIsOver()
+      }
+      else {
+        this.timeout = setTimeout(this.update, 10)
+      }
+    }
+
+    private pauseResume = (event: MouseEvent) => {
+      const button = event.currentTarget as HTMLButtonElement
+
+      if (this.running) {
+        button.innerHTML = 'Resume'
+        clearTimeout(this.timeout)
+        this.delayStart = new Date()
+        this.running = false
+      }
+      else {
+        button.innerHTML = 'Pause'
+        this.endTime.setTime(this.endTime.getTime() + (new Date().getTime() - this.delayStart!.getTime()))
+        this.timeout = setTimeout(this.update, 10)
+        this.running = true
+      }
+    }
+
+    private cancel = () => {
+      removeElement(this.timerElements.el as Element)
+      clearTimeout(this.timeout)
+    }
+
+    start(): Timer {
+      this.running = true
+
+      this.update()
+
+      return this
+    }
+  }
+
+  class Countdown {
+    private leftTime: number = 0
+    private timeout: number | undefined
+    private nameValue: string | undefined
+    private countdownElements: {
+      el: HTMLElement
+      time: HTMLElement
+      name: HTMLElement
+      cancelButton: HTMLElement
+    }
+
+    private endTime: Date
+
+    constructor(endTime: Date) {
+      this.endTime = endTime
+      const countdowns = $('#countdowns') as HTMLElement
+      const countdownTree = shaven(
+        ['div$el',
+          ['div',
+            ['p$name'],
+            ['time$time', toTimeString(this.leftTime)],
+          ],
+          ['div',
+            ['button$cancelButton', 'X'],
+          ],
+        ],
+      ) as ShavenResult
+
+      this.countdownElements = countdownTree.references as {
+        el: HTMLElement
+        time: HTMLElement
+        name: HTMLElement
+        cancelButton: HTMLElement
+      }
+
+      if (countdownTree.rootElement)
+        countdowns.appendChild(countdownTree.rootElement as HTMLElement)
+      this.countdownElements.cancelButton.addEventListener('click', this.cancel, false)
+    }
+
+    private update = () => {
+      this.leftTime = this.endTime.getTime() - new Date().getTime()
+
+      this.countdownElements.time.innerHTML = toTimeString(this.leftTime)
+      // setTitle(toTimeString(leftTime))
+
+      if (this.leftTime <= 0) {
+        clearTimeout(this.timeout)
+        timeIsOver()
+      }
+      else {
+        this.timeout = setTimeout(this.update, 10)
+      }
+    }
+
+    private cancel = () => {
+      removeElement(this.countdownElements.el)
+      clearTimeout(this.timeout)
+    }
+
+    name(value: string): Countdown {
+      this.nameValue = value
+      return this
+    }
+
+    start(): Countdown {
+      this.update()
+      this.countdownElements.name.innerHTML = this.nameValue || ' '
+      return this
+    }
+  }
+
+  function viewPage(params?: RegExpExecArray | string | string[]): void {
+    let page: string
+    let url: string
+    let title: string
+    const wrapper = document.querySelectorAll('.wrapper')
+
+    if (typeof params !== 'string') {
+      if (!params)
+        return
+      url = params[0]
+    }
+    else
+      url = params
+
+    page = (url == '/') ? 'home' : url.split('/')[1]
+
+    // console.log(page)
+
+    if (page != presentView) {
+      for (let i = 0; i < wrapper.length; i++)
+        wrapper[i].classList.remove('visible')
+
+      $('#' + page + 'wrapper').classList.add('visible')
+
+      title = capitalise(page) + ' | Timeomat'
+      setTitle(title)
+      presentTitle = title
+    }
+
+    presentView = page
+  }
+
+  /*
+   function Poopup(contentClass) {
+
+   const contentItems = contentClass || '.cOverlay';
+   const template = $(
+   '<div class="overlay">' +
+   '<div class="content">' +
+   '<div class="close">close</div>' +
+   '</div>' +
+   '</div>'
+   );
+
+   const overlay = template.css({
+   'position': 'absolute',
+   'width': '100%',
+   'height': '100%',
+   'backgroundColor': '#555',
+   'top': '0',
+   'left': '0',
+   'display': 'none'
+   });
+   const content = template.find(".content").css({
+   'float': 'left',
+   'backgroundColor': '#fff'
+
+   });
+   const close = template.find(".close");
+
+   content.append($(contentItems));
+   $(contentItems).show();
+
+   this.click(function () {
+
+   overlay.show();
+   content.show();
+
+   const height = $(document).height() / 2 - content.height() / 2;
+   const width = $(document).width() / 2 - content.width() / 2;
+
+   content.css('marginTop', height);
+   content.css('marginLeft', width);
+
+   return false;
+   });
+
+   content.click(function (e) {
+   e.stopPropagation();
+   return false;
+   });
+
+   close.click(function () {
+   overlay.hide();
+   content.hide();
+   return false;
+   });
+
+   overlay.click(function () {
+   overlay.hide();
+   content.hide();
+   return false;
+   });
+
+   $(window).resize(function () {
+   const height = $(document).height() / 2 - content.height() / 2;
+   const width = $(document).width() / 2 - content.width() / 2;
+   content.css('marginTop', height);
+   content.css('marginLeft', width);
+   });
+
+   $('body').append(template);
+   }
+   */
+
+  type ShortcutHandler = () => void | boolean
+  type ShortcutItem = [string[], string, ShortcutHandler]
+
+  class ShortcutsWindow {
+    private shortcuts: Record<string, ShortcutItem[]> = {
+      'side wide': [
+        [
+          ['?'],
+          'Bring up this Shortcut Reference',
+          () => {
+            this.toggle()
+          },
+        ],
+        [
+          ['c'],
+          'Switch to Clock Tab',
+          function () {
+            routor.route('/clock')
+          },
+        ],
+        [
+          ['s'],
+          'Switch to Stopwatch Tab',
+          function () {
+            routor.route('/stopwatch')
+          },
+        ],
+        [
+          ['t'],
+          'Switch to Timer Tab',
+          function () {
+            routor.route('/timer')
+          },
+        ],
+        [
+          ['d'],
+          'Switch to Countdown Tab',
+          function () {
+            routor.route('/countdown')
+          },
+        ],
+      ],
+      /* 'clock': [
+       [
+       ['a'],
+       'Toggle between Analog and Digital Clock',
+       function() {
+       }
+       ]
+       ], */
+      'timer': [
+        /* [
+         ['space'],
+         'Pause/Resume last Timer',
+         function() {
+         }
+         ], */
+        [
+          ['n'],
+          'Create New Timer',
+          function () {
+            const timerTime = $('#timerTime') as HTMLInputElement
+            timerTime.focus()
+            timerTime.value = ''
+            return false
+          },
+        ],
+      ],
+      'stopwatch': [
+        [
+          ['space'],
+          'Start/Pause the Stopwatch',
+          function () {
+            stopwatch.startStop()
+            return false
+          },
+        ],
+        [
+          ['r'],
+          'New Round',
+          function () {
+            stopwatch.showRound()
+          },
+        ],
+        [
+          ['x'],
+          'Reset Stopwatch',
+          function () {
+            stopwatch.stop()
+            stopwatch.reset()
+          },
+        ],
+      ],
+      'countdown': [
+        /* [
+         ['x'],
+         'Remove most recent Countdown',
+         function() {
+         }
+         ], */
+        [
+          ['n'],
+          'Create New Countdown',
+          function () {
+            ($('#countdownName') as HTMLInputElement).value = '';
+            ($('#countdownName') as HTMLInputElement).focus()
+            return false
+          },
+        ],
+      ],
+    }
+
+    private content: ShavenTree = ['div.content',
+      ['header',
+        ['h1', 'Keyboard Shortcuts'],
+      ],
+    ]
+
+    private body: { shinebox: HTMLElement } | undefined
+    private visible = false
+
+    constructor() {
+      this.buildContent()
+
+      const shineboxTree = shaven(
+        ['div#shinebox',
+          ['div.wrap',
+            this.content,
+          ],
+        ],
+      )
+
+      document.body.appendChild(shineboxTree.rootElement as HTMLElement)
+      this.body = { shinebox: shineboxTree.rootElement as HTMLElement }
+      this.body.shinebox.style.display = 'none'
+    }
+
+    private getKeyInfo(keyString: string): { character: string, type: string } {
+      const keys: Record<string, { character: string, type: string }> = {
+        shift: {
+          character: '⇧',
+          type: 'modifier',
+        },
+        alt: {
+          character: '⌥',
+          type: 'modifier',
+        },
+        ctrl: {
+          character: '⌃',
+          type: 'modifier',
+        },
+        cmd: {
+          character: '⌘',
+          type: 'modifier',
+        },
+        space: {
+          character: ' ',
+          type: 'space',
+        },
+      }
+
+      const key = keys[keyString.toLowerCase()]
+      if (key)
+        return key
+
+      return {
+        character: keyString.toLowerCase(),
+        type: '',
+      }
+    }
+
+    private buildContent() {
+      Object.keys(this.shortcuts).forEach((sectionName: string) => {
+        const section: ShavenTree = ['section', ['h2', sectionName]]
+
+        this.shortcuts[sectionName].forEach((item: ShortcutItem) => {
+          const combo: ShavenTree = ['span.keys']
+
+          item[0].forEach((k: string) => {
+            // console.log(k, i.replace('side wide', 'all'), item[2])
+
+            if (k != '?')
+              key(k, sectionName.replace('side wide', 'all'), item[2])
+
+            const keys = k.split('+')
+
+            keys.forEach((keyName: string) => {
+              const keyInfo = this.getKeyInfo(keyName)
+
+              combo.push(['kbd', { class: 'key ' + keyInfo.type }, keyInfo.character], '+')
+            })
+            combo.pop()
+          })
+
+          section.push(
+            ['p',
+              combo,
+              ['span', item[1]],
+            ],
+          )
+        })
+
+        this.content.push(section)
+      })
+    }
+
+    private hide = (event?: KeyboardEvent | MouseEvent) => {
+      if (event) {
+        event.stopPropagation()
+
+        if (event instanceof KeyboardEvent) {
+          if (event.key !== 'Escape')
+            return
+        }
+        else if (event.type !== 'click')
+          return
+      }
+
+      if (!this.body)
+        return
+
+      this.body.shinebox.style.display = 'none'
+      this.visible = false
+    }
+
+    private stopPropagation = (event: Event) => {
+      event.stopPropagation()
+    }
+
+    toggle = () => {
+      if (!this.body)
+        return
+
+      if (this.visible) {
+        this.hide()
+
+        removeEventListener('keydown', this.hide, false)
+        this.body.shinebox.removeEventListener('click', this.stopPropagation, false)
+        document.removeEventListener('click', this.hide, false)
+      }
+      else {
+        this.body.shinebox.style.display = 'block'
+        this.visible = true
+
+        window.addEventListener('keydown', this.hide, false);
+        (this.body.shinebox as HTMLElement).addEventListener('click', this.stopPropagation, false)
+        document.addEventListener('click', this.hide, false)
+      }
+    }
+  }
+
+  clock = new Clock()
+  stopwatch = new Stopwatch()
+  routor = createRoutor()
+
+  function initEventListeners() {
+    const menuItems = [
+      'home',
+      'clock',
+      // 'alarm',
+      'stopwatch',
+      'timer',
+      'countdown',
+      // 'worldclock'
+    ]
+
+    const countdownNameInput = $('#countdownName') as HTMLInputElement
+    const countdownDateInput = $('#countdownDate') as HTMLInputElement
+    const countdownTimeInput = $('#countdownTime') as HTMLInputElement
+
+    function setDefaultCountdownInputs() {
+      const defaultDate = new Date(new Date().getTime() + 60000)
+
+      countdownDateInput.value = defaultDate.toISOString().slice(0, 10)
+      countdownTimeInput.value = defaultDate.toTimeString().slice(0, 5)
+    }
+
+    setDefaultCountdownInputs()
+
+    menuItems.forEach(function (item: string) {
+      ($('#' + item) as HTMLElement).addEventListener('click', function (event: Event) {
+        event.preventDefault()
+
+        if (item == 'home')
+          routor.route('/')
+        else
+          routor.route('/' + item)
+      }, false)
+    });
+
+    ($('#startTimer') as HTMLElement).addEventListener('click', function (e: Event) {
+      e.preventDefault();
+
+      (new Timer(toEndTime(($('#timerTime') as HTMLInputElement).value))).start()
+
+      // routor.route('/timer/' + (($('#timerTime') as HTMLInputElement).value))
+    }, false);
+
+    ($('#startCountdown') as HTMLElement).addEventListener('click', function (e: Event) {
+      e.preventDefault()
+
+      const countdownEndTime = new Date(countdownDateInput.value + 'T' + countdownTimeInput.value)
+
+      if (!isFutureDate(countdownEndTime)) {
+        alert('The countdown must end in the future.')
+        return
+      }
+
+      createCountdown(countdownEndTime, countdownNameInput.value)
+    }, false)
+
+    /*
+     (($('#showFullscreen') as HTMLElement).addEventListener('click', function (event: Event) {
+
+     routor.route('/countdown/' +
+     (($('#countdownName') as HTMLInputElement).value) +
+     '/' +
+     (($('#countdownDate') as HTMLInputElement).value) +
+     'T' +
+     $('#countdownTime').value)
+     })
+     */
+
+    /*
+     (($('#setAlarm') as HTMLElement).addEventListener('click', function (e: Event) {
+e.preventDefault();
+
+     const days: string[] = []
+     const inputs = $('#alarmDays').getElementsByTagName('input')
+
+      for (const a in inputs) {
+        if (inputs.hasOwnProperty(a)) {
+          if ((inputs[a] as HTMLInputElement).checked)
+            days.push((inputs[a] as HTMLInputElement).id)
+        }
+      }
+
+     alarm.check($('#alarmTime').value, days, $('#alarmSound').value)
+
+     //const url = 'timer'
+     //history.pushState({'url': url}, url, baseURL + url)
+     }, false)
+     */
+
+    clock.showTime()
+
+    clock.showDate()
+
+    stopwatch.showTime();
+
+    ($('#stopwatchStart') as HTMLElement).addEventListener('click', function () {
+      stopwatch.startStop()
+    }, false);
+
+    ($('#stopwatchRound') as HTMLElement).addEventListener('click', function () {
+      stopwatch.showRound()
+    }, false);
+
+    ($('#stopwatchReset') as HTMLElement).addEventListener('click', function () {
+      stopwatch.reset()
+    }, false)
+  }
+
+  initEventListeners()
+
+  // Preload favicon
+  new Image().src = 'images/favicon2.png'
+
+  routor.route()
+
+  const shortcutsWindow = new ShortcutsWindow()
+
+  // Shortcuts window
+  Mousetrap.bind('?', function () {
+    shortcutsWindow.toggle()
+  })
+})(window, document)
