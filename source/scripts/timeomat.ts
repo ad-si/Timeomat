@@ -563,6 +563,7 @@ interface ShortcutsWindow {
       time: HTMLElement
       pauseButton: HTMLButtonElement
       silenceButton: HTMLButtonElement
+      fullscreenButton: HTMLButtonElement
       cancelButton: HTMLButtonElement
     }
 
@@ -579,6 +580,7 @@ interface ShortcutsWindow {
           ['div',
             ['button$pauseButton', 'Pause'],
             ['button$silenceButton.silence', 'Silence'],
+            ['button$fullscreenButton.fullscreen', { title: 'Fullscreen' }, '⛶'],
             ['button$cancelButton', 'X'],
           ],
         ],
@@ -589,6 +591,7 @@ interface ShortcutsWindow {
         time: HTMLElement
         pauseButton: HTMLButtonElement
         silenceButton: HTMLButtonElement
+        fullscreenButton: HTMLButtonElement
         cancelButton: HTMLButtonElement
       }
 
@@ -597,6 +600,7 @@ interface ShortcutsWindow {
 
       this.timerElements.pauseButton.addEventListener('click', this.pauseResume, false)
       this.timerElements.silenceButton.addEventListener('click', this.silence, false)
+      this.timerElements.fullscreenButton.addEventListener('click', this.toggleFullscreen, false)
       this.timerElements.cancelButton.addEventListener('click', this.cancel, false)
 
       if (options?.paused && options.leftTime !== undefined) {
@@ -654,6 +658,17 @@ interface ShortcutsWindow {
       }
       this.timerElements.el.classList.remove('expired')
       resetAlarmStateIfClear()
+    }
+
+    private toggleFullscreen = () => {
+      if (document.fullscreenElement === this.timerElements.el) {
+        document.exitFullscreen().catch(() => {})
+      }
+      else {
+        this.timerElements.el.requestFullscreen().catch((e) => {
+          console.warn('Fullscreen failed', e)
+        })
+      }
     }
 
     private pauseResume = (event: MouseEvent) => {
@@ -716,6 +731,7 @@ interface ShortcutsWindow {
       time: HTMLElement
       name: HTMLElement
       silenceButton: HTMLButtonElement
+      fullscreenButton: HTMLButtonElement
       cancelButton: HTMLElement
     }
 
@@ -731,10 +747,11 @@ interface ShortcutsWindow {
         ['div$el',
           ['div',
             ['p$name'],
-            ['time$time', toTimeString(this.leftTime)],
+            ['time$time', toTimeStringSeconds(this.leftTime)],
           ],
           ['div',
             ['button$silenceButton.silence', 'Silence'],
+            ['button$fullscreenButton.fullscreen', { title: 'Fullscreen' }, '⛶'],
             ['button$cancelButton', 'X'],
           ],
         ],
@@ -745,12 +762,14 @@ interface ShortcutsWindow {
         time: HTMLElement
         name: HTMLElement
         silenceButton: HTMLButtonElement
+        fullscreenButton: HTMLButtonElement
         cancelButton: HTMLElement
       }
 
       if (countdownTree.rootElement)
         countdowns.appendChild(countdownTree.rootElement as HTMLElement)
       this.countdownElements.silenceButton.addEventListener('click', this.silence, false)
+      this.countdownElements.fullscreenButton.addEventListener('click', this.toggleFullscreen, false)
       this.countdownElements.cancelButton.addEventListener('click', this.cancel, false)
 
       activeCountdowns.set(this.key, this)
@@ -794,6 +813,17 @@ interface ShortcutsWindow {
       }
       this.countdownElements.el.classList.remove('expired')
       resetAlarmStateIfClear()
+    }
+
+    private toggleFullscreen = () => {
+      if (document.fullscreenElement === this.countdownElements.el) {
+        document.exitFullscreen().catch(() => {})
+      }
+      else {
+        this.countdownElements.el.requestFullscreen().catch((e) => {
+          console.warn('Fullscreen failed', e)
+        })
+      }
     }
 
     private cancel = () => {

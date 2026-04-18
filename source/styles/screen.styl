@@ -524,6 +524,54 @@ body > nav
 #countdowns > div.expired button.silence
   display inline-block
 
+#timers button.fullscreen,
+#countdowns button.fullscreen
+  width 40px
+  font-size 18px
+  padding 3px 0 0 0
+  display inline-flex
+  align-items center
+  justify-content center
+  &:before
+    width 58px
+
+#timers > div:fullscreen,
+#countdowns > div:fullscreen
+  width 100vw
+  height 100vh
+  margin 0
+  padding 0
+  border-radius 0
+  background-image linear-gradient(gray(10), gray(0))
+  display flex
+  align-items center
+  justify-content center
+  > div:last-of-type
+    position absolute
+    right 40px
+    bottom 40px
+    top auto
+  button:last-of-type
+    display none
+
+#timers > div:fullscreen
+  span
+    font-size 18vw
+    line-height 1
+
+#countdowns > div:fullscreen
+  flex-direction column
+  > div:first-of-type
+    text-align center
+    width auto
+  p
+    font-size 6vw
+    margin-bottom 2vw
+    width auto
+  time
+    font-size 14vw
+    line-height 1
+
 #countdownFullscreen
   h2
     font-size 92px
