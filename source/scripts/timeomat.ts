@@ -1183,6 +1183,25 @@ interface ShortcutsWindow {
     const countdownDateInput = $('#countdownDate') as HTMLInputElement
     const countdownTimeInput = $('#countdownTime') as HTMLInputElement
 
+    function restrictInput(input: HTMLInputElement, allowed: RegExp): void {
+      input.addEventListener('beforeinput', (event: Event) => {
+        const ie = event as InputEvent
+        if (ie.data == null)
+          return
+        if (!allowed.test(ie.data))
+          event.preventDefault()
+      }, false)
+      input.addEventListener('input', () => {
+        const cleaned = Array.from(input.value).filter(c => allowed.test(c)).join('')
+        if (cleaned !== input.value)
+          input.value = cleaned
+      }, false)
+    }
+
+    restrictInput(timerTimeInput, /^[\d:]+$/)
+    restrictInput(countdownDateInput, /^[\d-]+$/)
+    restrictInput(countdownTimeInput, /^[\d:]+$/)
+
     function setDefaultCountdownInputs() {
       const defaultDate = new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
 
