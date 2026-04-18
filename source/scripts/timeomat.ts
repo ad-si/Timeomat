@@ -87,6 +87,10 @@ interface ShortcutsWindow {
     return time
   }
 
+  function toTimeStringSeconds(value: number): string {
+    return toTimeString(value).replace(/\.\d+$/, '')
+  }
+
   function toEndTime(duration: string): Date {
     const dur = duration.split(':')
 
@@ -763,7 +767,7 @@ interface ShortcutsWindow {
     private update = () => {
       this.leftTime = this.endTime.getTime() - new Date().getTime()
 
-      this.countdownElements.time.innerHTML = toTimeString(this.leftTime)
+      this.countdownElements.time.innerHTML = toTimeStringSeconds(this.leftTime)
       // setTitle(toTimeString(leftTime))
 
       if (this.leftTime <= 0) {
@@ -778,7 +782,8 @@ interface ShortcutsWindow {
         }
       }
       else {
-        this.timeout = setTimeout(this.update, 10)
+        const msUntilNextSecond = this.leftTime % 1000 || 1000
+        this.timeout = setTimeout(this.update, msUntilNextSecond)
       }
     }
 
