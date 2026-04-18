@@ -2,6 +2,7 @@ import Mousetrap from 'mousetrap'
 import key from 'keymaster'
 import shaven, { ShavenResult, ShavenTree } from './shaven-wrapper.ts'
 import Routor from './routor.ts'
+import notificationIconUrl from '../images/icon.png'
 
 shaven.setDefaults({ document })
 
@@ -96,10 +97,80 @@ interface ShortcutsWindow {
     return !isNaN(date.getTime()) && date.getTime() > new Date().getTime()
   }
 
-  function createCountdown(endTime: Date, countdownName: string): Countdown {
-    return (new Countdown(endTime))
+  const activeCountdownKeys = new Set<string>()
+
+  function countdownKey(endTime: Date, countdownName: string): string {
+    return 'countdown-' + endTime.getTime() + '-' + (countdownName || '')
+  }
+
+  function createCountdown(endTime: Date, countdownName: string): Countdown | null {
+    const key = countdownKey(endTime, countdownName)
+    if (activeCountdownKeys.has(key)) {
+      alert('A countdown with the same name and end time is already running.')
+      return null
+    }
+    activeCountdownKeys.add(key)
+    return (new Countdown(endTime, key))
       .name(countdownName)
       .start()
+  }
+
+  const swRegistrationPromise: Promise<ServiceWorkerRegistration | null> = (async () => {
+    if (!('serviceWorker' in navigator))
+      return null
+    try {
+      return await navigator.serviceWorker.register('/sw.js')
+    }
+    catch (e) {
+      console.warn('Service worker registration failed', e)
+      return null
+    }
+  })()
+
+  async function scheduleCountdownNotification(endTime: Date, countdownName: string, tag: string): Promise<string | null> {
+    if (!('TimestampTrigger' in window)) {
+      console.info('Notification Triggers API not supported; notification requires tab to stay open.')
+      return null
+    }
+
+    const reg = await swRegistrationPromise
+    if (!reg)
+      return null
+
+    if (Notification.permission === 'default') {
+      const perm = await Notification.requestPermission()
+      if (perm !== 'granted')
+        return null
+    }
+    else if (Notification.permission !== 'granted') {
+      return null
+    }
+
+    try {
+      await reg.showNotification(countdownName || 'Countdown', {
+        body: 'Your time is up!',
+        icon: notificationIconUrl,
+        tag,
+        data: { url: '/countdown' },
+        showTrigger: new (window as unknown as { TimestampTrigger: new (t: number) => unknown }).TimestampTrigger(endTime.getTime()),
+      } as NotificationOptions)
+      return tag
+    }
+    catch (e) {
+      console.warn('Failed to schedule notification', e)
+      return null
+    }
+  }
+
+  async function cancelScheduledNotification(tag: string): Promise<void> {
+    const reg = await swRegistrationPromise
+    if (!reg)
+      return
+    const notifications = await reg.getNotifications(
+      { tag, includeTriggered: true } as unknown as GetNotificationOptions,
+    )
+    for (const n of notifications)
+      n.close()
   }
 
   function createRoutor(): Routor {
@@ -445,6 +516,7 @@ interface ShortcutsWindow {
     private leftTime: number = 0
     private timeout: number | undefined
     private nameValue: string | undefined
+    private notificationTag: string | null = null
     private countdownElements: {
       el: HTMLElement
       time: HTMLElement
@@ -453,9 +525,11 @@ interface ShortcutsWindow {
     }
 
     private endTime: Date
+    private key: string
 
-    constructor(endTime: Date) {
+    constructor(endTime: Date, key: string) {
       this.endTime = endTime
+      this.key = key
       const countdowns = $('#countdowns') as HTMLElement
       const countdownTree = shaven(
         ['div$el',
@@ -490,6 +564,7 @@ interface ShortcutsWindow {
       if (this.leftTime <= 0) {
         clearTimeout(this.timeout)
         timeIsOver()
+        activeCountdownKeys.delete(this.key)
       }
       else {
         this.timeout = setTimeout(this.update, 10)
@@ -499,6 +574,11 @@ interface ShortcutsWindow {
     private cancel = () => {
       removeElement(this.countdownElements.el)
       clearTimeout(this.timeout)
+      activeCountdownKeys.delete(this.key)
+      if (this.notificationTag) {
+        cancelScheduledNotification(this.notificationTag)
+        this.notificationTag = null
+      }
     }
 
     name(value: string): Countdown {
@@ -509,6 +589,10 @@ interface ShortcutsWindow {
     start(): Countdown {
       this.update()
       this.countdownElements.name.innerHTML = this.nameValue || ' '
+      scheduleCountdownNotification(this.endTime, this.nameValue || 'Countdown', this.key)
+        .then((tag) => {
+          this.notificationTag = tag
+        })
       return this
     }
   }
