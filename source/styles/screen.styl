@@ -490,6 +490,24 @@ body > nav
       &:before
         width 68px
 
+#timers > div.expired,
+#countdowns > div.expired
+  background-image linear-gradient(rgba(220,40,40,0.55), rgba(150,20,20,0.75))
+  animation pulse-expired 1.1s ease-in-out infinite alternate
+
+@keyframes pulse-expired
+  from
+    box-shadow 0 -1px 2px rgba(255,255,255,0.1), 0 2px 2px rgba(0,0,0,0.5), 0 0 12px rgba(255,60,60,0.5)
+  to
+    box-shadow 0 -1px 2px rgba(255,255,255,0.1), 0 2px 2px rgba(0,0,0,0.5), 0 0 36px rgba(255,120,120,0.95)
+
+#timers button.silence,
+#countdowns button.silence
+  display none
+#timers > div.expired button.silence,
+#countdowns > div.expired button.silence
+  display inline-block
+
 #countdownFullscreen
   h2
     font-size 92px

@@ -241,33 +241,32 @@ interface ShortcutsWindow {
     document.title = value
   }
 
-  function timeIsOver(): void {
-    function setFavicon(state: string | null): void {
-      const fav = $('#favicon') as HTMLLinkElement
+  function setFavicon(state: 'warn' | null): void {
+    const fav = $('#favicon') as HTMLLinkElement
+    fav.href = state === 'warn' ? 'images/favicon2.png' : 'images/favicon.png'
+  }
 
-      if (state == null)
-        fav.href = 'images/favicon.png'
-      else if (state == 'warn')
-        fav.href = 'images/favicon2.png'
+  function resetAlarmStateIfClear(): void {
+    if (document.querySelectorAll('.expired').length === 0) {
+      setFavicon(null)
+      if (presentTitle)
+        setTitle(presentTitle)
     }
+  }
+
+  function timeIsOver(element: HTMLElement): HTMLAudioElement {
+    element.classList.add('expired')
+    setFavicon('warn')
+    setTitle('+++ Time is up! +++')
 
     const audio = new Audio()
     audio.src = 'sounds/alarm.wav'
     audio.volume = 1
+    audio.loop = true
     audio.addEventListener('canplay', function () {
-      audio.play()
-      setFavicon('warn')
-      setTitle('+++ Time is up! +++')
-      // document.documentElement.style.background = 'rgb(100,0,0)'
-      const notification = alert('Your Time Is Up!')
-
-      if (notification === undefined) {
-        audio.pause()
-        document.documentElement.style.background = 'url(images/bg.jpg) black'
-        setFavicon(null)
-        setTitle(presentTitle)
-      }
+      audio.play().catch(() => {})
     }, false)
+    return audio
   }
 
   class Clock {
@@ -429,10 +428,12 @@ interface ShortcutsWindow {
     private leftTime = 0
     private timeout: number | undefined
     private delayStart: Date | undefined
+    private expiredAudio: HTMLAudioElement | null = null
     private timerElements: {
       el: HTMLElement
       time: HTMLElement
       pauseButton: HTMLButtonElement
+      silenceButton: HTMLButtonElement
       cancelButton: HTMLButtonElement
     }
 
@@ -446,6 +447,7 @@ interface ShortcutsWindow {
           ['span$time'],
           ['div',
             ['button$pauseButton', 'Pause'],
+            ['button$silenceButton.silence', 'Silence'],
             ['button$cancelButton', 'X'],
           ],
         ],
@@ -455,6 +457,7 @@ interface ShortcutsWindow {
         el: HTMLElement
         time: HTMLElement
         pauseButton: HTMLButtonElement
+        silenceButton: HTMLButtonElement
         cancelButton: HTMLButtonElement
       }
 
@@ -462,6 +465,7 @@ interface ShortcutsWindow {
         ($('#timers') as HTMLElement).appendChild(timerTree.rootElement as HTMLElement)
 
       this.timerElements.pauseButton.addEventListener('click', this.pauseResume, false)
+      this.timerElements.silenceButton.addEventListener('click', this.silence, false)
       this.timerElements.cancelButton.addEventListener('click', this.cancel, false)
     }
 
@@ -474,11 +478,20 @@ interface ShortcutsWindow {
       if (this.leftTime <= 0) {
         clearTimeout(this.timeout)
         removeElement(this.timerElements.pauseButton)
-        timeIsOver()
+        this.expiredAudio = timeIsOver(this.timerElements.el)
       }
       else {
         this.timeout = setTimeout(this.update, 10)
       }
+    }
+
+    private silence = () => {
+      if (this.expiredAudio) {
+        this.expiredAudio.pause()
+        this.expiredAudio = null
+      }
+      this.timerElements.el.classList.remove('expired')
+      resetAlarmStateIfClear()
     }
 
     private pauseResume = (event: MouseEvent) => {
@@ -499,8 +512,13 @@ interface ShortcutsWindow {
     }
 
     private cancel = () => {
+      if (this.expiredAudio) {
+        this.expiredAudio.pause()
+        this.expiredAudio = null
+      }
       removeElement(this.timerElements.el as Element)
       clearTimeout(this.timeout)
+      resetAlarmStateIfClear()
     }
 
     start(): Timer {
@@ -517,10 +535,12 @@ interface ShortcutsWindow {
     private timeout: number | undefined
     private nameValue: string | undefined
     private notificationTag: string | null = null
+    private expiredAudio: HTMLAudioElement | null = null
     private countdownElements: {
       el: HTMLElement
       time: HTMLElement
       name: HTMLElement
+      silenceButton: HTMLButtonElement
       cancelButton: HTMLElement
     }
 
@@ -538,6 +558,7 @@ interface ShortcutsWindow {
             ['time$time', toTimeString(this.leftTime)],
           ],
           ['div',
+            ['button$silenceButton.silence', 'Silence'],
             ['button$cancelButton', 'X'],
           ],
         ],
@@ -547,11 +568,13 @@ interface ShortcutsWindow {
         el: HTMLElement
         time: HTMLElement
         name: HTMLElement
+        silenceButton: HTMLButtonElement
         cancelButton: HTMLElement
       }
 
       if (countdownTree.rootElement)
         countdowns.appendChild(countdownTree.rootElement as HTMLElement)
+      this.countdownElements.silenceButton.addEventListener('click', this.silence, false)
       this.countdownElements.cancelButton.addEventListener('click', this.cancel, false)
     }
 
@@ -563,15 +586,28 @@ interface ShortcutsWindow {
 
       if (this.leftTime <= 0) {
         clearTimeout(this.timeout)
-        timeIsOver()
         activeCountdownKeys.delete(this.key)
+        this.expiredAudio = timeIsOver(this.countdownElements.el)
       }
       else {
         this.timeout = setTimeout(this.update, 10)
       }
     }
 
+    private silence = () => {
+      if (this.expiredAudio) {
+        this.expiredAudio.pause()
+        this.expiredAudio = null
+      }
+      this.countdownElements.el.classList.remove('expired')
+      resetAlarmStateIfClear()
+    }
+
     private cancel = () => {
+      if (this.expiredAudio) {
+        this.expiredAudio.pause()
+        this.expiredAudio = null
+      }
       removeElement(this.countdownElements.el)
       clearTimeout(this.timeout)
       activeCountdownKeys.delete(this.key)
@@ -579,6 +615,7 @@ interface ShortcutsWindow {
         cancelScheduledNotification(this.notificationTag)
         this.notificationTag = null
       }
+      resetAlarmStateIfClear()
     }
 
     name(value: string): Countdown {
