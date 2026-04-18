@@ -97,7 +97,103 @@ interface ShortcutsWindow {
     return !isNaN(date.getTime()) && date.getTime() > new Date().getTime()
   }
 
-  const activeCountdownKeys = new Set<string>()
+  const STORAGE_KEY_TIMERS = 'timeomat.timers'
+  const STORAGE_KEY_COUNTDOWNS = 'timeomat.countdowns'
+  const STORAGE_KEY_SETTINGS = 'timeomat.settings'
+
+  interface StoredTimer {
+    id: string
+    endTime: number
+    paused: boolean
+    leftTime: number
+  }
+
+  interface StoredCountdown {
+    key: string
+    endTime: number
+    name: string
+  }
+
+  interface StoredSettings {
+    timerInput?: string
+    countdownName?: string
+  }
+
+  const activeTimers = new Map<string, Timer>()
+  const activeCountdowns = new Map<string, Countdown>()
+
+  function saveTimers(): void {
+    const list: StoredTimer[] = []
+    activeTimers.forEach((timer) => {
+      list.push(timer.serialize())
+    })
+    try {
+      localStorage.setItem(STORAGE_KEY_TIMERS, JSON.stringify(list))
+    }
+    catch (e) {
+      console.warn('Failed to save timers', e)
+    }
+  }
+
+  function loadStoredTimers(): StoredTimer[] {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY_TIMERS)
+      if (!raw)
+        return []
+      return JSON.parse(raw) as StoredTimer[]
+    }
+    catch {
+      return []
+    }
+  }
+
+  function saveCountdowns(): void {
+    const list: StoredCountdown[] = []
+    activeCountdowns.forEach((cd) => {
+      list.push(cd.serialize())
+    })
+    try {
+      localStorage.setItem(STORAGE_KEY_COUNTDOWNS, JSON.stringify(list))
+    }
+    catch (e) {
+      console.warn('Failed to save countdowns', e)
+    }
+  }
+
+  function loadStoredCountdowns(): StoredCountdown[] {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY_COUNTDOWNS)
+      if (!raw)
+        return []
+      return JSON.parse(raw) as StoredCountdown[]
+    }
+    catch {
+      return []
+    }
+  }
+
+  function loadSettings(): StoredSettings {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY_SETTINGS)
+      if (!raw)
+        return {}
+      return JSON.parse(raw) as StoredSettings
+    }
+    catch {
+      return {}
+    }
+  }
+
+  function updateSetting<K extends keyof StoredSettings>(key: K, value: StoredSettings[K]): void {
+    const settings = loadSettings()
+    settings[key] = value
+    try {
+      localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings))
+    }
+    catch (e) {
+      console.warn('Failed to save settings', e)
+    }
+  }
 
   function countdownKey(endTime: Date, countdownName: string): string {
     return 'countdown-' + endTime.getTime() + '-' + (countdownName || '')
@@ -105,11 +201,10 @@ interface ShortcutsWindow {
 
   function createCountdown(endTime: Date, countdownName: string): Countdown | null {
     const key = countdownKey(endTime, countdownName)
-    if (activeCountdownKeys.has(key)) {
+    if (activeCountdowns.has(key)) {
       alert('A countdown with the same name and end time is already running.')
       return null
     }
-    activeCountdownKeys.add(key)
     return (new Countdown(endTime, key))
       .name(countdownName)
       .start()
@@ -128,6 +223,9 @@ interface ShortcutsWindow {
   })()
 
   async function scheduleCountdownNotification(endTime: Date, countdownName: string, tag: string): Promise<string | null> {
+    if (endTime.getTime() <= Date.now())
+      return null
+
     if (!('TimestampTrigger' in window)) {
       console.info('Notification Triggers API not supported; notification requires tab to stay open.')
       return null
@@ -423,12 +521,22 @@ interface ShortcutsWindow {
     }
   }
 
+  interface TimerRestoreOptions {
+    id?: string
+    paused?: boolean
+    leftTime?: number
+    silentOnExpire?: boolean
+  }
+
   class Timer {
     private running = false
+    private paused = false
     private leftTime = 0
     private timeout: number | undefined
     private delayStart: Date | undefined
     private expiredAudio: HTMLAudioElement | null = null
+    private silentOnExpire = false
+    readonly id: string
     private timerElements: {
       el: HTMLElement
       time: HTMLElement
@@ -439,8 +547,10 @@ interface ShortcutsWindow {
 
     private endTime: Date
 
-    constructor(endTime: Date) {
+    constructor(endTime: Date, options?: TimerRestoreOptions) {
       this.endTime = endTime
+      this.id = options?.id ?? (Date.now().toString(36) + Math.random().toString(36).slice(2, 8))
+      this.silentOnExpire = !!options?.silentOnExpire
 
       const timerTree = shaven(
         ['div$el',
@@ -467,6 +577,30 @@ interface ShortcutsWindow {
       this.timerElements.pauseButton.addEventListener('click', this.pauseResume, false)
       this.timerElements.silenceButton.addEventListener('click', this.silence, false)
       this.timerElements.cancelButton.addEventListener('click', this.cancel, false)
+
+      if (options?.paused && options.leftTime !== undefined) {
+        this.paused = true
+        this.leftTime = options.leftTime
+        this.timerElements.time.innerHTML = toTimeString(this.leftTime)
+        this.timerElements.pauseButton.innerHTML = 'Resume'
+        this.delayStart = new Date()
+      }
+
+      activeTimers.set(this.id, this)
+      saveTimers()
+    }
+
+    serialize(): StoredTimer {
+      let leftTime = this.leftTime
+      if (this.paused && this.delayStart)
+        leftTime = Math.max(0, this.endTime.getTime() - this.delayStart.getTime())
+
+      return {
+        id: this.id,
+        endTime: this.endTime.getTime(),
+        paused: this.paused,
+        leftTime,
+      }
     }
 
     private update = () => {
@@ -478,7 +612,14 @@ interface ShortcutsWindow {
       if (this.leftTime <= 0) {
         clearTimeout(this.timeout)
         removeElement(this.timerElements.pauseButton)
-        this.expiredAudio = timeIsOver(this.timerElements.el)
+        if (this.silentOnExpire) {
+          this.timerElements.el.classList.add('expired')
+        }
+        else {
+          this.expiredAudio = timeIsOver(this.timerElements.el)
+        }
+        activeTimers.delete(this.id)
+        saveTimers()
       }
       else {
         this.timeout = setTimeout(this.update, 10)
@@ -502,12 +643,16 @@ interface ShortcutsWindow {
         clearTimeout(this.timeout)
         this.delayStart = new Date()
         this.running = false
+        this.paused = true
+        saveTimers()
       }
       else {
         button.innerHTML = 'Pause'
         this.endTime.setTime(this.endTime.getTime() + (new Date().getTime() - this.delayStart!.getTime()))
         this.timeout = setTimeout(this.update, 10)
         this.running = true
+        this.paused = false
+        saveTimers()
       }
     }
 
@@ -518,16 +663,24 @@ interface ShortcutsWindow {
       }
       removeElement(this.timerElements.el as Element)
       clearTimeout(this.timeout)
+      activeTimers.delete(this.id)
+      saveTimers()
       resetAlarmStateIfClear()
     }
 
     start(): Timer {
-      this.running = true
+      if (this.paused)
+        return this
 
+      this.running = true
       this.update()
 
       return this
     }
+  }
+
+  interface CountdownRestoreOptions {
+    silentOnExpire?: boolean
   }
 
   class Countdown {
@@ -536,6 +689,7 @@ interface ShortcutsWindow {
     private nameValue: string | undefined
     private notificationTag: string | null = null
     private expiredAudio: HTMLAudioElement | null = null
+    private silentOnExpire = false
     private countdownElements: {
       el: HTMLElement
       time: HTMLElement
@@ -545,11 +699,12 @@ interface ShortcutsWindow {
     }
 
     private endTime: Date
-    private key: string
+    readonly key: string
 
-    constructor(endTime: Date, key: string) {
+    constructor(endTime: Date, key: string, options?: CountdownRestoreOptions) {
       this.endTime = endTime
       this.key = key
+      this.silentOnExpire = !!options?.silentOnExpire
       const countdowns = $('#countdowns') as HTMLElement
       const countdownTree = shaven(
         ['div$el',
@@ -576,6 +731,16 @@ interface ShortcutsWindow {
         countdowns.appendChild(countdownTree.rootElement as HTMLElement)
       this.countdownElements.silenceButton.addEventListener('click', this.silence, false)
       this.countdownElements.cancelButton.addEventListener('click', this.cancel, false)
+
+      activeCountdowns.set(this.key, this)
+    }
+
+    serialize(): StoredCountdown {
+      return {
+        key: this.key,
+        endTime: this.endTime.getTime(),
+        name: this.nameValue || '',
+      }
     }
 
     private update = () => {
@@ -586,8 +751,14 @@ interface ShortcutsWindow {
 
       if (this.leftTime <= 0) {
         clearTimeout(this.timeout)
-        activeCountdownKeys.delete(this.key)
-        this.expiredAudio = timeIsOver(this.countdownElements.el)
+        activeCountdowns.delete(this.key)
+        saveCountdowns()
+        if (this.silentOnExpire) {
+          this.countdownElements.el.classList.add('expired')
+        }
+        else {
+          this.expiredAudio = timeIsOver(this.countdownElements.el)
+        }
       }
       else {
         this.timeout = setTimeout(this.update, 10)
@@ -610,7 +781,8 @@ interface ShortcutsWindow {
       }
       removeElement(this.countdownElements.el)
       clearTimeout(this.timeout)
-      activeCountdownKeys.delete(this.key)
+      activeCountdowns.delete(this.key)
+      saveCountdowns()
       if (this.notificationTag) {
         cancelScheduledNotification(this.notificationTag)
         this.notificationTag = null
@@ -626,6 +798,7 @@ interface ShortcutsWindow {
     start(): Countdown {
       this.update()
       this.countdownElements.name.innerHTML = this.nameValue || ' '
+      saveCountdowns()
       scheduleCountdownNotification(this.endTime, this.nameValue || 'Countdown', this.key)
         .then((tag) => {
           this.notificationTag = tag
@@ -1005,6 +1178,7 @@ interface ShortcutsWindow {
       // 'worldclock'
     ]
 
+    const timerTimeInput = $('#timerTime') as HTMLInputElement
     const countdownNameInput = $('#countdownName') as HTMLInputElement
     const countdownDateInput = $('#countdownDate') as HTMLInputElement
     const countdownTimeInput = $('#countdownTime') as HTMLInputElement
@@ -1017,6 +1191,46 @@ interface ShortcutsWindow {
     }
 
     setDefaultCountdownInputs()
+
+    const savedSettings = loadSettings()
+    if (savedSettings.timerInput)
+      timerTimeInput.value = savedSettings.timerInput
+    if (savedSettings.countdownName)
+      countdownNameInput.value = savedSettings.countdownName
+
+    timerTimeInput.addEventListener('change', () => {
+      updateSetting('timerInput', timerTimeInput.value)
+    }, false)
+    countdownNameInput.addEventListener('change', () => {
+      updateSetting('countdownName', countdownNameInput.value)
+    }, false)
+
+    function restoreFromStorage() {
+      const now = Date.now()
+
+      for (const st of loadStoredTimers()) {
+        if (st.paused) {
+          new Timer(new Date(now + st.leftTime), {
+            id: st.id,
+            paused: true,
+            leftTime: st.leftTime,
+          })
+        }
+        else {
+          const silent = st.endTime <= now
+          new Timer(new Date(st.endTime), { id: st.id, silentOnExpire: silent }).start()
+        }
+      }
+
+      for (const sc of loadStoredCountdowns()) {
+        const silent = sc.endTime <= now
+        new Countdown(new Date(sc.endTime), sc.key, { silentOnExpire: silent })
+          .name(sc.name)
+          .start()
+      }
+    }
+
+    restoreFromStorage()
 
     menuItems.forEach(function (item: string) {
       ($('#' + item) as HTMLElement).addEventListener('click', function (event: Event) {
