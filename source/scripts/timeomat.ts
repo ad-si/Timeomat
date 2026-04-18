@@ -889,7 +889,7 @@ interface ShortcutsWindow {
     const countdownTimeInput = $('#countdownTime') as HTMLInputElement
 
     function setDefaultCountdownInputs() {
-      const defaultDate = new Date(new Date().getTime() + 60000)
+      const defaultDate = new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
 
       countdownDateInput.value = defaultDate.toISOString().slice(0, 10)
       countdownTimeInput.value = defaultDate.toTimeString().slice(0, 5)
