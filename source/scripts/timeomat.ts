@@ -133,6 +133,7 @@ interface ShortcutsWindow {
     catch (e) {
       console.warn('Failed to save timers', e)
     }
+    updateNavBadges()
   }
 
   function loadStoredTimers(): StoredTimer[] {
@@ -158,6 +159,7 @@ interface ShortcutsWindow {
     catch (e) {
       console.warn('Failed to save countdowns', e)
     }
+    updateNavBadges()
   }
 
   function loadStoredCountdowns(): StoredCountdown[] {
@@ -342,6 +344,21 @@ interface ShortcutsWindow {
   function setFavicon(state: 'warn' | null): void {
     const fav = $('#favicon') as HTMLLinkElement
     fav.href = state === 'warn' ? 'images/favicon2.png' : 'images/favicon.png'
+  }
+
+  function updateNavBadges(): void {
+    const timerBadge = document.getElementById('timerBadge') as HTMLElement | null
+    const countdownBadge = document.getElementById('countdownBadge') as HTMLElement | null
+    if (timerBadge) {
+      const n = activeTimers.size
+      timerBadge.textContent = n > 0 ? String(n) : ''
+      timerBadge.classList.toggle('hidden', n === 0)
+    }
+    if (countdownBadge) {
+      const n = activeCountdowns.size
+      countdownBadge.textContent = n > 0 ? String(n) : ''
+      countdownBadge.classList.toggle('hidden', n === 0)
+    }
   }
 
   function resetAlarmStateIfClear(): void {
