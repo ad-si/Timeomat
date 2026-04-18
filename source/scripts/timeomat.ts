@@ -53,6 +53,88 @@ interface ShortcutsWindow {
     element.parentNode!.removeChild(element)
   }
 
+  function animateRemoval(el: HTMLElement, container: HTMLElement): void {
+    el.classList.remove('expired', 'entering')
+
+    if (container.children.length === 1) {
+      container.classList.add('leaving')
+      container.addEventListener('animationend', () => {
+        container.classList.remove('leaving')
+        if (el.parentNode)
+          removeElement(el)
+      }, { once: true })
+      return
+    }
+
+    const followers: HTMLElement[] = []
+    let past = false
+    for (const child of Array.from(container.children)) {
+      if (past && child instanceof HTMLElement)
+        followers.push(child)
+      if (child === el)
+        past = true
+    }
+    const startPositions = followers.map(s => s.getBoundingClientRect().top)
+    const startContainerHeight = container.offsetHeight
+
+    const rect = el.getBoundingClientRect()
+    const containerRect = container.getBoundingClientRect()
+    el.style.position = 'absolute'
+    el.style.top = (rect.top - containerRect.top) + 'px'
+    el.style.left = (rect.left - containerRect.left) + 'px'
+    el.style.width = rect.width + 'px'
+    el.style.margin = '0'
+    el.style.zIndex = '0'
+    el.classList.add('leaving')
+
+    const endContainerHeight = container.offsetHeight
+    container.style.height = startContainerHeight + 'px'
+    void container.offsetHeight
+
+    followers.forEach((s, i) => {
+      const delta = startPositions[i] - s.getBoundingClientRect().top
+      if (!delta)
+        return
+      s.style.transition = 'none'
+      s.style.transform = `translateY(${delta}px)`
+      s.style.position = 'relative'
+      s.style.zIndex = '1'
+    })
+
+    requestAnimationFrame(() => {
+      container.style.transition = 'height 0.3s ease-out'
+      container.style.height = endContainerHeight + 'px'
+      const onContainerEnd = (e: TransitionEvent) => {
+        if (e.propertyName !== 'height')
+          return
+        container.style.transition = ''
+        container.style.height = ''
+        container.removeEventListener('transitionend', onContainerEnd)
+      }
+      container.addEventListener('transitionend', onContainerEnd)
+
+      followers.forEach((s) => {
+        s.style.transition = 'transform 0.3s ease-out'
+        s.style.transform = 'translateY(0)'
+        const onEnd = (e: TransitionEvent) => {
+          if (e.propertyName !== 'transform')
+            return
+          s.style.transition = ''
+          s.style.transform = ''
+          s.style.position = ''
+          s.style.zIndex = ''
+          s.removeEventListener('transitionend', onEnd)
+        }
+        s.addEventListener('transitionend', onEnd)
+      })
+    })
+
+    el.addEventListener('animationend', () => {
+      if (el.parentNode)
+        removeElement(el)
+    }, { once: true })
+  }
+
   function toTimeString(value: number): string {
     let time = ''
     let a: number
@@ -547,6 +629,7 @@ interface ShortcutsWindow {
     paused?: boolean
     leftTime?: number
     silentOnExpire?: boolean
+    restored?: boolean
   }
 
   class Timer {
@@ -595,8 +678,18 @@ interface ShortcutsWindow {
         cancelButton: HTMLButtonElement
       }
 
-      if (timerTree.rootElement)
-        ($('#timers') as HTMLElement).appendChild(timerTree.rootElement as HTMLElement)
+      if (timerTree.rootElement) {
+        const rootEl = timerTree.rootElement as HTMLElement
+        const container = $('#timers') as HTMLElement
+        if (!options?.restored) {
+          const target = container.children.length === 0 ? container : rootEl
+          target.classList.add('entering')
+          target.addEventListener('animationend', () => {
+            target.classList.remove('entering')
+          }, { once: true })
+        }
+        container.appendChild(rootEl)
+      }
 
       this.timerElements.pauseButton.addEventListener('click', this.pauseResume, false)
       this.timerElements.silenceButton.addEventListener('click', this.silence, false)
@@ -697,10 +790,10 @@ interface ShortcutsWindow {
         this.expiredAudio.pause()
         this.expiredAudio = null
       }
-      removeElement(this.timerElements.el as Element)
       clearTimeout(this.timeout)
       activeTimers.delete(this.id)
       saveTimers()
+      animateRemoval(this.timerElements.el, $('#timers') as HTMLElement)
       resetAlarmStateIfClear()
     }
 
@@ -717,6 +810,7 @@ interface ShortcutsWindow {
 
   interface CountdownRestoreOptions {
     silentOnExpire?: boolean
+    restored?: boolean
   }
 
   class Countdown {
@@ -766,8 +860,17 @@ interface ShortcutsWindow {
         cancelButton: HTMLElement
       }
 
-      if (countdownTree.rootElement)
-        countdowns.appendChild(countdownTree.rootElement as HTMLElement)
+      if (countdownTree.rootElement) {
+        const rootEl = countdownTree.rootElement as HTMLElement
+        if (!options?.restored) {
+          const target = countdowns.children.length === 0 ? countdowns : rootEl
+          target.classList.add('entering')
+          target.addEventListener('animationend', () => {
+            target.classList.remove('entering')
+          }, { once: true })
+        }
+        countdowns.appendChild(rootEl)
+      }
       this.countdownElements.silenceButton.addEventListener('click', this.silence, false)
       this.countdownElements.fullscreenButton.addEventListener('click', this.toggleFullscreen, false)
       this.countdownElements.cancelButton.addEventListener('click', this.cancel, false)
@@ -831,7 +934,6 @@ interface ShortcutsWindow {
         this.expiredAudio.pause()
         this.expiredAudio = null
       }
-      removeElement(this.countdownElements.el)
       clearTimeout(this.timeout)
       activeCountdowns.delete(this.key)
       saveCountdowns()
@@ -839,6 +941,7 @@ interface ShortcutsWindow {
         cancelScheduledNotification(this.notificationTag)
         this.notificationTag = null
       }
+      animateRemoval(this.countdownElements.el, $('#countdowns') as HTMLElement)
       resetAlarmStateIfClear()
     }
 
@@ -1285,17 +1388,18 @@ interface ShortcutsWindow {
             id: st.id,
             paused: true,
             leftTime: st.leftTime,
+            restored: true,
           })
         }
         else {
           const silent = st.endTime <= now
-          new Timer(new Date(st.endTime), { id: st.id, silentOnExpire: silent }).start()
+          new Timer(new Date(st.endTime), { id: st.id, silentOnExpire: silent, restored: true }).start()
         }
       }
 
       for (const sc of loadStoredCountdowns()) {
         const silent = sc.endTime <= now
-        new Countdown(new Date(sc.endTime), sc.key, { silentOnExpire: silent })
+        new Countdown(new Date(sc.endTime), sc.key, { silentOnExpire: silent, restored: true })
           .name(sc.name)
           .start()
       }

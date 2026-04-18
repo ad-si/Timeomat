@@ -400,6 +400,7 @@ body > nav
   box-shadow 0 2px 2px rgba(255,255,255,0.2), 0 -2px 1px rgba(0,0,0,0.2)
   display inline-block
   width 600px
+  position relative
   &:not(:empty)
     padding 20px 20px 0
   > div
@@ -456,6 +457,7 @@ body > nav
   box-shadow 0 2px 2px rgba(255,255,255,0.2), 0 -2px 1px rgba(0,0,0,0.2)
   display inline-block
   width 700px
+  position relative
   &:not(:empty)
     padding 20px 20px 0
   > div
@@ -516,6 +518,53 @@ body > nav
     box-shadow 0 -1px 2px rgba(255,255,255,0.1), 0 2px 2px rgba(0,0,0,0.5), 0 0 12px rgba(255,60,60,0.5)
   to
     box-shadow 0 -1px 2px rgba(255,255,255,0.1), 0 2px 2px rgba(0,0,0,0.5), 0 0 36px rgba(255,120,120,0.95)
+
+#timers.entering,
+#countdowns.entering,
+#timers > div.entering,
+#countdowns > div.entering
+  animation timer-enter 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) both
+  transform-origin top center
+
+@keyframes timer-enter
+  0%
+    opacity 0
+    transform translateY(-24px) scale(0.92)
+  60%
+    opacity 1
+  100%
+    opacity 1
+    transform translateY(0) scale(1)
+
+#timers.leaving,
+#countdowns.leaving
+  animation timer-leave 0.3s cubic-bezier(0.4, 0, 0.6, 1) both
+  transform-origin top center
+  pointer-events none
+
+#timers > div.leaving,
+#countdowns > div.leaving
+  animation timer-leave-item 0.3s ease-out both
+  pointer-events none
+
+@keyframes timer-leave
+  0%
+    opacity 1
+    transform translateY(0) scale(1)
+  100%
+    opacity 0
+    transform translateY(-16px) scale(0.92)
+
+@keyframes timer-leave-item
+  0%
+    opacity 1
+    transform scale(1)
+  50%
+    opacity 0
+    transform scale(0.96)
+  100%
+    opacity 0
+    transform scale(0.95)
 
 #timers button.silence,
 #countdowns button.silence
