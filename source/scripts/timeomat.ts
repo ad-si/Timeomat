@@ -571,7 +571,7 @@ interface ShortcutsWindow {
     showDate(): void {
       const d = new Date();
 
-      (($('#date')) as HTMLElement).innerHTML = this.weekdays[d.getDay()] + ', ' + d.getDate() + '.' + this.months[d.getMonth()] + ' ' + d.getFullYear()
+      (($('#date')) as HTMLElement).innerHTML = this.weekdays[d.getDay()] + ', ' + d.getDate() + '. ' + this.months[d.getMonth()] + ' ' + d.getFullYear()
 
       setTimeout(() => {
         this.showDate()
