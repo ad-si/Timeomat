@@ -3,6 +3,8 @@
 Webapp including a clock, alarm, stopwatch, and timer.
 It is designed to be simple and easy to use, with a clean and modern interface.
 
+![Timeomat webapp screenshot](screenshots/2026-04-19t1003_analog.png)
+
 
 ## Related
 
