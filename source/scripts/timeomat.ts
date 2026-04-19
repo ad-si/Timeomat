@@ -506,6 +506,8 @@ interface ShortcutsWindow {
     private hourHand = document.getElementById('hourHandGroup') as unknown as SVGGElement
     private minuteHand = document.getElementById('minuteHandGroup') as unknown as SVGGElement
     private secondHand = document.getElementById('secondHandGroup') as unknown as SVGGElement
+    private lastDigitalText = ''
+    private lastDateText = ''
 
     constructor() {
       this.buildMarkers()
@@ -543,7 +545,11 @@ interface ShortcutsWindow {
     }
 
     showTime(): void {
-      this.digitalEl.innerHTML = new Date().toTimeString().substr(0, 8)
+      const text = new Date().toTimeString().substr(0, 8)
+      if (text !== this.lastDigitalText) {
+        this.digitalEl.textContent = text
+        this.lastDigitalText = text
+      }
 
       setTimeout(() => {
         this.showTime()
@@ -569,9 +575,12 @@ interface ShortcutsWindow {
     }
 
     showDate(): void {
-      const d = new Date();
-
-      (($('#date')) as HTMLElement).innerHTML = this.weekdays[d.getDay()] + ', ' + d.getDate() + '. ' + this.months[d.getMonth()] + ' ' + d.getFullYear()
+      const d = new Date()
+      const text = this.weekdays[d.getDay()] + ', ' + d.getDate() + '. ' + this.months[d.getMonth()] + ' ' + d.getFullYear()
+      if (text !== this.lastDateText) {
+        (($('#date')) as HTMLElement).textContent = text
+        this.lastDateText = text
+      }
 
       setTimeout(() => {
         this.showDate()
@@ -580,7 +589,6 @@ interface ShortcutsWindow {
   }
 
   class Stopwatch {
-    private timer: number | undefined
     private startTime: Date = new Date()
     private time = 0
     private firstTime = true
@@ -588,6 +596,10 @@ interface ShortcutsWindow {
     private tableStatus = false
     private roundCounter = 0
     private lastRound = 0
+    private lastDisplayText = ''
+    private lastNextRoundText = ''
+    private lastNextDurationText = ''
+    private lastNextTimeText = ''
     private stopwatchDisplay = $('#stopwatchDisplay') as HTMLElement
     private stopwatchStart = $('#stopwatchStart') as HTMLElement
     private stopwatchReset = $('#stopwatchReset') as HTMLElement
@@ -607,7 +619,8 @@ interface ShortcutsWindow {
 
         this.isRunning = true
 
-        this.showTime();
+        this.showTime()
+        subscribeTick(this.tick);
 
         (this.stopwatchStart as HTMLElement).innerHTML = 'Stop'
         this.stopwatchReset.classList.add('hidden')
@@ -616,7 +629,7 @@ interface ShortcutsWindow {
     }
 
     stop(): void {
-      clearTimeout(this.timer)
+      unsubscribeTick(this.tick)
       this.isRunning = false;
       (this.stopwatchStart as HTMLElement).innerHTML = 'Continue'
       this.stopwatchReset.classList.remove('hidden')
@@ -630,26 +643,41 @@ interface ShortcutsWindow {
         this.stop()
     }
 
+    private tick = (): void => {
+      this.showTime()
+    }
+
     showTime(): void {
       if (this.isRunning) {
         const now = new Date()
         this.time = now.getTime() - this.startTime.getTime()
 
-        const display = this.stopwatchDisplay as HTMLElement
-        display.innerHTML = toTimeString(this.time)
-
-        if (this.tableStatus) {
-          (this.nextRound as HTMLElement).innerHTML = (this.roundCounter + 1).toString();
-          (this.nextDuration as HTMLElement).innerHTML = toTimeString(this.time - this.lastRound);
-          (this.nextTime as HTMLElement).innerHTML = toTimeString(this.time)
+        const displayText = toTimeString(this.time)
+        if (displayText !== this.lastDisplayText) {
+          this.stopwatchDisplay.textContent = displayText
+          this.lastDisplayText = displayText
         }
 
-        this.timer = window.setTimeout(() => {
-          this.showTime()
-        }, 10)
+        if (this.tableStatus) {
+          const nextRoundText = (this.roundCounter + 1).toString()
+          if (nextRoundText !== this.lastNextRoundText) {
+            this.nextRound.textContent = nextRoundText
+            this.lastNextRoundText = nextRoundText
+          }
+          const nextDurationText = toTimeString(this.time - this.lastRound)
+          if (nextDurationText !== this.lastNextDurationText) {
+            this.nextDuration.textContent = nextDurationText
+            this.lastNextDurationText = nextDurationText
+          }
+          if (displayText !== this.lastNextTimeText) {
+            this.nextTime.textContent = displayText
+            this.lastNextTimeText = displayText
+          }
+        }
       }
       else {
-        (this.stopwatchDisplay as HTMLElement).innerHTML = '00:00:00.00'
+        this.stopwatchDisplay.textContent = '00:00:00.00'
+        this.lastDisplayText = '00:00:00.00'
       }
     }
 
@@ -698,9 +726,13 @@ interface ShortcutsWindow {
     reset(): void {
       this.firstTime = true
       this.roundCounter = 0
-      this.lastRound = 0;
+      this.lastRound = 0
+      this.lastDisplayText = '00:00:00.00'
+      this.lastNextRoundText = ''
+      this.lastNextDurationText = ''
+      this.lastNextTimeText = '';
 
-      (this.stopwatchDisplay as HTMLElement).innerHTML = '00:00:00.00';
+      (this.stopwatchDisplay as HTMLElement).textContent = '00:00:00.00';
       (this.stopwatchStart as HTMLElement).innerHTML = 'Start'
       this.stopwatchReset.classList.add('hidden')
       this.table.classList.add('hidden')
@@ -722,12 +754,39 @@ interface ShortcutsWindow {
     restored?: boolean
   }
 
+  const tickSubscribers = new Set<() => void>()
+  let tickRafId: number | null = null
+
+  function runTick(): void {
+    tickRafId = null
+    tickSubscribers.forEach((fn) => {
+      try {
+        fn()
+      }
+      catch (e) {
+        console.warn('Tick subscriber failed', e)
+      }
+    })
+    if (tickSubscribers.size > 0)
+      tickRafId = requestAnimationFrame(runTick)
+  }
+
+  function subscribeTick(fn: () => void): void {
+    tickSubscribers.add(fn)
+    if (tickRafId === null)
+      tickRafId = requestAnimationFrame(runTick)
+  }
+
+  function unsubscribeTick(fn: () => void): void {
+    tickSubscribers.delete(fn)
+  }
+
   class Timer {
     private running = false
     private paused = false
     private leftTime = 0
-    private timeout: number | undefined
     private delayStart: Date | undefined
+    private lastRenderedText = ''
     private expiredAudio: HTMLAudioElement | null = null
     private silentOnExpire = false
     readonly id: string
@@ -789,7 +848,8 @@ interface ShortcutsWindow {
       if (options?.paused && options.leftTime !== undefined) {
         this.paused = true
         this.leftTime = options.leftTime
-        this.timerElements.time.innerHTML = toTimeString(this.leftTime)
+        this.lastRenderedText = toTimeString(this.leftTime)
+        this.timerElements.time.textContent = this.lastRenderedText
         this.timerElements.pauseButton.innerHTML = 'Resume'
         this.delayStart = new Date()
       }
@@ -814,11 +874,14 @@ interface ShortcutsWindow {
     private update = () => {
       this.leftTime = this.endTime.getTime() - new Date().getTime()
 
-      this.timerElements.time.innerHTML = toTimeString(this.leftTime)
-      // setTitle(toTimeString(leftTime))
+      const text = toTimeString(this.leftTime)
+      if (text !== this.lastRenderedText) {
+        this.timerElements.time.textContent = text
+        this.lastRenderedText = text
+      }
 
       if (this.leftTime <= 0) {
-        clearTimeout(this.timeout)
+        unsubscribeTick(this.update)
         removeElement(this.timerElements.pauseButton)
         if (this.silentOnExpire) {
           this.timerElements.el.classList.add('expired')
@@ -828,9 +891,6 @@ interface ShortcutsWindow {
         }
         activeTimers.delete(this.id)
         saveTimers()
-      }
-      else {
-        this.timeout = setTimeout(this.update, 10)
       }
     }
 
@@ -859,7 +919,7 @@ interface ShortcutsWindow {
 
       if (this.running) {
         button.innerHTML = 'Resume'
-        clearTimeout(this.timeout)
+        unsubscribeTick(this.update)
         this.delayStart = new Date()
         this.running = false
         this.paused = true
@@ -868,9 +928,11 @@ interface ShortcutsWindow {
       else {
         button.innerHTML = 'Pause'
         this.endTime.setTime(this.endTime.getTime() + (new Date().getTime() - this.delayStart!.getTime()))
-        this.timeout = setTimeout(this.update, 10)
         this.running = true
         this.paused = false
+        this.update()
+        if (this.leftTime > 0)
+          subscribeTick(this.update)
         saveTimers()
       }
     }
@@ -880,7 +942,7 @@ interface ShortcutsWindow {
         this.expiredAudio.pause()
         this.expiredAudio = null
       }
-      clearTimeout(this.timeout)
+      unsubscribeTick(this.update)
       activeTimers.delete(this.id)
       saveTimers()
       animateRemoval(this.timerElements.el, $('#timers') as HTMLElement)
@@ -893,6 +955,8 @@ interface ShortcutsWindow {
 
       this.running = true
       this.update()
+      if (this.leftTime > 0)
+        subscribeTick(this.update)
 
       return this
     }
@@ -905,11 +969,11 @@ interface ShortcutsWindow {
 
   class Countdown {
     private leftTime: number = 0
-    private timeout: number | undefined
     private nameValue: string | undefined
     private notificationTag: string | null = null
     private expiredAudio: HTMLAudioElement | null = null
     private silentOnExpire = false
+    private lastRenderedText = ''
     private countdownElements: {
       el: HTMLElement
       time: HTMLElement
@@ -979,11 +1043,14 @@ interface ShortcutsWindow {
     private update = () => {
       this.leftTime = this.endTime.getTime() - new Date().getTime()
 
-      this.countdownElements.time.innerHTML = toTimeStringSeconds(this.leftTime)
-      // setTitle(toTimeString(leftTime))
+      const text = toTimeStringSeconds(this.leftTime)
+      if (text !== this.lastRenderedText) {
+        this.countdownElements.time.textContent = text
+        this.lastRenderedText = text
+      }
 
       if (this.leftTime <= 0) {
-        clearTimeout(this.timeout)
+        unsubscribeTick(this.update)
         activeCountdowns.delete(this.key)
         saveCountdowns()
         if (this.silentOnExpire) {
@@ -992,10 +1059,6 @@ interface ShortcutsWindow {
         else {
           this.expiredAudio = timeIsOver(this.countdownElements.el)
         }
-      }
-      else {
-        const msUntilNextSecond = this.leftTime % 1000 || 1000
-        this.timeout = setTimeout(this.update, msUntilNextSecond)
       }
     }
 
@@ -1024,7 +1087,7 @@ interface ShortcutsWindow {
         this.expiredAudio.pause()
         this.expiredAudio = null
       }
-      clearTimeout(this.timeout)
+      unsubscribeTick(this.update)
       activeCountdowns.delete(this.key)
       saveCountdowns()
       if (this.notificationTag) {
@@ -1042,6 +1105,8 @@ interface ShortcutsWindow {
 
     start(): Countdown {
       this.update()
+      if (this.leftTime > 0)
+        subscribeTick(this.update)
       this.countdownElements.name.innerHTML = this.nameValue || ' '
       saveCountdowns()
       scheduleCountdownNotification(this.endTime, this.nameValue || 'Countdown', this.key)
