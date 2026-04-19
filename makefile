@@ -30,7 +30,7 @@ format:
 deploy: build
 	cp ./build/{index,200}.html
 	cp ./CNAME ./build/
-	surge ./build
+	npx surge ./build
 
 
 .PHONY: clean
