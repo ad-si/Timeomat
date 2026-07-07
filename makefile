@@ -28,9 +28,7 @@ format:
 
 .PHONY: deploy
 deploy: build
-	cp ./build/{index,200}.html
-	cp ./CNAME ./build/
-	npx surge ./build
+	netlify deploy --prod --dir ./build
 
 
 .PHONY: clean
