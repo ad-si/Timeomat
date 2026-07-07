@@ -5,3 +5,7 @@
 
 # Generated JS
 source/scripts/*.js
+.direnv
+
+# Local Netlify folder
+.netlify

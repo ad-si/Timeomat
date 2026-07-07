@@ -19,13 +19,9 @@
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
             bash
-            cargo
-            clippy
-            coreutils # cat
+            coreutils
             gnumake
-            rust-analyzer
-            rustc
-            rustfmt
+            netlify-cli
           ];
         };
         formatter = pkgs.nixfmt-tree; # Format this file with `nix fmt`
